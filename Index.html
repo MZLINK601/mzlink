@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+     <title>MZLINK</title>
+     <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="cartoes.css">
+</head>
+
+<body>
+
+    <header>
+
+        <nav>
+            <button onclick="location.href='login.html'">Entrar</button>
+            <button onclick="location.href='registo.html'">Criar conta</button>
+        </nav>
+    </header>
+
+    <main>
+    <h1>MZLINK</h1>
+    <h2>Encontre, Compare, Resolva.</h2>
+    <p>Encontre produtos, serviços, vendedores e profissionais.</p>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="O que voçê precisa encontrar?">
+        <button id="searchButton">Pesquisar</button>
+    </div>
+
+    <div id="results"></div>
+
+    <h2>Categorias</h2>
+    <div class="categorias">
+        <button data-categoria="produtos">Produtos</button>
+        <button data-categoria="servicos">Serviços</button>
+        <button data-categoria="vendedores">Vendedores</button>
+        <button data-categoria="profissionais">profissionais</button>
+        <button data-categoria="instituicoes">Instituições</button> 
+        <button data-categoria="empresas">Empresas</button>      
+    </div>
+
+        <div class="cards">
+            <div class="card"><h3>Encontre</h3><p>Milhares de produtos perto de si</p></div>
+            <div class="card"><h3>Compare</h3><p>Compare preços e avaliações</p></div>
+            <div class="card"><h3>Resolva</h3><p>Resolva a sua necessidade com confiança</p></div>
+        </div>
+        </main>
+    
+<script src="script.js"></script>
+<script src="sessao.js" charset="UTF-8"></script>
+</body>
+</html>

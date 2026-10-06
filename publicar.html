@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicar anúncio - MZLINK</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-page { align-items: flex-start; }
+    .publicar-wrap { width: 100%; max-width: 520px; margin: 20px auto; }
+    .publicar-wrap .auth-card { max-width: 100%; margin-bottom: 20px; }
+    .meu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+    .meu-item small { display: block; color: #6b7280; }
+    .meu-item button { background: #dc2626; padding: 8px 14px; }
+    .meu-item button:hover { background: #b91c1c; }
+    .voltar { display: block; text-align: center; color: #1d4ed8; font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body class="auth-page">
+
+  <div class="publicar-wrap">
+
+    <div class="auth-card">
+      <a href="index.html" class="auth-logo">MZLINK</a>
+      <h2>Publicar anúncio</h2>
+
+      <form id="publicarForm">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" placeholder="Seu nome ou da sua empresa" required>
+
+        <label for="tipo">O que oferece</label>
+        <input type="text" id="tipo" placeholder="Ex: Eletricista, Roupa, Aulas de inglês" required>
+
+        <label for="local">Local</label>
+        <input type="text" id="local" placeholder="Ex: Maputo, Matola" required>
+
+        <label for="categoria">Categoria</label>
+        <select id="categoria" required>
+          <option value="">Escolha uma opção</option>
+          <option value="produtos">Produtos</option>
+          <option value="servicos">Serviços</option>
+          <option value="vendedores">Vendedores</option>
+          <option value="profissionais">Profissionais</option>
+          <option value="empresas">Empresas</option>
+          <option value="instituicoes">Instituições</option>
+        </select>
+
+        <label for="whatsapp">WhatsApp</label>
+        <input type="tel" id="whatsapp" placeholder="84 123 4567" required>
+
+        <button type="submit">Publicar</button>
+        <p id="message"></p>
+      </form>
+    </div>
+
+    <div class="auth-card">
+      <h2>Os meus anúncios</h2>
+      <div id="meusAnuncios"><p>A carregar...</p></div>
+    </div>
+
+    <a class="voltar" href="index.html">Voltar à página inicial</a>
+
+  </div>
+
+  <script src="sessao.js" charset="UTF-8"></script>
+  <script src="publicar.js" charset="UTF-8"></script>
+</body>
+</html>
