@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bem-vindo ao Premium — MZLINK</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 40px 20px;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(212,175,55,.18), transparent 60%),
+        linear-gradient(135deg, rgb(15,17,21) 0%, rgb(26,29,36) 100%);
+      color: rgb(255,255,255);
+      display: grid;
+      place-items: center;
+    }
+
+    .container {
+      max-width: 760px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .icon-topo {
+      font-size: 5rem;
+      margin-bottom: 12px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, rgb(212,175,55), rgb(245,215,110));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .sub {
+      color: rgb(201,204,211);
+      margin-bottom: 40px;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .cartoes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .cartao {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(212,175,55,.3);
+      border-radius: 18px;
+      padding: 24px 16px;
+      transition: transform .2s, border-color .2s;
+    }
+
+    .cartao:hover {
+      transform: translateY(-4px);
+      border-color: rgb(212,175,55);
+    }
+
+    .cartao .emoji {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+    }
+
+    .cartao h3 {
+      font-size: .85rem;
+      color: rgb(139,143,153);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .cartao .antes {
+      font-size: .85rem;
+      color: rgb(139,143,153);
+      text-decoration: line-through;
+    }
+
+    .cartao .depois {
+      font-size: 1.6rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, rgb(212,175,55), rgb(245,215,110));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .cartao .valor {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: rgb(255,255,255);
+    }
+
+    .cartao .extra {
+      color: rgb(139,143,153);
+      font-size: .8rem;
+      margin-top: 4px;
+    }
+
+    .btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, rgb(212,175,55), rgb(245,215,110));
+      color: rgb(26,26,26);
+      font-weight: 800;
+      font-size: 1rem;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 10px 30px rgba(212,175,55,.4);
+      transition: transform .2s;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn.secundario {
+      background: rgba(255,255,255,.08);
+      color: rgb(255,255,255);
+      box-shadow: none;
+      border: 1px solid rgba(255,255,255,.15);
+    }
+
+    @media (max-width: 640px) {
+      .cartoes { grid-template-columns: 1fr; }
+      h1 { font-size: 1.6rem; }
+      .icon-topo { font-size: 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="icon-topo">🏆</div>
+
+    <h1>Parabéns, és Premium!</h1>
+
+    <p class="sub">
+      A tua conta <strong>MZLINK Premium</strong> foi ativada.<br>
+      Aqui está o que ganhaste:
+    </p>
+
+    <div class="cartoes">
+
+      <div class="cartao">
+        <div class="emoji">📸</div>
+        <h3>Fotos</h3>
+        <div class="antes">4 fotos</div>
+        <div class="depois">20 fotos</div>
+      </div>
+
+      <div class="cartao">
+        <div class="emoji">📢</div>
+        <h3>Anúncios</h3>
+        <div class="antes">3 ativos</div>
+        <div class="depois">Ilimitados</div>
+      </div>
+
+      <div class="cartao">
+        <div class="emoji">🔝</div>
+        <h3>Destaque</h3>
+        <div class="valor">Ativado</div>
+        <div class="extra">Apareces primeiro</div>
+      </div>
+
+      <div class="cartao">
+        <div class="emoji">✔️</div>
+        <h3>Selo</h3>
+        <div class="valor" style="color: rgb(29,161,242);">Verificado</div>
+        <div class="extra">Em todos os anúncios</div>
+      </div>
+
+      <div class="cartao">
+        <div class="emoji">📊</div>
+        <h3>Estatísticas</h3>
+        <div class="valor">Ativadas</div>
+        <div class="extra">Vê as visitas</div>
+      </div>
+
+      <div class="cartao">
+        <div class="emoji">💬</div>
+        <h3>Suporte</h3>
+        <div class="valor">Prioritário</div>
+        <div class="extra">Resposta rápida</div>
+      </div>
+
+    </div>
+
+    <div class="btns">
+      <a href="publicar.html" class="btn">📢 Criar primeiro anúncio</a>
+      <a href="index.html" class="btn secundario">Ir para início</a>
+    </div>
+
+  </div>
+
+</body>
+</html>

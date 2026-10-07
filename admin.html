@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — MZLINK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">MZLINK <span class="admin-tag">ADMIN</span></a>
+    <nav>
+      <a href="admin.html" class="ativo">Utilizadores</a>
+      <a href="index.html">Site</a>
+      <a href="#" id="btnSair">Sair</a>
+    </nav>
+  </header>
+
+  <main class="admin-wrap">
+
+    <div id="avisoAcesso" class="aviso" style="display:none;"></div>
+
+    <section id="painelAdmin" style="display:none;">
+
+      <h1>Painel Admin</h1>
+
+      <div class="admin-stats">
+        <div class="stat-card">
+          <strong id="statUsers">—</strong>
+          <span>Utilizadores</span>
+        </div>
+        <div class="stat-card destaque-ouro">
+          <strong id="statPremium">—</strong>
+          <span>Premium ativos</span>
+        </div>
+        <div class="stat-card">
+          <strong id="statAnuncios">—</strong>
+          <span>Anúncios</span>
+        </div>
+      </div>
+
+      <div class="admin-barra">
+        <input type="search" id="busca" placeholder="🔍 Pesquisar por email ou nome...">
+        <select id="filtroPlano">
+          <option value="">Todos os planos</option>
+          <option value="basico">Básico</option>
+          <option value="premium">Premium</option>
+        </select>
+      </div>
+
+      <div class="admin-tabela-wrap">
+        <table class="admin-tabela">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Plano</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyUsers">
+            <tr><td colspan="4">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="js/sessao.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

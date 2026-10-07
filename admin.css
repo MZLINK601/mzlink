@@ -1,0 +1,311 @@
+/* ============================================================
+   MZLINK · Painel Admin
+   ============================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: rgb(248, 249, 251);
+  color: rgb(26, 26, 26);
+  min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.header {
+  background: rgb(15, 17, 21);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header .logo {
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 1.3rem;
+  letter-spacing: -.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-tag {
+  display: inline-block;
+  background: linear-gradient(135deg, rgb(212,175,55), rgb(245,215,110));
+  color: rgb(26, 26, 26);
+  font-size: .65rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+}
+
+.header nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header nav a {
+  color: rgb(200, 200, 200);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: .9rem;
+  transition: color .2s;
+}
+
+.header nav a:hover,
+.header nav a.ativo {
+  color: rgb(212, 175, 55);
+}
+
+/* ===== WRAP ===== */
+.admin-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.admin-wrap h1 {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: 24px;
+}
+
+.aviso {
+  padding: 20px;
+  background: rgb(253, 226, 226);
+  color: rgb(180, 35, 24);
+  border-radius: 12px;
+  font-weight: 700;
+  text-align: center;
+  border: 1px solid rgba(180, 35, 24, .2);
+}
+
+/* ===== STATS CARDS ===== */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: rgb(255, 255, 255);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgb(238, 241, 245);
+  box-shadow: 0 4px 16px rgba(0,0,0,.04);
+  text-align: center;
+  transition: transform .2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.stat-card.destaque-ouro {
+  border: 2px solid rgb(212, 175, 55);
+  background: linear-gradient(180deg, rgb(255,253,245), rgb(255,255,255));
+  box-shadow: 0 8px 24px rgba(212,175,55,.15);
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 2rem;
+  font-weight: 900;
+  color: rgb(0, 102, 255);
+  margin-bottom: 6px;
+}
+
+.stat-card.destaque-ouro strong {
+  background: linear-gradient(135deg, rgb(212,175,55), rgb(168,132,44));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.stat-card span {
+  font-size: .85rem;
+  color: rgb(102, 112, 133);
+  font-weight: 600;
+}
+
+/* ===== BARRA DE PESQUISA ===== */
+.admin-barra {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.admin-barra input,
+.admin-barra select {
+  padding: 12px 16px;
+  border: 1px solid rgb(238, 241, 245);
+  border-radius: 12px;
+  font-size: .95rem;
+  font-family: inherit;
+  background: rgb(255, 255, 255);
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.admin-barra input {
+  flex: 1;
+  min-width: 240px;
+}
+
+.admin-barra input:focus,
+.admin-barra select:focus {
+  outline: none;
+  border-color: rgb(212, 175, 55);
+  box-shadow: 0 0 0 3px rgba(212,175,55,.15);
+}
+
+/* ===== TABELA ===== */
+.admin-tabela-wrap {
+  background: rgb(255, 255, 255);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,.05);
+  border: 1px solid rgb(238, 241, 245);
+}
+
+.admin-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .9rem;
+}
+
+.admin-tabela thead {
+  background: rgb(15, 17, 21);
+  color: rgb(255, 255, 255);
+}
+
+.admin-tabela th {
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+
+.admin-tabela td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgb(240, 244, 249);
+  vertical-align: middle;
+}
+
+.admin-tabela tbody tr:hover {
+  background: rgb(250, 251, 252);
+}
+
+.admin-tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===== TAGS DE PLANO ===== */
+.tag-plano {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .5px;
+}
+
+.tag-plano.basico {
+  background: rgb(240, 244, 249);
+  color: rgb(102, 112, 133);
+}
+
+.tag-plano.premium {
+  background: linear-gradient(135deg, rgb(212,175,55), rgb(245,215,110));
+  color: rgb(26, 26, 26);
+  box-shadow: 0 2px 8px rgba(212,175,55,.3);
+}
+
+/* ===== BOTÕES DE AÇÃO ===== */
+.btn-acao {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: .78rem;
+  cursor: pointer;
+  transition: transform .1s, filter .2s;
+  font-family: inherit;
+  margin-right: 4px;
+}
+
+.btn-acao:active {
+  transform: scale(.95);
+}
+
+.btn-promover {
+  background: linear-gradient(135deg, rgb(212,175,55), rgb(245,215,110));
+  color: rgb(26, 26, 26);
+}
+
+.btn-promover:hover {
+  filter: brightness(1.05);
+}
+
+.btn-rebaixar {
+  background: rgb(240, 244, 249);
+  color: rgb(102, 112, 133);
+}
+
+.btn-rebaixar:hover {
+  background: rgb(226, 233, 242);
+}
+
+.sem-resultados {
+  text-align: center;
+  padding: 40px;
+  color: rgb(102, 112, 133);
+  font-style: italic;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 640px) {
+  .admin-wrap {
+    padding: 24px 16px;
+  }
+
+  .header {
+    padding: 12px 16px;
+  }
+
+  .header nav {
+    gap: 12px;
+  }
+
+  .header nav a {
+    font-size: .82rem;
+  }
+
+  .admin-tabela {
+    font-size: .82rem;
+  }
+
+  .admin-tabela th,
+  .admin-tabela td {
+    padding: 10px 12px;
+  }
+
+  .stat-card strong {
+    font-size: 1.6rem;
+  }
+}

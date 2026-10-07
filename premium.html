@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Torne-se Premium no MZLINK — publique até 100 fotos, destaque-se e venda mais.">
+  <title>Conta Premium — MZLINK</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="premium.css">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <a href="index.html" class="logo">MZ<span>LINK</span></a>
+    <nav>
+      <a href="index.html">Início</a>
+      <a href="publicar.html">Publicar</a>
+      <a href="login.html">Entrar</a>
+    </nav>
+  </header>
+
+  <!-- ===== HERO PREMIUM ===== -->
+  <section class="premium-hero">
+    <div class="premium-hero-content">
+      <span class="badge-dourado">⭐ Conta Premium</span>
+      <h1>Vende <span class="texto-dourado">3× mais</span> com o MZLINK Premium</h1>
+      <p>Mais fotos, mais destaque, mais clientes. Feito para quem leva o negócio a sério. 🇲🇿</p>
+      <a href="#pagamento" class="btn-ouro">Quero ser Premium →</a>
+    </div>
+    <div class="premium-hero-brilho"></div>
+  </section>
+
+  <!-- ===== COMPARAÇÃO DE PLANOS ===== -->
+  <section class="planos-wrap">
+    <h2 class="titulo-seccao">Escolhe o teu plano</h2>
+    <p class="subtitulo-seccao">Começa grátis. Faz upgrade quando quiseres.</p>
+
+    <div class="planos-grid">
+
+      <!-- BÁSICO -->
+      <article class="plano-card">
+        <header>
+          <h3>Básico</h3>
+          <p class="plano-preco">Grátis</p>
+        </header>
+        <ul class="plano-lista">
+          <li class="ok">Até <strong>4 fotos</strong> por anúncio</li>
+          <li class="ok">Até <strong>3 anúncios</strong> ativos</li>
+          <li class="ok">Contacto por WhatsApp</li>
+          <li class="no">Sem destaque na busca</li>
+          <li class="no">Sem selo verificado</li>
+          <li class="no">Sem estatísticas</li>
+        </ul>
+        <button class="btn-plano-basico" disabled>Plano atual</button>
+      </article>
+
+      <!-- PREMIUM -->
+      <article class="plano-card plano-destaque">
+        <span class="fita-premium">MAIS ESCOLHIDO</span>
+        <header>
+          <h3>⭐ Premium</h3>
+          <p class="plano-preco">
+            <span class="valor">500</span>
+            <span class="mt">MT</span>
+            <span class="periodo">/mês</span>
+          </p>
+        </header>
+        <ul class="plano-lista">
+          <li class="ok">Até <strong>20 fotos</strong> por anúncio</li>
+          <li class="ok"><strong>Anúncios ilimitados</strong></li>
+          <li class="ok"><strong>Destaque na busca</strong> 🔝</li>
+          <li class="ok">Selo <strong>Verificado ✔️</strong></li>
+          <li class="ok">Estatísticas dos anúncios</li>
+          <li class="ok">Suporte prioritário</li>
+        </ul>
+        <a href="#pagamento" class="btn-plano-ouro">Ativar Premium</a>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ===== PAGAMENTO ===== -->
+  <section class="pagamento-seccao" id="pagamento">
+    <div class="pagamento-box">
+
+      <div class="pagamento-topo">
+        <span class="icone-coroa">👑</span>
+        <h2>Ativar Conta Premium</h2>
+        <p class="sub">
+          Paga por <strong>M-Pesa</strong> ou <strong>e-Mola</strong> e envia o comprovativo por WhatsApp.
+          Ativação em menos de 5 minutos. ⚡
+        </p>
+      </div>
+
+      <p id="preco" class="preco-destaque">500 MT / mês</p>
+
+      <!-- M-PESA -->
+      <div class="metodo-pagamento">
+        <div class="metodo-logo mpesa">M-P</div>
+        <div class="metodo-info">
+          <strong id="numMpesa">—</strong>
+          <small id="nomeMpesa">—</small>
+        </div>
+        <button class="btn-copiar" data-copiar="numMpesa" aria-label="Copiar número M-Pesa">
+          📋 Copiar
+        </button>
+      </div>
+
+      <!-- E-MOLA -->
+      <div class="metodo-pagamento">
+        <div class="metodo-logo emola">e-M</div>
+        <div class="metodo-info">
+          <strong id="numEmola">—</strong>
+          <small id="nomeEmola">—</small>
+        </div>
+        <button class="btn-copiar" data-copiar="numEmola" aria-label="Copiar número e-Mola">
+          📋 Copiar
+        </button>
+      </div>
+
+      <!-- PASSOS -->
+      <div class="passos">
+        <div class="passo"><span>1</span> Faz o pagamento</div>
+        <div class="passo"><span>2</span> Guarda o comprovativo</div>
+        <div class="passo"><span>3</span> Envia por WhatsApp</div>
+        <div class="passo"><span>4</span> Conta ativada ✅</div>
+      </div>
+
+      <!-- BOTÃO WHATSAPP -->
+      <a id="btnWa" class="btn-whatsapp" target="_blank" rel="noopener">
+        📲 Enviar comprovativo por WhatsApp
+      </a>
+
+      <p class="nota-seguranca">
+        🔒 Todos os pagamentos são confirmados manualmente pela equipa MZLINK.
+      </p>
+
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="faq-wrap">
+    <h2 class="titulo-seccao">Perguntas frequentes</h2>
+
+    <details class="faq-item">
+      <summary>Quanto tempo demora a ativação?</summary>
+      <p>Normalmente menos de 5 minutos após o envio do comprovativo. Em horário de pico pode levar até 30 minutos.</p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Posso cancelar quando quiser?</summary>
+      <p>Sim. O Premium é mensal e podes voltar ao plano Básico em qualquer altura, sem penalizações.</p>
+    </details>
+
+    <details class="faq-item">
+      <summary>As 20 fotos são por anúncio ou no total?</summary>
+      <p>É por anúncio. Podes ter vários anúncios, cada um com até 20 fotos.</p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Como recebo o selo Verificado?</summary>
+      <p>Após a ativação, o selo aparece automaticamente no teu perfil e em todos os teus anúncios.</p>
+    </details>
+  </section>
+
+  <!-- ===== RODAPÉ ===== -->
+  <footer class="rodape">
+    <p>© 2026 MZLINK — Encontre, Compare, Resolva. 🇲🇿</p>
+  </footer>
+
+  <script src="premium.js"></script>
+</body>
+</html>
