@@ -335,3 +335,15 @@ div.categorias button:hover {
 }
 
 
+.btn-premium {
+    background: linear-gradient(135deg, rgb(212, 175, 55), rgb(245, 215, 110)) !important;
+    color: rgb(26, 26, 26) !important;
+    font-weight: 800 !important;
+    box-shadow: 0 4px 12px rgb(212, 175, 55, 4);
+    border: none;
+    transition: transform .2s;
+}
+
+.btn-premium:hover {
+    transform: translate(-2px);
+}
