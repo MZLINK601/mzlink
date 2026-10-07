@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova palavra-passe - MZLINK</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .voltar { display: block; text-align: center; margin-top: 16px; color: #1d4ed8; font-weight: 600; text-decoration: none; }
+    #novaForm { display: none; }
+  </style>
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <a href="index.html" class="auth-logo">MZLINK</a>
+    <h2>Nova palavra-passe</h2>
+
+    <form id="novaForm">
+      <label for="password">Nova palavra-passe</label>
+      <input type="password" id="password" placeholder="Mínimo 6 caracteres" required>
+
+      <label for="confirmPassword">Repita a palavra-passe</label>
+      <input type="password" id="confirmPassword" placeholder="Repita a palavra-passe" required>
+
+      <button type="submit">Guardar palavra-passe</button>
+    </form>
+
+    <p id="message">A verificar o link...</p>
+
+    <a class="voltar" href="login.html">Voltar ao login</a>
+  </div>
+
+  <script src="sessao.js" charset="UTF-8"></script>
+  <script src="nova-senha.js" charset="UTF-8"></script>
+</body>
+</html>
