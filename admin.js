@@ -61,7 +61,7 @@
   async function carregarTudo() {
     var sessao = await MZ.sessaoValida();
 
-    var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id,user_id,nome,whatsapp,criado_em&order=criado_em.desc", {
+    var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id,user_id,nome,whatsapp,criado_em&order=criado_em.desc" {
       headers: {
         apikey: MZ.key,
         Authorization: "Bearer " + sessao.access_token
