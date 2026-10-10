@@ -1,0 +1,67 @@
+/* ============================================================
+   MZLINK · Cards Premium e Badge 👑
+   ============================================================ */
+
+/* ===== Badge 👑 PREMIUM nos cards ===== */
+.badge-premium-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #d4af37, #f5d76e);
+  color: #1a1a1a;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+  vertical-align: middle;
+  margin-left: 6px;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+/* ===== Card Premium com borda dourada ===== */
+.result-card.card-premium {
+  border: 2px solid #d4af37;
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.18);
+  background: linear-gradient(180deg, #fffdf5, #ffffff);
+  position: relative;
+}
+
+/* ===== Selo "Premium" no canto do card ===== */
+.result-card.card-premium::before {
+  content: "👑 DESTAQUE";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #d4af37, #f5d76e);
+  color: #1a1a1a;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  border-bottom-left-radius: 10px;
+  border-top-right-radius: 10px;
+  box-shadow: 0 3px 10px rgba(212, 175, 55, 0.35);
+}
+
+/* ===== Hover no card premium ===== */
+.result-card.card-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(212, 175, 55, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 640px) {
+  .badge-premium-card {
+    font-size: 0.58rem;
+    padding: 2px 6px;
+  }
+
+  .result-card.card-premium::before {
+    font-size: 0.55rem;
+    padding: 3px 8px;
+  }
+}
