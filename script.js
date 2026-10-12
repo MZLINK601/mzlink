@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ⭐ Gerar estrelas visuais (ex: 4.5 → ★★★★½)
+  // ⭐ Gerar estrelas visuais
   function gerarEstrelasHTML(media) {
     const num = Number(media) || 0;
     let html = "";
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return html;
   }
 
-  // Buscar user logado (para saber se pode avaliar)
+  // Buscar user logado
   async function carregarUserLogado() {
     try {
       if (typeof MZ === "undefined" || !MZ.sessaoValida) return;
@@ -115,28 +115,50 @@ document.addEventListener("DOMContentLoaded", function () {
         avaliacaoHTML = '<div class="avaliacao-info sem-avaliacoes">Ainda sem avaliações</div>';
       }
 
-      // Botão avaliar (só para users logados que não são o dono)
+      // Botão avaliar
       let btnAvaliar = "";
       if (userAtual && String(userAtual.id) !== String(item.user_id)) {
         btnAvaliar = '<button class="btn-avaliar" data-anuncio-id="' + item.id +
           '" data-anuncio-nome="' + limpar(item.nome) + '">⭐ Avaliar</button>';
       }
 
+      // ⭐ FOTO PRINCIPAL
+      const fotos = item.fotos || [];
+      let fotoHTML = "";
+      if (fotos.length > 0) {
+        fotoHTML =
+          '<div class="foto-principal-card">' +
+            '<img src="' + fotos[0] + '" alt="' + limpar(item.nome) + '" loading="lazy">' +
+            (fotos.length > 1 ? '<span class="contador-fotos">📸 ' + fotos.length + '</span>' : '') +
+          '</div>';
+      } else {
+        fotoHTML =
+          '<div class="foto-principal-card sem-foto">' +
+            '<span>📸</span>' +
+            '<small>Sem fotos</small>' +
+          '</div>';
+      }
+
       html +=
         '<div class="result-card ' + (ehPremium ? 'card-premium' : '') + '">' +
-          '<div class="avatar">' + limpar(item.nome.charAt(0)) + '</div>' +
-          '<div class="info">' +
-            '<h3>' + limpar(item.nome) + ' ' + badgePremium + '</h3>' +
-            '<span class="tag">' + limpar(item.tipo) + '</span>' +
-            '<p>📍 ' + limpar(item.local) + '</p>' +
+          fotoHTML +
+          '<div class="card-conteudo">' +
+            '<div class="linha-topo">' +
+              '<div class="avatar">' + limpar(item.nome.charAt(0)) + '</div>' +
+              '<div class="info">' +
+                '<h3>' + limpar(item.nome) + ' ' + badgePremium + '</h3>' +
+                '<span class="tag">' + limpar(item.tipo) + '</span>' +
+                '<p>📍 ' + limpar(item.local) + '</p>' +
+              '</div>' +
+            '</div>' +
             avaliacaoHTML +
             btnAvaliar +
+            '<a class="btn-contactar" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener">Contactar</a>' +
           '</div>' +
-          '<a class="btn-contactar" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener">Contactar</a>' +
         '</div>';
-    });
+    });   // ← FECHA o forEach AQUI
 
-    results.innerHTML = html;
+    results.innerHTML = html;   // ← AGORA está fora do forEach ✅
 
     // Ligar botões "Avaliar"
     results.querySelectorAll(".btn-avaliar").forEach(function (btn) {
