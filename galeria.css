@@ -1,0 +1,223 @@
+/* ============================================================
+   MZLINK · Galeria de Fotos 📸
+   ============================================================ */
+
+.galeria-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 17, 21, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.galeria-overlay.visivel { display: flex; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.galeria-modal {
+  width: 100%;
+  max-width: 900px;
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  animation: modalEntrar 0.3s ease-out;
+}
+
+@keyframes modalEntrar {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.galeria-fechar {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 10;
+  font-family: inherit;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+}
+
+.galeria-fechar:hover {
+  background: #dc2626;
+  color: #fff;
+  transform: rotate(90deg) scale(1.1);
+}
+
+.galeria-titulo {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 12px 16px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  letter-spacing: 0.3px;
+}
+
+.galeria-conteudo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #000;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.galeria-imagem-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 0;
+}
+
+#galeriaImagem {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  display: block;
+  border-radius: 4px;
+}
+
+.galeria-nav {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  font-size: 32px;
+  font-weight: 900;
+  color: #1a1a1a;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-family: inherit;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  margin: 0 12px;
+  line-height: 1;
+  padding-bottom: 6px;
+}
+
+.galeria-nav:hover {
+  background: #d4af37;
+  transform: scale(1.1);
+}
+
+.galeria-rodape {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px 16px;
+  border-radius: 0 0 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.galeria-contador {
+  color: #d4af37;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.galeria-miniaturas {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.galeria-miniaturas .mini {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  opacity: 0.6;
+  transition: all 0.2s;
+}
+
+.galeria-miniaturas .mini:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.galeria-miniaturas .mini.ativa {
+  border-color: #d4af37;
+  opacity: 1;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+}
+
+/* Efeito zoom no card */
+.foto-principal-card { cursor: pointer; }
+
+.foto-principal-card .icone-zoom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: rgba(15, 17, 21, 0.85);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 999px;
+  opacity: 0;
+  transition: all 0.25s;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+
+.foto-principal-card:hover .icone-zoom {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+@media (max-width: 640px) {
+  .galeria-overlay { padding: 10px; }
+  .galeria-modal { max-height: 98vh; }
+  .galeria-nav {
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+    margin: 0 6px;
+  }
+  #galeriaImagem { max-height: 55vh; }
+  .galeria-titulo { font-size: 0.9rem; padding: 10px; }
+  .galeria-fechar {
+    top: -8px; right: -8px;
+    width: 34px; height: 34px; font-size: 20px;
+  }
+  .galeria-miniaturas .mini { width: 45px; height: 45px; }
+}
