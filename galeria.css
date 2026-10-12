@@ -178,7 +178,13 @@
 }
 
 /* Efeito zoom no card */
-.foto-principal-card { cursor: pointer; }
+.foto-principal-card {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: manipulation;
+}
 
 .foto-principal-card .icone-zoom {
   position: absolute;
@@ -204,6 +210,7 @@
   transform: translate(-50%, -50%) scale(1);
 }
 
+/* ===== Otimização para telemóvel ===== */
 @media (max-width: 640px) {
   .galeria-overlay { padding: 10px; }
   .galeria-modal { max-height: 98vh; }
@@ -216,8 +223,28 @@
   #galeriaImagem { max-height: 55vh; }
   .galeria-titulo { font-size: 0.9rem; padding: 10px; }
   .galeria-fechar {
-    top: -8px; right: -8px;
-    width: 34px; height: 34px; font-size: 20px;
+    top: -8px;
+    right: -8px;
+    width: 34px;
+    height: 34px;
+    font-size: 20px;
   }
-  .galeria-miniaturas .mini { width: 45px; height: 45px; }
+  .galeria-miniaturas .mini {
+    width: 45px;
+    height: 45px;
+  }
+
+  /* Ícone "Ver fotos" sempre visível em mobile */
+  .foto-principal-card .icone-zoom {
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+    font-size: 0.72rem;
+    padding: 6px 12px;
+  }
+
+  /* Feedback ao tocar */
+  .foto-principal-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+  }
 }
