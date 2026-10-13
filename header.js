@@ -1,56 +1,70 @@
 /* ============================================================
-   MZLINK · Header dinâmico
-   Mostra o nome do user e muda botões conforme login
-   ============================================================ */
+   MZLINK · Header dinâmico
+   ============================================================ */
 
 (function () {
-  'use strict';
+  'use strict';
 
-  async function atualizarHeader() {
-    var nomeEl = document.getElementById("nomeUserTopo");
-    var nav = document.querySelector("header nav");
-    var botaoPremium = document.querySelector(".btn-premium");
+  var CHAVE = "mzlink_sessao";
 
-    if (!nav) return;
+  function lerSessao() {
+    try {
+      return JSON.parse(localStorage.getItem(CHAVE));
+    } catch (e) {
+      return null;
+    }
+  }
 
-    // Verificar sessão
-    if (typeof MZ === "undefined" || !MZ.sessaoValida) return;
+  function sair() {
+    try {
+      localStorage.removeItem(CHAVE);
+    } catch (e) {}
+    window.location.href = "index.html";
+  }
 
-    var sessao = await MZ.sessaoValida();
+  function atualizarHeader() {
+    var nomeEl = document.getElementById("nomeUserTopo");
+    var nav = document.querySelector("header nav");
 
-    if (sessao && sessao.access_token) {
-      // ✅ USER LOGADO
-      if (nomeEl) {
-        nomeEl.textContent = sessao.nome || "Utilizador";
-      }
+    if (!nav) return;
 
-      // Substituir botões Entrar/Criar conta por Publicar/Sair
-      var navHTML =
-        '<button onclick="location.href=\'premium.html\'" class="btn-premium">⭐ Premium</button>' +
-        '<button onclick="location.href=\'publicar.html\'">Publicar anúncio</button>' +
-        '<button id="btnSairHeader">Sair</button>';
+    var sessao = lerSessao();
 
-      nav.innerHTML = navHTML;
+    console.log("Sessão encontrada:", sessao);
 
-      // Ligar botão Sair
-      var btnSair = document.getElementById("btnSairHeader");
-      if (btnSair) {
-        btnSair.onclick = function () {
-          if (typeof MZ.sair === "function") MZ.sair();
-        };
-      }
-    } else {
-      // ❌ USER NÃO LOGADO
-      if (nomeEl) {
-        nomeEl.textContent = "...";
-      }
-      // Já está com botões "Entrar" e "Criar conta" no HTML
-    }
-  }
+    // ===== USER LOGADO =====
+    if (sessao && sessao.access_token) {
+      // ⚠️ USA "name" (como o login.js guarda)
+      var nome = sessao.name || sessao.nome || sessao.email || "Utilizador";
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", atualizarHeader);
-  } else {
-    atualizarHeader();
-  }
+      if (nomeEl) {
+        nomeEl.textContent = nome;
+      }
+
+      nav.innerHTML =
+        '<button onclick="location.href=\'premium.html\'" class="btn-premium">⭐ Premium</button>' +
+        '<button onclick="location.href=\'publicar.html\'">Publicar anúncio</button>' +
+        '<button id="btnSairHeader">Sair</button>';
+
+      var btnSair = document.getElementById("btnSairHeader");
+      if (btnSair) {
+        btnSair.onclick = sair;
+      }
+    }
+    // ===== USER NÃO LOGADO =====
+    else {
+      if (nomeEl) nomeEl.textContent = "...";
+
+      nav.innerHTML =
+        '<button onclick="location.href=\'premium.html\'" class="btn-premium">⭐ Premium</button>' +
+        '<button onclick="location.href=\'login.html\'">Entrar</button>' +
+        '<button onclick="location.href=\'registo.html\'">Criar conta</button>';
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", atualizarHeader);
+  } else {
+    atualizarHeader();
+  }
 })();
