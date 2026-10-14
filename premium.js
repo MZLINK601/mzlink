@@ -3,7 +3,7 @@ var PAGAMENTO_CONFIG = {
   mpesa:    { numero: "852337913", nome: "AMÓS ELDIO" },
   emola:    { numero: "879608566", nome: "CELESTE" },
   whatsapp: "258879608566",
-  preco:    "500 MT / mês",
+  preco:    "99 MT / mês",
   plano:    "Premium MZLINK"
 };
 
