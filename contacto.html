@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto — MZLINK</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: #f8f9fb;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+      .header-simples {
+        background: #fff;
+        padding: 16px 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      }
+      .header-simples img { height: 42px; }
+      .container {
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+      }
+      .hero {
+        text-align: center;
+        padding: 24px 0 32px;
+      }
+      .hero h1 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #0f1115;
+        margin-bottom: 8px;
+      }
+      .hero p {
+        color: #667085;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+      .card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 28px 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,.04);
+        border: 1px solid #eef1f5;
+      }
+      .contacto-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 12px;
+        transition: all .2s;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid transparent;
+      }
+      .contacto-item:hover {
+        background: #fafbfc;
+        border-color: #d4af37;
+        transform: translateX(4px);
+      }
+      .contacto-item + .contacto-item {
+        margin-top: 8px;
+      }
+      .contacto-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .contacto-icon.whats { background: #25D366; color: #fff; }
+      .contacto-icon.email { background: #0ea5e9; color: #fff; }
+      .contacto-icon.mpesa { background: #e30613; color: #fff; font-size: 0.85rem; font-weight: 900; }
+      .contacto-icon.emola { background: #f37021; color: #fff; font-size: 0.85rem; font-weight: 900; }
+      .contacto-info strong {
+        display: block;
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #0f1115;
+        margin-bottom: 2px;
+      }
+      .contacto-info span {
+        font-size: 0.85rem;
+        color: #667085;
+      }
+      .section-title {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #8b6914;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        margin-left: 4px;
+      }
+      .horario {
+        padding: 16px;
+        background: #fffdf5;
+        border: 1px solid #f0e6c8;
+        border-radius: 12px;
+        margin-top: 16px;
+        font-size: 0.85rem;
+        color: #8b6914;
+        font-weight: 700;
+        line-height: 1.6;
+      }
+      .horario strong {
+        display: block;
+        color: #a8842c;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 6px;
+      }
+      .btn-voltar {
+        display: block;
+        text-align: center;
+        margin-top: 32px;
+        padding: 14px 28px;
+        background: linear-gradient(135deg, #d4af37, #f5d76e);
+        color: #1a1a1a;
+        font-weight: 900;
+        text-decoration: none;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(212,175,55,.35);
+        transition: transform .2s;
+      }
+      .btn-voltar:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <header class="header-simples">
+        <img src="logo-mzlink.png" alt="MZLINK">
+    </header>
+
+    <main class="container">
+
+        <section class="hero">
+            <h1>Fala connosco</h1>
+            <p>Estamos aqui para ajudar 💬</p>
+        </section>
+
+        <div class="card">
+            <p class="section-title">📱 Contacto directo</p>
+
+            <a class="contacto-item" href="https://wa.me/258852337913?text=Ol%C3%A1%20MZLINK!%20Preciso%20de%20ajuda." target="_blank" rel="noopener">
+                <div class="contacto-icon whats">💬</div>
+                <div class="contacto-info">
+                    <strong>WhatsApp Suporte</strong>
+                    <span>85 233 7913 · Resposta em minutos</span>
+                </div>
+            </a>
+
+            <a class="contacto-item" href="mailto:geral@mzlink.co.mz">
+                <div class="contacto-icon email">📧</div>
+                <div class="contacto-info">
+                    <strong>Email</strong>
+                    <span>geral@mzlink.co.mz</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="card">
+            <p class="section-title">💰 Pagamentos Premium</p>
+
+            <div class="contacto-item">
+                <div class="contacto-icon mpesa">M-P</div>
+                <div class="contacto-info">
+                    <strong>M-Pesa</strong>
+                    <span>85 233 7913 · Amós Elidio</span>
+                </div>
+            </div>
+
+            <div class="contacto-item">
+                <div class="contacto-icon emola">e-M</div>
+                <div class="contacto-info">
+                    <strong>e-Mola</strong>
+                    <span>87 960 8566 · Celeste</span>
+                </div>
+            </div>
+
+            <div class="horario">
+                <strong>🕐 Horário de atendimento</strong>
+                Segunda a Quinta · 15h40 às 19h30
+                <br>
+                <span style="font-weight:600; color:#a8842c; font-size:0.8rem;">
+                    (Fora deste horário, deixa mensagem que respondo assim que puder)
+                </span>
+            </div>
+        </div>
+
+        <div class="card">
+            <p class="section-title">🏢 Sobre o MZLINK</p>
+            <p style="color:#4b5563;font-size:0.92rem;margin-bottom:12px;">
+                O MZLINK é uma plataforma moçambicana criada em 2026, com sede em Maputo.
+                O nosso objectivo é ligar compradores e vendedores de forma simples e directa.
+            </p>
+            <p style="color:#4b5563;font-size:0.92rem;">
+                📍 Maputo, Moçambique 🇲🇿<br>
+                🏆 Feito por moçambicanos, para moçambicanos
+            </p>
+        </div>
+
+        <a href="index.html" class="btn-voltar">← Voltar ao MZLINK</a>
+
+    </main>
+
+</body>
+</html>
