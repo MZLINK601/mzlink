@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nós — MZLINK</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="logo.css">
+    <style>
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: #f8f9fb;
+        margin: 0;
+        padding: 0;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+
+      .header-simples {
+        background: #fff;
+        padding: 16px 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.05);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .header-simples img { height: 42px; }
+
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+      }
+
+      .hero-sobre {
+        text-align: center;
+        padding: 24px 0 32px;
+      }
+
+      .hero-sobre h1 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #0f1115;
+        margin: 0 0 8px;
+        letter-spacing: -0.5px;
+      }
+
+      .hero-sobre .subtitulo {
+        color: #667085;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 28px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,.04);
+        border: 1px solid #eef1f5;
+      }
+
+      .card.dourado {
+        border: 2px solid #d4af37;
+        background: linear-gradient(180deg, #fffdf5, #fff);
+        box-shadow: 0 8px 24px rgba(212,175,55,.12);
+      }
+
+      .card h2 {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: #0f1115;
+        margin: 0 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .card h2 .emoji {
+        font-size: 1.5rem;
+      }
+
+      .card p {
+        color: #4b5563;
+        font-size: 0.95rem;
+        margin: 0 0 12px;
+      }
+
+      .card p:last-child { margin-bottom: 0; }
+
+      .lista-valores {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+
+      .lista-valores li {
+        padding: 10px 0 10px 32px;
+        position: relative;
+        font-size: 0.92rem;
+        color: #4b5563;
+        border-bottom: 1px solid #f8f9fb;
+      }
+
+      .lista-valores li:last-child { border-bottom: none; }
+
+      .lista-valores li::before {
+        content: "✅";
+        position: absolute;
+        left: 0;
+        top: 10px;
+      }
+
+      .fundador-box {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: linear-gradient(135deg, #0f1115, #1a1d24);
+        border-radius: 14px;
+        border: 1px solid #d4af37;
+        color: #fff;
+      }
+
+      .fundador-box .avatar-fund {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #d4af37, #f5d76e);
+        display: grid;
+        place-items: center;
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: #1a1a1a;
+        flex-shrink: 0;
+      }
+
+      .fundador-box .info-fund {
+        flex: 1;
+      }
+
+      .fundador-box .info-fund h3 {
+        margin: 0 0 4px;
+        font-size: 1rem;
+        font-weight: 900;
+        color: #fff;
+      }
+
+      .fundador-box .info-fund p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #c9ccd3;
+      }
+
+      .fundador-box .info-fund .selo {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 3px 10px;
+        background: linear-gradient(135deg, #d4af37, #f5d76e);
+        color: #1a1a1a;
+        font-size: 0.7rem;
+        font-weight: 900;
+        border-radius: 999px;
+        letter-spacing: 0.5px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .stat-mini {
+        text-align: center;
+        padding: 16px 8px;
+        background: #fffdf5;
+        border: 1px solid #f0e6c8;
+        border-radius: 12px;
+      }
+
+      .stat-mini strong {
+        display: block;
+        font-size: 1.6rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #d4af37, #a8842c);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .stat-mini span {
+        font-size: 0.72rem;
+        color: #8b6914;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-voltar {
+        display: inline-block;
+        margin-top: 24px;
+        padding: 14px 28px;
+        background: linear-gradient(135deg, #d4af37, #f5d76e);
+        color: #1a1a1a;
+        font-weight: 900;
+        text-decoration: none;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(212,175,55,.35);
+        transition: transform .2s;
+      }
+
+      .btn-voltar:hover { transform: translateY(-2px); }
+
+      @media (max-width: 640px) {
+        .hero-sobre h1 { font-size: 1.5rem; }
+        .card { padding: 22px 18px; border-radius: 14px; }
+        .stats-grid { grid-template-columns: 1fr; }
+        .fundador-box { flex-direction: column; text-align: center; }
+      }
+    </style>
+</head>
+<body>
+
+    <header class="header-simples">
+        <img src="logo-mzlink.png" alt="MZLINK">
+    </header>
+
+    <main class="container">
+
+        <section class="hero-sobre">
+            <h1>Sobre o MZLINK</h1>
+            <p class="subtitulo">Encontre, Compare, Resolva. 🇲🇿</p>
+        </section>
+
+        <!-- CARD MISSÃO -->
+        <div class="card">
+            <h2><span class="emoji">🎯</span> A nossa missão</h2>
+            <p>
+                O MZLINK nasceu para ligar <strong>quem procura</strong> a <strong>quem oferece</strong> em Moçambique. 
+                Queremos que qualquer pessoa — vendedor, profissional, loja ou instituição — 
+                consiga mostrar o que faz de forma simples e directa.
+            </p>
+            <p>
+                Sem complicações. Sem intermediários. Contacto directo pelo WhatsApp.
+            </p>
+        </div>
+
+        <!-- CARD PORQUE -->
+        <div class="card">
+            <h2><span class="emoji">💡</span> Porquê o MZLINK?</h2>
+            <p>
+                Em Moçambique, encontrar produtos e serviços ainda depende muito de 
+                <em>"perguntar a alguém que conhece alguém"</em>. Perdemos tempo, 
+                oportunidades e clientes.
+            </p>
+            <p>
+                O MZLINK junta tudo num só lugar — com <strong>fotos reais</strong>, 
+                <strong>avaliações de outros clientes</strong> e <strong>contacto directo</strong>.
+            </p>
+        </div>
+
+        <!-- CARD VALORES -->
+        <div class="card">
+            <h2><span class="emoji">💎</span> Os nossos valores</h2>
+            <ul class="lista-valores">
+                <li><strong>Simplicidade</strong> — qualquer pessoa consegue usar, mesmo sem experiência</li>
+                <li><strong>Confiança</strong> — avaliações reais e verificação de anúncios</li>
+                <li><strong>Acessibilidade</strong> — publicar é grátis para sempre no plano básico</li>
+                <li><strong>Comunidade local</strong> — feito em Moçambique, para moçambicanos</li>
+            </ul>
+        </div>
+
+        <!-- CARD FUNDADOR -->
+        <div class="card dourado">
+            <h2><span class="emoji">👑</span> Quem está por trás</h2>
+            <div class="fundador-box">
+                <div class="avatar-fund">A</div>
+                <div class="info-fund">
+                    <h3>Amós Elidio Mavie</h3>
+                    <p>Criador do MZLINK • Maputo, Moçambique</p>
+                    <span class="selo">🏆 FUNDADOR</span>
+                </div>
+            </div>
+            <p style="margin-top:16px;">
+                Aos 17 anos, decidi criar o MZLINK porque vi que faltava 
+                uma plataforma simples e moçambicana para ligar pessoas. 
+                Este é o começo — e contamos contigo!
+            </p>
+        </div>
+
+        <!-- CARD ESTATÍSTICAS -->
+        <div class="card">
+            <h2><span class="emoji">📊</span> O MZLINK em números</h2>
+            <div class="stats-grid">
+                <div class="stat-mini">
+                    <strong>50</strong>
+                    <span>Vagas Fundador</span>
+                </div>
+                <div class="stat-mini">
+                    <strong>100%</strong>
+                    <span>Grátis para sempre</span>
+                </div>
+                <div class="stat-mini">
+                    <strong>🇲🇿</strong>
+                    <span>Feito em Moçambique</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div style="text-align:center; margin-top:32px;">
+            <a href="index.html" class="btn-voltar">← Voltar ao MZLINK</a>
+        </div>
+
+    </main>
+
+</body>
+  </html>
