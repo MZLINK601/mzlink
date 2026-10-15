@@ -77,5 +77,85 @@
     <script src="modo-premium.js"></script>
     <script src="galeria.js"></script>
     <script src="header.js"></script>
+    
+<!-- ===== RODAPÉ ===== -->
+<footer class="rodape-mzlink">
+    <div class="rodape-conteudo">
+        <div class="rodape-marca">
+            <strong>MZLINK</strong>
+            <p>Encontre, Compare, Resolva. 🇲🇿</p>
+        </div>
+
+        <div class="rodape-links">
+            <a href="sobre.html">Sobre Nós</a>
+            <a href="contacto.html">Contacto</a>
+            <a href="termos.html">Termos e Condições</a>
+        </div>
+
+        <div class="rodape-info">
+            <p>💬 Suporte: <strong>85 233 7913</strong></p>
+            <p>📧 mzlink601@gmail.com</p>
+        </div>
+    </div>
+
+    <div class="rodape-copy">
+        © 2026 MZLINK · Feito em Moçambique 🇲🇿
+    </div>
+</footer>
+
+<style>
+  .rodape-mzlink {
+    background: linear-gradient(180deg, #0f1115, #1a1d24);
+    color: #c9ccd3;
+    margin-top: 60px;
+    padding: 32px 20px 20px;
+    border-top: 3px solid #d4af37;
+  }
+  .rodape-conteudo {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .rodape-marca strong {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #d4af37, #f5d76e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .rodape-marca p { font-size: 0.82rem; color: #8b8f99; margin: 0; }
+  .rodape-links { display: flex; flex-direction: column; gap: 10px; }
+  .rodape-links a {
+    color: #c9ccd3;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  .rodape-links a:hover { color: #d4af37; }
+  .rodape-info p { margin: 0 0 8px; font-size: 0.85rem; }
+  .rodape-info strong { color: #d4af37; font-weight: 800; }
+  .rodape-copy {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    text-align: center;
+    font-size: 0.75rem;
+    color: #8b8f99;
+    letter-spacing: 0.3px;
+  }
+  @media (max-width: 640px) {
+    .rodape-conteudo { grid-template-columns: 1fr; text-align: center; }
+    .rodape-links { align-items: center; }
+  }
+      </style>
 </body>
 </html>
