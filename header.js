@@ -44,6 +44,8 @@
       nav.innerHTML =
         '<button onclick="location.href=\'premium.html\'" class="btn-premium">⭐ Premium</button>' +
         '<button onclick="location.href=\'publicar.html\'">Publicar anúncio</button>' +
+        '<button onclick="location.href=\'perfil.html\'">👤 Meu Perfil</button>' +
+
         '<button id="btnSairHeader">Sair</button>';
 
       var btnSair = document.getElementById("btnSairHeader");
