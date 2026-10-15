@@ -1,144 +1,208 @@
-// perfil.js — MZLINK: página "Meu Perfil"
-// Ajuste CHAVES_USUARIO se o seu sessao.js guarda o utilizador com outro nome.
+/* ============================================================
+   MZLINK · Perfil do Utilizador 👤
+   ============================================================ */
+
 (function () {
   'use strict';
 
-  var CHAVES_USUARIO = ['usuario', 'user', 'mzlink_user', 'utilizador'];
-  var conteudo = document.getElementById('conteudo');
+  var CHAVE = "mzlink_sessao";
+  var conteudo = document.getElementById("conteudo");
 
-  function lerUsuario() {
-    for (var i = 0; i < CHAVES_USUARIO.length; i++) {
-      try {
-        var bruto = localStorage.getItem(CHAVES_USUARIO[i]);
-        if (bruto) {
-          var u = JSON.parse(bruto);
-          if (u && typeof u === 'object') return { chave: CHAVES_USUARIO[i], dados: u };
-        }
-      } catch (e) { /* ignora e tenta a próxima chave */ }
-    }
-    return null;
-  }
+  if (!conteudo) return;
 
-  function guardarUsuario(sessao) {
+  var sessao = null;
+  var user = null;
+  var userMeta = {};
+  var plano = "basico";
+
+  function lerSessao() {
     try {
-      localStorage.setItem(sessao.chave, JSON.stringify(sessao.dados));
-      return true;
+      return JSON.parse(localStorage.getItem(CHAVE));
     } catch (e) {
-      return false;
+      return null;
     }
   }
 
-  function esc(texto) {
-    var d = document.createElement('div');
-    d.textContent = texto == null ? '' : String(texto);
+  function limpar(t) {
+    var d = document.createElement("div");
+    d.textContent = String(t == null ? "" : t);
     return d.innerHTML;
   }
 
-  function ehPremium(u) {
-    return u.premium === true || u.plano === 'premium';
+  function cabecalhos() {
+    return {
+      apikey: MZ.key,
+      Authorization: "Bearer " + sessao.access_token
+    };
   }
 
-  function mostrarAviso(tipo, msg) {
-    var el = document.getElementById('aviso');
-    if (!el) return;
-    el.className = 'aviso visivel ' + tipo;
-    el.textContent = msg;
-    setTimeout(function () { el.className = 'aviso'; }, 3000);
-  }
+  async function iniciar() {
+    sessao = lerSessao();
 
-  function campo(rotulo, valor, opcoes) {
-    opcoes = opcoes || {};
-    var vazio = !valor;
-    var texto = vazio ? 'Não definido' : valor;
-    var classe = 'valor' + (opcoes.bloqueado || vazio ? ' bloqueado' : '');
-    var botao = opcoes.chave
-      ? '<button class="btn-editar" data-editar="' + opcoes.chave + '" data-rotulo="' + esc(rotulo) + '">Editar</button>'
-      : '';
-    return (
-      '<div class="campo">' +
-        '<div class="campo-info">' +
-          '<label>' + esc(rotulo) + '</label>' +
-          '<div class="' + classe + '">' + esc(texto) + '</div>' +
-        '</div>' + botao +
-      '</div>'
-    );
-  }
+    if (!sessao || !sessao.access_token) {
+      window.location.href = "login.html?next=perfil.html";
+      return;
+    }
 
-  function desenhar(sessao) {
-    var u = sessao.dados;
-    var nome = u.nome || u.name || 'Utilizador';
-    var premium = ehPremium(u);
-    var inicial = nome.trim().charAt(0).toUpperCase() || '?';
+    if (typeof MZ === "undefined") {
+      conteudo.innerHTML = '<div class="loading">Erro: sessao.js não carregou.</div>';
+      return;
+    }
 
-    conteudo.innerHTML =
-      '<section class="hero">' +
-        '<div class="avatar-grande' + (premium ? ' premium' : '') + '">' + esc(inicial) + '</div>' +
-        '<h1>' + esc(nome) + '</h1>' +
-        '<div class="email">' + esc(u.email || '') + '</div>' +
-        '<span class="plano-badge ' + (premium ? 'premium' : 'basico') + '">' +
-          (premium ? '⭐ PREMIUM' : 'PLANO BÁSICO') +
-        '</span>' +
-      '</section>' +
+    try {
+      var rUser = await fetch(MZ.url + "/auth/v1/user", { headers: cabecalhos() });
+      if (!rUser.ok) {
+        localStorage.removeItem(CHAVE);
+        window.location.href = "login.html?next=perfil.html";
+        return;
+      }
+      user = await rUser.json();
+      userMeta = user.user_metadata || {};
 
-      '<section class="card">' +
-        '<h2>Dados pessoais</h2>' +
-        campo('Nome', nome, { chave: 'nome' }) +
-        campo('Email', u.email, { bloqueado: true }) +
-        campo('Telefone', u.telefone, { chave: 'telefone' }) +
-        campo('Cidade', u.cidade, { chave: 'cidade' }) +
-      '</section>' +
+      var rPlano = await fetch(
+        MZ.url + "/rest/v1/profissionais?select=plano&user_id=eq." +
+        encodeURIComponent(user.id) + "&limit=1",
+        { headers: cabecalhos() }
+      );
 
-      '<section class="card">' +
-        '<h2>Conta</h2>' +
-        (premium
-          ? ''
-          : '<a class="btn-acao principal" href="premium.html">⭐ Passar a Premium</a>') +
-        '<button class="btn-acao sair" id="btnSair">Terminar sessão</button>' +
-        '<div class="aviso" id="aviso"></div>' +
-      '</section>' +
+      if (rPlano.ok) {
+        var lista = await rPlano.json();
+        plano = (lista && lista[0] && lista[0].plano) || "basico";
+      }
 
-      '<a class="btn-voltar" href="index.html">← Voltar ao início</a>';
-
-    ligarEventos(sessao);
-  }
-
-  function ligarEventos(sessao) {
-    var botoes = conteudo.querySelectorAll('[data-editar]');
-    Array.prototype.forEach.call(botoes, function (b) {
-      b.addEventListener('click', function () {
-        var chave = b.getAttribute('data-editar');
-        var rotulo = b.getAttribute('data-rotulo');
-        var atual = sessao.dados[chave] || '';
-        var novo = window.prompt('Novo valor para ' + rotulo + ':', atual);
-        if (novo === null) return;
-        novo = novo.trim();
-        if (chave === 'nome' && !novo) {
-          mostrarAviso('erro', 'O nome não pode ficar vazio.');
-          return;
-        }
-        sessao.dados[chave] = novo;
-        if (guardarUsuario(sessao)) {
-          desenhar(sessao);
-          mostrarAviso('ok', 'Dados atualizados.');
-        } else {
-          mostrarAviso('erro', 'Não foi possível guardar.');
-        }
-      });
-    });
-
-    var sair = document.getElementById('btnSair');
-    if (sair) {
-      sair.addEventListener('click', function () {
-        try { localStorage.removeItem(sessao.chave); } catch (e) {}
-        location.href = 'index.html';
-      });
+      renderizar();
+    } catch (e) {
+      conteudo.innerHTML = '<div class="loading">Erro de ligação. Recarrega.</div>';
     }
   }
 
-  var sessao = lerUsuario();
-  if (!sessao) {
-    location.replace('login.html');
-    return;
+  function renderizar() {
+    var nome = userMeta.nome || userMeta.name || user.email.split("@")[0];
+    var telefone = String(userMeta.whatsapp || "").replace(/^258/, "");
+    var inicial = nome.charAt(0).toUpperCase();
+    var ehPremium = plano === "premium";
+
+    var html =
+      '<div class="hero">' +
+        '<div class="avatar-grande ' + (ehPremium ? 'premium' : '') + '">' + limpar(inicial) + '</div>' +
+        '<h1>' + limpar(nome) + '</h1>' +
+        '<p class="email">' + limpar(user.email) + '</p>' +
+        '<span class="plano-badge ' + (ehPremium ? 'premium' : 'basico') + '">' +
+          (ehPremium ? '⭐ PREMIUM' : '🆓 Básico') +
+        '</span>' +
+      '</div>' +
+
+      '<div class="card">' +
+        '<h2>📝 Dados pessoais</h2>' +
+        '<div class="campo">' +
+          '<div class="campo-info">' +
+            '<label>Nome</label>' +
+            '<div class="valor">' + limpar(nome) + '</div>' +
+          '</div>' +
+          '<button class="btn-editar" id="btnEditNome">✏️ Editar</button>' +
+        '</div>' +
+        '<div class="campo">' +
+          '<div class="campo-info">' +
+            '<label>WhatsApp</label>' +
+            '<div class="valor">' + (telefone ? '258' + limpar(telefone) : '—') + '</div>' +
+          '</div>' +
+          '<button class="btn-editar" id="btnEditTel">✏️ Editar</button>' +
+        '</div>' +
+        '<div class="campo">' +
+          '<div class="campo-info">' +
+            '<label>Email (não editável)</label>' +
+            '<div class="valor bloqueado">' + limpar(user.email) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="aviso" id="avisoPerfil"></div>' +
+      '</div>' +
+
+      '<div class="card">' +
+        '<h2>📢 Os meus anúncios</h2>' +
+        '<a href="publicar.html" class="btn-acao principal">📢 Ver os meus anúncios</a>' +
+      '</div>' +
+
+      '<div class="card">' +
+        '<h2>🔐 Segurança</h2>' +
+        '<a href="nova-senha.html" class="btn-acao principal">🔑 Mudar palavra-passe</a>' +
+        '<button class="btn-acao sair" id="btnSairPerfil">🚪 Sair da conta</button>' +
+      '</div>' +
+
+      '<a href="index.html" class="btn-voltar">← Voltar ao MZLINK</a>';
+
+    conteudo.innerHTML = html;
+
+    document.getElementById("btnEditNome").onclick = editarNome;
+    document.getElementById("btnEditTel").onclick = editarTelefone;
+    document.getElementById("btnSairPerfil").onclick = sair;
   }
-  desenhar(sessao);
+
+  function mostrarAviso(texto, tipo) {
+    var el = document.getElementById("avisoPerfil");
+    if (!el) return;
+    el.textContent = texto;
+    el.className = "aviso visivel " + (tipo === "ok" ? "ok" : "erro");
+    setTimeout(function () { el.classList.remove("visivel"); }, 3500);
+  }
+
+  function editarNome() {
+    var atual = userMeta.nome || userMeta.name || "";
+    var novo = prompt("✏️ Editar nome:", atual);
+    if (novo === null) return;
+    novo = novo.trim();
+    if (novo.length < 2) { mostrarAviso("Nome muito curto.", "erro"); return; }
+    if (novo.length > 60) { mostrarAviso("Nome muito longo.", "erro"); return; }
+    if (novo === atual) return;
+    guardar({ nome: novo });
+  }
+
+  function editarTelefone() {
+    var atual = String(userMeta.whatsapp || "").replace(/^258/, "");
+    var novo = prompt("✏️ Editar WhatsApp (ex: 841234567):", atual);
+    if (novo === null) return;
+    novo = novo.replace(/\s/g, "");
+    if (!/^(8[2-7])\d{7}$/.test(novo)) { mostrarAviso("Número inválido.", "erro"); return; }
+    if (novo === atual) return;
+    guardar({ whatsapp: "258" + novo });
+  }
+
+  async function guardar(dados) {
+    try {
+      var novoMeta = Object.assign({}, userMeta, dados);
+
+      var r = await fetch(MZ.url + "/auth/v1/user", {
+        method: "PUT",
+        headers: Object.assign({ "Content-Type": "application/json" }, cabecalhos()),
+        body: JSON.stringify({ data: novoMeta })
+      });
+
+      if (!r.ok) {
+        mostrarAviso("Erro ao guardar. Tenta de novo.", "erro");
+        return;
+      }
+
+      userMeta = novoMeta;
+
+      try {
+        var s = JSON.parse(localStorage.getItem(CHAVE)) || {};
+        if (dados.nome) s.nome = dados.nome;
+        if (dados.whatsapp) s.whatsapp = dados.whatsapp;
+        localStorage.setItem(CHAVE, JSON.stringify(s));
+      } catch (e) {}
+
+      renderizar();
+      mostrarAviso("✅ Guardado com sucesso!", "ok");
+    } catch (e) {
+      mostrarAviso("Sem ligação à internet.", "erro");
+    }
+  }
+
+  function sair() {
+    if (!confirm("Queres sair da conta?")) return;
+    try { localStorage.removeItem(CHAVE); } catch (e) {}
+    window.location.href = "index.html";
+  }
+
+  iniciar();
+
 })();
