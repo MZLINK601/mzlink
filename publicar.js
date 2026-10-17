@@ -55,7 +55,6 @@
 
   /* ---------- Aviso de limite de anúncios ---------- */
   function bloquearFormulario() {
-    // Esconde o formulário e mostra aviso premium
     if (form) form.style.display = "none";
 
     var aviso = document.createElement("div");
@@ -83,7 +82,6 @@
     document.getElementById("nome").value = meta.nome || "";
     document.getElementById("whatsapp").value = String(meta.whatsapp || "").replace(/^258/, "");
 
-    // Buscar plano E contar anúncios numa só chamada
     var r2 = await fetch(
       MZ.url + "/rest/v1/profissionais?select=id,plano&user_id=eq." +
       encodeURIComponent(usuario.id),
@@ -93,19 +91,15 @@
     if (r2.ok) {
       var dados = await r2.json();
       totalMeusAnuncios = dados.length;
-
-      // Plano (pega do primeiro registo, ou 'basico' se vazio)
       planoUser = (dados[0] && dados[0].plano) || "basico";
     }
 
     limiteFotos = planoUser === "premium" ? 20 : 4;
     limiteAnuncios = planoUser === "premium" ? Infinity : 3;
 
-    // Aplicar classe no body
     document.body.classList.remove("plano-basico", "plano-premium");
     document.body.classList.add(planoUser === "premium" ? "plano-premium" : "plano-basico");
 
-    // Atualizar UI das fotos
     if (planoUser === "premium") {
       fotosInfo.className = "fotos-info premium";
       fotosInfo.innerHTML = "⭐ Plano <strong>Premium</strong>: até 20 fotos por anúncio.";
@@ -120,7 +114,6 @@
 
     atualizarContador();
 
-    // ⚠️ Verificar limite de anúncios
     if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
       bloquearFormulario();
     }
@@ -241,7 +234,7 @@
   async function listarMeus() {
     lista.textContent = "";
     var r = await fetch(
-      MZ.url + "/rest/v1/profissionais?select=id,nome,tipo,local,categoria,fotos&user_id=eq." +
+      MZ.url + "/rest/v1/profissionais?select=id,nome,tipo,local,categoria,fotos,preco&user_id=eq." +
         encodeURIComponent(usuario.id) + "&order=criado_em.desc",
       { headers: cabecalhos({}) }
     );
@@ -270,7 +263,8 @@
       titulo.textContent = item.tipo + " - " + item.nome;
       var detalhe = document.createElement("small");
       var nFotos = (item.fotos && item.fotos.length) || 0;
-      detalhe.textContent = item.local + " | " + item.categoria +
+      var precoTxt = item.preco ? " | 💰 " + item.preco + " MT" : "";
+      detalhe.textContent = item.local + " | " + item.categoria + precoTxt +
         " | 📸 " + nFotos + " foto" + (nFotos === 1 ? "" : "s");
       info.appendChild(titulo);
       info.appendChild(detalhe);
@@ -311,7 +305,6 @@
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    // ⚠️ Verificar limite antes de submeter
     if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
       alert(
         "Limite do plano Básico: 3 anúncios.\n\n" +
@@ -326,6 +319,7 @@
     var local = document.getElementById("local").value.trim();
     var categoria = document.getElementById("categoria").value;
     var telefone = document.getElementById("whatsapp").value.replace(/\s/g, "");
+    var precoInput = document.getElementById("preco").value;
 
     if (nome.length < 2 || tipo.length < 2 || local.length < 2) {
       aviso("Preencha nome, o que oferece e local (mínimo 2 letras).", true);
@@ -359,6 +353,7 @@
           tipo: tipo,
           local: local,
           categoria: categoria,
+          preco: precoInput ? Number(precoInput) : null,
           whatsapp: "258" + telefone,
           user_id: usuario.id
         })
@@ -374,7 +369,6 @@
       var criado = await r.json();
       var anuncioId = criado && criado[0] && criado[0].id;
 
-      // Upload das fotos
       var urls = [];
       if (anuncioId && ficheiros.length) {
         aviso("A enviar " + ficheiros.length + " foto(s)...", false);
@@ -417,10 +411,10 @@
       }
 
       aviso("✅ Anúncio publicado com " + urls.length + " foto(s)!", false);
-
       document.getElementById("tipo").value = "";
       document.getElementById("local").value = "";
       document.getElementById("categoria").value = "";
+      document.getElementById("preco").value = ""; // Limpa o preço
 
       ficheiros.forEach(function (item) { URL.revokeObjectURL(item.url); });
       ficheiros = [];
@@ -429,7 +423,6 @@
 
       await listarMeus();
 
-      // Se acabou de atingir o limite, recarrega para bloquear
       if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
         setTimeout(function () { window.location.reload(); }, 1500);
       }
