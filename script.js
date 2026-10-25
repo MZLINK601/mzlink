@@ -95,6 +95,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const media = Number(item.media_estrelas) || 0;
       const total = Number(item.total_avaliacoes) || 0;
 
+      // Mensagem para partilhar no WhatsApp
+      const msgPartilha = encodeURIComponent(
+        "Olha este anúncio no MZLINK: " + item.nome + " (" + item.tipo + " em " + item.local + "). Fala com ele aqui: https://mzlink601.github.io/mzlink/"
+      );
+
       const badgePremium = ehPremium
         ? '<span class="badge-premium-card">👑 PREMIUM</span>'
         : '';
@@ -151,7 +156,10 @@ document.addEventListener("DOMContentLoaded", function () {
             '</div>' +
             avaliacaoHTML +
             btnAvaliar +
-            '<a class="btn-contactar" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener">Contactar</a>' +
+            '<div style="display: flex; gap: 8px; margin-top: 10px;">' +
+              '<a class="btn-contactar" style="flex: 2; margin-top: 0;" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener">Contactar</a>' +
+              '<a class="btn-partilhar" style="flex: 1;" href="https://wa.me/?text=' + msgPartilha + '" target="_blank" rel="noopener">📤 Partilhar</a>' +
+            '</div>' +
           '</div>' +
         '</div>';
     });
