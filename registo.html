@@ -2,22 +2,21 @@
 <html lang="pt">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width-device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Criar conta - MZLINK</title>
         <link rel="stylesheet" href="style.css">
     </head>
     <body class="auth-page">
 
         <div class="auth-card">
-            <a href="Index.html" class="autth-logo">MZLINK</a>
+            <a href="index.html" class="auth-logo">MZLINK</a>
             <h2>Criar conta</h2>
-
 
             <form id="registerForm">
                 <label for="accountType">Tipo de conta</label>
                 <select id="accountType" required>
                     <option value="">Escolha uma opção</option>
-                    <option value="Cliente">Cliente(quero encontrar)</option>
+                    <option value="Cliente">Cliente (quero encontrar)</option>
                     <option value="Vendedor">Vendedor</option>
                     <option value="Profissional">Profissional</option>
                     <option value="Empresa">Empresa</option>
@@ -27,13 +26,13 @@
                 <input type="text" id="name" placeholder="Seu nome" required>
                 
                 <label for="email">Email</label>
-                <input type="email" id="email" placeholder="seuemail@exemplo.com" aria-required>
+                <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
 
                 <label for="phone">WhatsApp</label>
                 <input type="tel" id="phone" placeholder="84 123 4567" required>
 
                 <label for="password">Palavra-passe</label>
-                <input type="password" id="password" placeholder="Minimos 6 caracteres" required>
+                <input type="password" id="password" placeholder="Mínimo 6 caracteres" required>
 
                 <label for="confirmPassword">Confirmar Palavra-passe</label>
                 <input type="password" id="confirmPassword" placeholder="Repita a Palavra-passe" required>
@@ -42,14 +41,26 @@
                 <p id="message"></p>
             </form>
 
-            <p class="auth-link">Ja tem conta? <a href="login.html">Entrar</a></p>
+            <p class="auth-link">Já tem conta? <a href="login.html">Entrar</a></p>
+
+            <!-- ===== BOTÃO DE CADASTRO VIA WHATSAPP ===== -->
+            <div style="text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid #eef1f5;">
+                <p style="color: #667085; margin-bottom: 12px; font-weight: 600; font-size: 0.9rem;">
+                    É dono de um negócio e quer um perfil profissional?
+                </p>
+                <a href="https://wa.me/258852337913?text=Ol%C3%A1%2C%20Am%C3%B3s!%20Quero%20cadastrar%20a%20minha%20empresa%20no%20MZLINK.%0A%0A%F0%9F%8F%A2%20Nome%20do%20Neg%C3%B3cio%3A%20%0A%F0%9F%9B%A0%EF%B8%8F%20O%20que%20vendo%2Ffa%C3%A7o%3A%20%0A%F0%9F%93%8D%20Bairro%3A%20" 
+                   target="_blank" 
+                   style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; background: #25D366; color: white; font-weight: 800; font-size: 1rem; text-decoration: none; border-radius: 12px; box-shadow: 0 8px 24px rgba(37,211,102,0.3); transition: transform 0.2s;">
+                    <span style="font-size: 1.4rem;">💬</span> Cadastrar Negócio via WhatsApp
+                </a>
+                <p style="color: #98a2b3; margin-top: 10px; font-size: 0.75rem;">
+                    Atendimento rápido e personalizado (Verificação em 24h)
+                </p>
+            </div>
+            <!-- ===== FIM DO BOTÃO ===== -->
+
         </div>
 
         <script src="registo.js"></script>
     </body>
-</html>
-
-                
-
-
-
+            </html>
