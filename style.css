@@ -385,3 +385,44 @@ div.categorias button:hover {
     font-size: .8rem !important;
 }
 }
+
+/* ===== Ajustes do Header Móvel ===== */
+.header-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+header nav {
+  display: flex;
+  flex-wrap: nowrap; /* Impede de quebrar para baixo */
+  overflow-x: auto; /* Se não couber, desliza para o lado */
+  gap: 6px;
+  width: 100%;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+header nav button {
+  white-space: nowrap; /* Impede o texto de quebrar em 2 linhas */
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid #eef1f5;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+header nav button.btn-premium {
+  background: linear-gradient(135deg, #d4af37, #f5d76e);
+  color: #1a1a1a;
+  border: none;
+}
+
+header nav::-webkit-scrollbar {
+  display: none; /* Esconde a barra de rolagem no celular */
+}
