@@ -426,3 +426,34 @@ header nav button.btn-premium {
 header nav::-webkit-scrollbar {
   display: none; /* Esconde a barra de rolagem no celular */
 }
+
+
+/* ===== Botão Partilhar ===== */
+.btn-partilhar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #f0f4f9;
+  color: #0066ff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  border-radius: 12px;
+  text-decoration: none;
+  border: 2px solid #0066ff;
+  transition: all 0.2s;
+  padding: 10px 4px; /* Ajuste para ficar do mesmo tamanho */
+}
+
+.btn-partilhar:hover {
+  background: #0066ff;
+  color: #fff;
+}
+
+/* Ajuste do botão contactar para caber ao lado */
+.btn-contactar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px; /* Ajuste para ficar do mesmo tamanho */
+}
