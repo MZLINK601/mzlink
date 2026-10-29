@@ -16,7 +16,10 @@
             <form id="formEmailLogin">
                 <label for="email">O teu Email</label>
                 <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
-                <button type="submit" id="btnEnviarCodigoLogin">Receber Código de Acesso</button>
+                
+                <!-- Botão usa type="button" e onclick para ser à prova de falhas -->
+                <button type="button" id="btnEnviarCodigoLogin" onclick="window.enviarCodigoLogin()">Receber Código de Acesso</button>
+                
                 <p id="msgEmail" style="color:red; margin-top:10px; font-weight:bold;"></p>
             </form>
 
@@ -24,11 +27,26 @@
             <form id="formCodigoLogin" style="display: none; margin-top: 20px;">
                 <label for="codigo">Insere o código que recebeste no email</label>
                 <input type="text" id="codigo" placeholder="Código do email" required maxlength="10">
-                <button type="submit" id="btnEntrar">Entrar</button>
+                
+                <!-- Botão usa type="button" e onclick -->
+                <button type="button" id="btnEntrar" onclick="window.validarCodigoLogin()">Entrar</button>
+                
                 <p id="msgCodigo" style="color:red; margin-top:10px; font-weight:bold;"></p>
             </form>
 
             <p class="auth-link">Ainda não tem conta? <a href="registo.html">Criar conta</a></p>
+
+            <!-- Botão do WhatsApp para Empresas -->
+            <div style="text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid #eef1f5;">
+                <p style="color: #667085; margin-bottom: 12px; font-weight: 600; font-size: 0.9rem;">
+                    É dono de um negócio?
+                </p>
+                <a href="https://wa.me/258852337913?text=Ol%C3%A1%2C%20Am%C3%B3s!%20Quero%20cadastrar%20a%20minha%20empresa%20no%20MZLINK." 
+                   target="_blank" 
+                   style="display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 16px; background: #25D366; color: white; font-weight: 800; font-size: 1rem; text-decoration: none; border-radius: 12px; box-shadow: 0 8px 24px rgba(37,211,102,0.3);">
+                    💬 Cadastrar via WhatsApp
+                </a>
+            </div>
         </div>
 
         <script src="login.js"></script>
