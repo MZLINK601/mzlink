@@ -1,33 +1,27 @@
 /* ============================================================
-   MZLINK · Perfil do Utilizador 👤
+   MZLINK · Perfil do Utilizador 👤 (100% Moçambicano)
    ============================================================ */
 
-(function () {
+(async function () {
   'use strict';
 
-  var CHAVE = "mzlink_sessao";
   var conteudo = document.getElementById("conteudo");
-
-  if (!conteudo) return;
-
-  var sessao = null;
-  var user = null;
-  var userMeta = {};
-  var plano = "basico";
+  var CHAVE = "mzlink_sessao";
 
   function lerSessao() {
-    try {
-      return JSON.parse(localStorage.getItem(CHAVE));
-    } catch (e) {
-      return null;
-    }
+    try { return JSON.parse(localStorage.getItem(CHAVE)); } catch (e) { return null; }
   }
 
-  function limpar(t) {
-    var d = document.createElement("div");
-    d.textContent = String(t == null ? "" : t);
-    return d.innerHTML;
+  var sessao = lerSessao();
+
+  if (!sessao || !sessao.access_token) {
+    window.location.href = "login.html?next=perfil.html";
+    return;
   }
+
+  var user = null;
+  var plano = "basico";
+  var userMeta = null;
 
   function cabecalhos() {
     return {
@@ -36,26 +30,16 @@
     };
   }
 
-  async function iniciar() {
-    sessao = lerSessao();
+  function limpar(t) {
+    var d = document.createElement("div");
+    d.textContent = String(t == null ? "" : t);
+    return d.innerHTML;
+  }
 
-    if (!sessao || !sessao.access_token) {
-      window.location.href = "login.html?next=perfil.html";
-      return;
-    }
-
-    if (typeof MZ === "undefined") {
-      conteudo.innerHTML = '<div class="loading">Erro: sessao.js não carregou.</div>';
-      return;
-    }
-
+  async function carregar() {
     try {
       var rUser = await fetch(MZ.url + "/auth/v1/user", { headers: cabecalhos() });
-      if (!rUser.ok) {
-        localStorage.removeItem(CHAVE);
-        window.location.href = "login.html?next=perfil.html";
-        return;
-      }
+      if (!rUser.ok) throw new Error("sessao");
       user = await rUser.json();
       userMeta = user.user_metadata || {};
 
@@ -72,7 +56,8 @@
 
       renderizar();
     } catch (e) {
-      conteudo.innerHTML = '<div class="loading">Erro de ligação. Recarrega.</div>';
+      conteudo.innerHTML = '<div class="loading">Sessão expirada. Faz login de novo.</div>';
+      setTimeout(function () { window.location.href = "login.html"; }, 1500);
     }
   }
 
@@ -81,10 +66,17 @@
     var telefone = String(userMeta.whatsapp || "").replace(/^258/, "");
     var inicial = nome.charAt(0).toUpperCase();
     var ehPremium = plano === "premium";
+    var urlAvatar = userMeta.avatar_url;
 
     var html =
       '<div class="hero">' +
-        '<div class="avatar-grande ' + (ehPremium ? 'premium' : '') + '">' + limpar(inicial) + '</div>' +
+        '<div class="avatar-grande ' + (ehPremium ? 'premium' : '') + '" id="avatarContainer" onclick="document.getElementById(\'inputAvatar\').click()">' +
+          '<span id="avatarLetra" style="' + (urlAvatar ? 'display:none;' : '') + '">' + limpar(inicial) + '</span>' +
+          '<img id="avatarImagem" src="' + (urlAvatar || '') + '" style="' + (urlAvatar ? 'display:block;' : 'display:none;') + '">' +
+          '<div class="icone-camara">📷</div>' +
+        '</div>' +
+        '<input type="file" id="inputAvatar" accept="image/*" style="display: none;">' +
+        '<div class="badge-moz">🇲🇿 Orgulho Nacional</div>' +
         '<h1>' + limpar(nome) + '</h1>' +
         '<p class="email">' + limpar(user.email) + '</p>' +
         '<span class="plano-badge ' + (ehPremium ? 'premium' : 'basico') + '">' +
@@ -97,16 +89,16 @@
         '<div class="campo">' +
           '<div class="campo-info">' +
             '<label>Nome</label>' +
-            '<div class="valor">' + limpar(nome) + '</div>' +
+            '<div class="valor" id="nomeValor">' + limpar(nome) + '</div>' +
           '</div>' +
-          '<button class="btn-editar" id="btnEditNome">✏️ Editar</button>' +
+          '<button class="btn-editar" onclick="window.MZPerfil.editarNome()">✏️ Editar</button>' +
         '</div>' +
         '<div class="campo">' +
           '<div class="campo-info">' +
             '<label>WhatsApp</label>' +
-            '<div class="valor">' + (telefone ? '258' + limpar(telefone) : '—') + '</div>' +
+            '<div class="valor" id="telValor">' + (telefone ? '258' + limpar(telefone) : '—') + '</div>' +
           '</div>' +
-          '<button class="btn-editar" id="btnEditTel">✏️ Editar</button>' +
+          '<button class="btn-editar" onclick="window.MZPerfil.editarTelefone()">✏️ Editar</button>' +
         '</div>' +
         '<div class="campo">' +
           '<div class="campo-info">' +
@@ -124,17 +116,69 @@
 
       '<div class="card">' +
         '<h2>🔐 Segurança</h2>' +
-        '<a href="nova-senha.html" class="btn-acao principal">🔑 Mudar palavra-passe</a>' +
-        '<button class="btn-acao sair" id="btnSairPerfil">🚪 Sair da conta</button>' +
+        '<button class="btn-acao sair" onclick="window.MZPerfil.sair()">🚪 Sair da conta</button>' +
       '</div>' +
 
       '<a href="index.html" class="btn-voltar">← Voltar ao MZLINK</a>';
 
     conteudo.innerHTML = html;
 
-    document.getElementById("btnEditNome").onclick = editarNome;
-    document.getElementById("btnEditTel").onclick = editarTelefone;
-    document.getElementById("btnSairPerfil").onclick = sair;
+    // Ligar o upload da foto
+    var inputAvatar = document.getElementById("inputAvatar");
+    inputAvatar.addEventListener("change", async function (e) {
+      var file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert("A foto é muito grande. Escolhe uma menor que 2MB.");
+        return;
+      }
+
+      try {
+        document.getElementById("avatarLetra").textContent = "...";
+        
+        var ext = file.name.split(".").pop() || "jpg";
+        var caminho = user.id + "/avatar." + ext;
+
+        // 1. Upload para o Supabase Storage (bucket avatares)
+        var rUpload = await fetch(MZ.url + "/storage/v1/object/avatares/" + caminho, {
+          method: "POST",
+          headers: {
+            apikey: MZ.key,
+            Authorization: "Bearer " + sessao.access_token,
+            "Content-Type": file.type,
+            "x-upsert": "true"
+          },
+          body: file
+        });
+
+        if (!rUpload.ok) {
+          alert("Erro ao enviar a foto.");
+          renderizar();
+          return;
+        }
+
+        // 2. Link público
+        var urlPublica = MZ.url + "/storage/v1/object/public/avatares/" + caminho;
+
+        // 3. Guardar no perfil do utilizador
+        var novoMeta = Object.assign({}, userMeta, { avatar_url: urlPublica });
+        
+        await fetch(MZ.url + "/auth/v1/user", {
+          method: "PUT",
+          headers: Object.assign({ "Content-Type": "application/json" }, cabecalhos()),
+          body: JSON.stringify({ data: novoMeta })
+        });
+
+        userMeta = novoMeta;
+        renderizar();
+        alert("✅ Foto de perfil atualizada!");
+
+      } catch (err) {
+        alert("Erro de ligação ao enviar a foto.");
+        renderizar();
+      }
+    });
   }
 
   function mostrarAviso(texto, tipo) {
@@ -203,6 +247,12 @@
     window.location.href = "index.html";
   }
 
-  iniciar();
+  window.MZPerfil = {
+    editarNome: editarNome,
+    editarTelefone: editarTelefone,
+    sair: sair
+  };
+
+  carregar();
 
 })();
