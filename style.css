@@ -457,3 +457,36 @@ header nav::-webkit-scrollbar {
   justify-content: center;
   padding: 10px 4px; /* Ajuste para ficar do mesmo tamanho */
 }
+
+
+/* ===== GRELHA DE CATEGORIAS PERFEITA ===== */
+.categorias {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important; /* 2 colunas no telemóvel */
+    gap: 12px !important;
+    max-width: 400px;
+    margin: 20px auto !important;
+    padding: 0 20px !important;
+}
+
+.categorias button {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 14px 10px !important;
+    background-color: #ffffff !important;
+    color: #0f1115 !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    font-weight: 800 !important;
+    font-size: 0.9rem !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04) !important;
+    text-transform: capitalize;
+    transition: all 0.2s !important;
+}
+
+/* Quando passa o rato ou toca, fica com a borda verde de Moz */
+.categorias button:hover, .categorias button:active {
+    border-color: #009639 !important;
+    color: #009639 !important;
+    transform: scale(0.98);
+}
