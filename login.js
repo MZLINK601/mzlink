@@ -6,8 +6,11 @@ var SUPABASE_URL_LOGIN = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
 var SUPABASE_KEY_LOGIN = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
 var emailGuardadoLogin = "";
 
-// Função 1: Enviar o código (chamada pelo onclick do botão)
+// Função 1: Enviar o código
 window.enviarCodigoLogin = async function() {
+  // TESTE: Se o botão funcionar, este alerta vai aparecer!
+  alert("O botão foi clicado! A ligar ao servidor...");
+
   var emailInput = document.getElementById("email");
   var btnEnviar = document.getElementById("btnEnviarCodigoLogin");
   var msgEmail = document.getElementById("msgEmail");
@@ -46,12 +49,12 @@ window.enviarCodigoLogin = async function() {
       msgCodigo.textContent = "✅ Código enviado! Verifica o teu email.";
     } else {
       var erro = await r.json();
-      msgEmail.textContent = "Erro: " + (erro.msg || "Este email não está registado.");
+      alert("Erro do servidor: " + (erro.msg || "Este email não está registado."));
       btnEnviar.disabled = false;
       btnEnviar.textContent = "Receber Código de Acesso";
     }
   } catch (err) {
-    msgEmail.textContent = "Erro de ligação à internet.";
+    alert("Erro de ligação à internet.");
     btnEnviar.disabled = false;
     btnEnviar.textContent = "Receber Código de Acesso";
   }
@@ -109,12 +112,12 @@ window.validarCodigoLogin = async function() {
       }, 1000);
 
     } else {
-      msgCodigo.textContent = "❌ Código inválido ou expirado. Tenta de novo.";
+      alert("❌ Código inválido ou expirado. Tenta de novo.");
       btnEntrar.disabled = false;
       btnEntrar.textContent = "Entrar";
     }
   } catch (err) {
-    msgCodigo.textContent = "Erro de ligação à internet.";
+    alert("Erro de ligação à internet.");
     btnEntrar.disabled = false;
     btnEntrar.textContent = "Entrar";
   }
