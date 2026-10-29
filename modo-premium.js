@@ -1,10 +1,16 @@
 /* ============================================================
    MZLINK · Modo Premium 👑
-   Ativa o visual VIP para utilizadores Premium
    ============================================================ */
 
 (function () {
   'use strict';
+
+  var CHAVE = "mzlink_sessao";
+
+  function lerSessao() {
+    try { return JSON.parse(localStorage.getItem(CHAVE)); }
+    catch (e) { return null; }
+  }
 
   function ativarModoPremium(nomeUser) {
     if (document.body.classList.contains('premium-mode')) return;
@@ -15,7 +21,6 @@
     var header = document.querySelector('header');
     if (!header) return;
 
-    // Evitar duplicar
     if (document.querySelector('.premium-banner')) return;
 
     var banner = document.createElement('div');
@@ -31,45 +36,49 @@
     header.insertAdjacentElement('afterend', banner);
   }
 
-  function iniciar() {
+  async function iniciar() {
     if (typeof MZ === 'undefined' || !MZ.sessaoValida) return;
 
-    MZ.sessaoValida().then(function (sessao) {
-      if (!sessao || !sessao.access_token) return;
+    var sessao = lerSessao();
+    if (!sessao || !sessao.access_token) return;
 
-      // Buscar user
-      return fetch(MZ.url + '/auth/v1/user', {
+    try {
+      // 1. Ir buscar o ID do user
+      var rUser = await fetch(MZ.url + '/auth/v1/user', {
         headers: {
           apikey: MZ.key,
           Authorization: 'Bearer ' + sessao.access_token
         }
-      })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (user) {
-        if (!user) return;
-
-        // Verificar plano na tabela profissionais
-        return fetch(
-          MZ.url + '/rest/v1/profissionais?select=plano&user_id=eq.' +
-          encodeURIComponent(user.id) + '&limit=1',
-          {
-            headers: {
-              apikey: MZ.key,
-              Authorization: 'Bearer ' + sessao.access_token
-            }
-          }
-        )
-        .then(function (r) { return r.json(); })
-        .then(function (lista) {
-          var plano = (lista && lista[0] && lista[0].plano) || 'basico';
-          if (plano === 'premium') {
-            var nome = (user.user_metadata && user.user_metadata.nome) ||
-                       user.email.split('@')[0];
-            ativarModoPremium(nome);
-          }
-        });
       });
-    }).catch(function () {});
+      if (!rUser.ok) return;
+      var user = await rUser.json();
+
+      // 2. Verificar o plano na tabela
+      var rPlano = await fetch(
+        MZ.url + '/rest/v1/profissionais?select=plano&user_id=eq.' +
+        encodeURIComponent(user.id) + '&limit=1',
+        {
+          headers: {
+            apikey: MZ.key,
+            Authorization: 'Bearer ' + sessao.access_token
+          }
+        }
+      );
+
+      if (rPlano.ok) {
+        var lista = await rPlano.json();
+        var plano = (lista && lista[0] && lista[0].plano) || 'basico';
+        
+        if (plano === 'premium') {
+          // 3. AQUI ESTÁ A CORREÇÃO: Usar o nome da sessão em vez do anúncio
+          var nome = sessao.name || user.user_metadata?.name || user.email.split('@')[0] || "Premium";
+          
+          ativarModoPremium(nome);
+        }
+      }
+    } catch (e) {
+      console.warn("Erro no modo premium:", e);
+    }
   }
 
   if (document.readyState === 'loading') {
