@@ -24,7 +24,7 @@
     <link rel="apple-touch-icon" href="favicon.png">
 
     <style>
-        /* ===== ESTILOS DO NOVO HERO (100% MOÇAMBICANO) ===== */
+        /* ===== ESTILOS DO NOVO HERO (100% MOÇAMBICANO COM A PONTE) ===== */
         body {
             font-family: 'Inter', system-ui, sans-serif;
             margin: 0;
@@ -32,10 +32,11 @@
         }
 
         .hero-moz {
-            background: radial-gradient(circle at top, #ffffff 0%, #f1f4f9 100%);
-            padding: 40px 20px 30px;
+            /* Fundo escuro transparente + A nossa foto da Ponte Maputo-Catembe */
+            background: linear-gradient(rgba(15, 17, 21, 0.65), rgba(15, 17, 21, 0.85)), url('ponte.jpg') center/cover no-repeat;
+            padding: 60px 20px 50px;
             text-align: center;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 3px solid #d4af37;
         }
 
         .badge-moz {
@@ -50,39 +51,43 @@
             border-radius: 999px;
             margin-bottom: 20px;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 12px rgba(227, 25, 55, 0.3);
+            box-shadow: 0 4px 12px rgba(227, 25, 55, 0.4);
         }
 
         .hero-moz h1 {
             font-size: 2.4rem;
             font-weight: 900;
-            color: #0f1115;
+            color: #ffffff; /* Branco para contrastar com a foto */
             line-height: 1.1;
             margin: 0 0 12px 0;
             letter-spacing: -1px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.8); /* Sombra forte */
         }
 
         .texto-ouro {
-            background: linear-gradient(135deg, #d4af37, #b8860b);
+            background: linear-gradient(135deg, #f5d76e, #d4af37);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            text-shadow: 0px 2px 15px rgba(212, 175, 55, 0.6); /* Brilho dourado */
         }
 
         .hero-moz p {
             font-size: 1rem;
-            color: #475569;
+            color: #f8f9fa; /* Branco suave */
             margin: 0 auto 28px;
             max-width: 400px;
             line-height: 1.5;
             font-weight: 500;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
         }
 
         .search-box {
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
             border-radius: 16px;
             overflow: hidden;
             border: 1px solid #e2e8f0;
+            background: #fff;
         }
 
         /* Selos de Confiança */
@@ -98,10 +103,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
             padding: 10px 16px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             border: 1px solid #f1f5f9;
         }
 
@@ -164,7 +170,7 @@
     </header>
 
     <main>
-        <!-- NOVO HERO 100% MOÇAMBICANO -->
+        <!-- NOVO HERO COM A PONTE MAPUTO-CATEMBE -->
         <section class="hero-moz">
             <div class="badge-moz">🇲🇿 100% Moçambicano</div>
             <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
@@ -175,7 +181,7 @@
                 <button id="searchButton">Pesquisar</button>
             </div>
 
-            <!-- SELOS DE CONFIANÇA (VERDE, PRETO E OURO) -->
+            <!-- SELOS DE CONFIANÇA -->
             <div class="selos-confianca">
                 <div class="selo-item">
                     <span class="selo-icone">🛡️</span>
@@ -301,4 +307,4 @@
       }
     </style>
 </body>
-            </html>
+</html>
