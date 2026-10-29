@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt">
-    <head> 
-        <meta charset=""UTF-8>
+    <head>
+        <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Entrar - MZLINK</title>
         <link rel="stylesheet" href="style.css">
@@ -9,21 +9,23 @@
     <body class="auth-page">
 
         <div class="auth-card">
-            <a href="Index.html" class="autth-logo">MZLINK</a>
-            <H2>Entrar na sua conta</H2>
+            <a href="index.html" class="auth-logo">MZLINK</a>
+            <h2>Entrar na conta</h2>
 
-            <form id="loginForm">
-                <label for="email">Email</label>
+            <!-- PASSO 1: Pedir o Email -->
+            <form id="formEmailLogin">
+                <label for="email">O teu Email</label>
                 <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
-     
-                <p style="text-align: right; margin-top: -10px;"><a href="esqueci.html" style="font-size: 13px;">Esqueceu a Palavra-passe?</a></p>
+                <button type="submit" id="btnEnviarCodigoLogin">Receber Código de Acesso</button>
+                <p id="msgEmail" style="color:red; margin-top:10px; font-weight:bold;"></p>
+            </form>
 
-                
-                <label for="password">Palavra-passe</label>
-                <input type="password" id="password" placeholder="Sua Palavra-passe" required>
-
-                <button type="submit">Entrar</button>
-                <p id="message"></p>
+            <!-- PASSO 2: Inserir o Código (Escondido no início) -->
+            <form id="formCodigoLogin" style="display: none; margin-top: 20px;">
+                <label for="codigo">Insere o código que recebeste no email</label>
+                <input type="text" id="codigo" placeholder="Código do email" required maxlength="10">
+                <button type="submit" id="btnEntrar">Entrar</button>
+                <p id="msgCodigo" style="color:red; margin-top:10px; font-weight:bold;"></p>
             </form>
 
             <p class="auth-link">Ainda não tem conta? <a href="registo.html">Criar conta</a></p>
