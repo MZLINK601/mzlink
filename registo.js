@@ -1,83 +1,117 @@
-document.getElementById("registerForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
+/* ============================================================
+   MZLINK · Registo via Código (OTP)
+   ============================================================ */
 
-  // Ligacao ao Supabase (chave publica)
-  const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
+(function () {
+  'use strict';
 
-  const accountType = document.getElementById("accountType").value;
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const phone = document.getElementById("phone").value.replace(/\s/g, "");
-  const password = document.getElementById("password").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
-  const message = document.getElementById("message");
-  const button = document.querySelector("#registerForm button[type='submit']");
+  var SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
 
-  function erro(texto) {
-    message.textContent = texto;
-    message.className = "error";
-  }
+  var formEmail = document.getElementById("formEmail");
+  var formCodigo = document.getElementById("formCodigo");
+  var btnEnviar = document.getElementById("btnEnviarCodigo");
+  var btnEntrar = document.getElementById("btnEntrar");
+  var msgEmail = document.getElementById("msgEmail");
+  var msgCodigo = document.getElementById("msgCodigo");
+  var emailGuardado = "";
 
-  if (password.length < 6) {
-    erro("A palavra-passe deve ter pelo menos 6 caracteres.");
-    return;
-  }
+  // PASSO 1: Enviar o código para o email
+  formEmail.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var email = document.getElementById("email").value.trim();
+    
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = "A enviar...";
+    msgEmail.textContent = "";
 
-  if (password !== confirmPassword) {
-    erro("As palavras-passe não coincidem.");
-    return;
-  }
+    try {
+      var r = await fetch(SUPABASE_URL + "/auth/v1/otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_KEY
+        },
+        body: JSON.stringify({
+          email: email,
+          create_user: true // Cria a conta automaticamente se não existir
+        })
+      });
 
-  if (!/^(8[2-7])\d{7}$/.test(phone)) {
-    erro("Digite um número válido de Moçambique (ex: 841234567).");
-    return;
-  }
-
-  button.disabled = true;
-  message.className = "";
-  message.textContent = "A criar a conta...";
-
-  try {
-    const resposta = await fetch(SUPABASE_URL + "/auth/v1/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_KEY
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-        data: {
-          nome: name,
-          tipo_conta: accountType,
-          whatsapp: "258" + phone
-        }
-      })
-    });
-
-    const dados = await resposta.json();
-
-    if (!resposta.ok) {
-      const texto = String(dados.msg || dados.error_description || dados.message || "");
-
-      if (texto.toLowerCase().includes("already")) {
-        erro("Este email já tem conta. Vá a Entrar.");
-      } else if (texto.toLowerCase().includes("rate limit")) {
-        erro("Muitas tentativas. Espere alguns minutos e tente de novo.");
+      if (r.ok) {
+        emailGuardado = email;
+        formEmail.style.display = "none";
+        formCodigo.style.display = "block";
+        msgCodigo.style.color = "green";
+        msgCodigo.textContent = "✅ Código enviado! Verifica o teu email.";
       } else {
-        erro("Não foi possível criar a conta. " + texto);
+        var erro = await r.json();
+        msgEmail.textContent = "Erro: " + (erro.msg || "Tenta de novo.");
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = "Receber Código";
       }
-      button.disabled = false;
-      return;
+    } catch (err) {
+      msgEmail.textContent = "Erro de ligação à internet.";
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = "Receber Código";
     }
+  });
 
-    message.className = "";
-    message.textContent = "Conta criada! Verifique o seu email para confirmar e depois entre.";
-    document.getElementById("registerForm").reset();
-  } catch (err) {
-    erro("Sem ligação à internet. Verifique e tente de novo.");
-  }
+  // PASSO 2: Validar o código e entrar
+  formCodigo.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var codigo = document.getElementById("codigo").value.trim();
+    
+    btnEntrar.disabled = true;
+    btnEntrar.textContent = "A validar...";
+    msgCodigo.textContent = "";
 
-  button.disabled = false;
-});
+    try {
+      var r = await fetch(SUPABASE_URL + "/auth/v1/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_KEY
+        },
+        body: JSON.stringify({
+          type: "email",
+          email: emailGuardado,
+          token: codigo
+        })
+      });
+
+      if (r.ok) {
+        var dados = await r.json();
+        
+        // Guardar a sessão no navegador
+        try {
+          localStorage.setItem("mzlink_sessao", JSON.stringify({
+            access_token: dados.access_token,
+            refresh_token: dados.refresh_token,
+            expires_at: dados.expires_at,
+            name: dados.user.user_metadata?.name || dados.user.email.split('@')[0],
+            email: dados.user.email
+          }));
+        } catch (e) {}
+
+        msgCodigo.style.color = "green";
+        msgCodigo.textContent = "✅ Sucesso! A entrar...";
+        
+        setTimeout(function () {
+          window.location.href = "index.html";
+        }, 1000);
+
+      } else {
+        var erro = await r.json();
+        msgCodigo.textContent = "❌ Código inválido ou expirado. Tenta de novo.";
+        btnEntrar.disabled = false;
+        btnEntrar.textContent = "Entrar na Conta";
+      }
+    } catch (err) {
+      msgCodigo.textContent = "Erro de ligação à internet.";
+      btnEntrar.disabled = false;
+      btnEntrar.textContent = "Entrar na Conta";
+    }
+  });
+
+})();
