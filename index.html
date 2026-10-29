@@ -2,8 +2,15 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>MZLINK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MZLINK - Encontre, Compare, Resolva</title>
+    
+    <!-- Fontes Profissionais -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+    <!-- Estilos do MZLINK -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="cartoes.css">
     <link rel="stylesheet" href="premium-cards.css">
@@ -11,14 +18,129 @@
     <link rel="stylesheet" href="modo-premium.css">
     <link rel="stylesheet" href="fotos-cards.css">
     <link rel="stylesheet" href="galeria.css">
-    <link rel="stylesheet" href="galeria.css">
     <link rel="stylesheet" href="logo.css">
-
-    </style>
 
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
 
+    <style>
+        /* ===== ESTILOS DO NOVO HERO (100% MOÇAMBICANO) ===== */
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 0;
+            background: #f8f9fb;
+        }
+
+        .hero-moz {
+            background: radial-gradient(circle at top, #ffffff 0%, #f1f4f9 100%);
+            padding: 40px 20px 30px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .badge-moz {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #E31937; /* Vermelho da bandeira */
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 8px 16px;
+            border-radius: 999px;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(227, 25, 55, 0.3);
+        }
+
+        .hero-moz h1 {
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: #0f1115;
+            line-height: 1.1;
+            margin: 0 0 12px 0;
+            letter-spacing: -1px;
+        }
+
+        .texto-ouro {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-moz p {
+            font-size: 1rem;
+            color: #475569;
+            margin: 0 auto 28px;
+            max-width: 400px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .search-box {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Selos de Confiança */
+        .selos-confianca {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .selo-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            padding: 10px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border: 1px solid #f1f5f9;
+        }
+
+        .selo-icone {
+            font-size: 1.3rem;
+        }
+
+        .selo-texto {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #1e293b;
+            line-height: 1.2;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        /* Ajuste das Categorias */
+        .categorias {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 20px;
+        }
+        .categorias button {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            color: #0f1115;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 999px;
+            transition: all 0.2s;
+        }
+        .categorias button:hover {
+            border-color: #009639; /* Verde da bandeira */
+            color: #009639;
+            background: #f0fdf4;
+        }
+    </style>
 </head>
 
 <body>
@@ -42,14 +164,33 @@
     </header>
 
     <main>
-        <h1>MZLINK</h1>
-        <h2>Encontre, Compare, Resolva.</h2>
-        <p>Encontre produtos, serviços, vendedores e profissionais.</p>
+        <!-- NOVO HERO 100% MOÇAMBICANO -->
+        <section class="hero-moz">
+            <div class="badge-moz">🇲🇿 100% Moçambicano</div>
+            <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
+            <p>Produtos, serviços e profissionais de confiança perto de ti. Fala direto no WhatsApp, sem intermediários.</p>
 
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="O que voçê precisa encontrar?">
-            <button id="searchButton">Pesquisar</button>
-        </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="O que você precisa encontrar?">
+                <button id="searchButton">Pesquisar</button>
+            </div>
+
+            <!-- SELOS DE CONFIANÇA (VERDE, PRETO E OURO) -->
+            <div class="selos-confianca">
+                <div class="selo-item">
+                    <span class="selo-icone">🛡️</span>
+                    <span class="selo-texto">Empresas<br>Verificadas</span>
+                </div>
+                <div class="selo-item">
+                    <span class="selo-icone">⚡</span>
+                    <span class="selo-texto">Contacto<br>Imediato</span>
+                </div>
+                <div class="selo-item">
+                    <span class="selo-icone">🇲🇿</span>
+                    <span class="selo-texto">Orgulho<br>Nacional</span>
+                </div>
+            </div>
+        </section>
 
         <div id="results"></div>
 
@@ -79,84 +220,85 @@
     <script src="header.js"></script>
     <script src="verificar-premium.js"></script>
     
-<!-- ===== RODAPÉ ===== -->
-<footer class="rodape-mzlink">
-    <div class="rodape-conteudo">
-        <div class="rodape-marca">
-            <strong>MZLINK</strong>
-            <p>Encontre, Compare, Resolva. 🇲🇿</p>
+    <!-- ===== RODAPÉ ===== -->
+    <footer class="rodape-mzlink">
+        <div class="rodape-conteudo">
+            <div class="rodape-marca">
+                <strong>MZLINK</strong>
+                <p>Encontre, Compare, Resolva. 🇲🇿</p>
+            </div>
+
+            <div class="rodape-links">
+                <a href="sobre.html">Sobre Nós</a>
+                <a href="contacto.html">Contacto</a>
+                <a href="termos.html">Termos e Condições</a>
+            </div>
+
+            <div class="rodape-info">
+                <p>💬 Suporte: <strong>85 233 7913</strong></p>
+                <p>📧 mzlink601@gmail.com</p>
+            </div>
         </div>
 
-        <div class="rodape-links">
-            <a href="sobre.html">Sobre Nós</a>
-            <a href="contacto.html">Contacto</a>
-            <a href="termos.html">Termos e Condições</a>
+        <div class="rodape-copy">
+            © 2026 MZLINK · Feito em Moçambique 🇲🇿
         </div>
+    </footer>
 
-        <div class="rodape-info">
-            <p>💬 Suporte: <strong>85 233 7913</strong></p>
-            <p>📧 mzlink601@gmail.com</p>
-        </div>
-    </div>
-
-    <div class="rodape-copy">
-        © 2026 MZLINK · Feito em Moçambique 🇲🇿
-    </div>
-</footer>
-
-<style>
-  .rodape-mzlink {
-    background: linear-gradient(180deg, #0f1115, #1a1d24);
-    color: #c9ccd3;
-    margin-top: 60px;
-    padding: 32px 20px 20px;
-    border-top: 3px solid #d4af37;
-  }
-  .rodape-conteudo {
-    max-width: 900px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 24px;
-    margin-bottom: 24px;
-  }
-  .rodape-marca strong {
-    display: block;
-    font-size: 1.3rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, #d4af37, #f5d76e);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    letter-spacing: -0.5px;
-    margin-bottom: 6px;
-  }
-  .rodape-marca p { font-size: 0.82rem; color: #8b8f99; margin: 0; }
-  .rodape-links { display: flex; flex-direction: column; gap: 10px; }
-  .rodape-links a {
-    color: #c9ccd3;
-    text-decoration: none;
-    font-size: 0.88rem;
-    font-weight: 600;
-    transition: color 0.2s;
-  }
-  .rodape-links a:hover { color: #d4af37; }
-  .rodape-info p { margin: 0 0 8px; font-size: 0.85rem; }
-  .rodape-info strong { color: #d4af37; font-weight: 800; }
-  .rodape-copy {
-    max-width: 900px;
-    margin: 0 auto;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    text-align: center;
-    font-size: 0.75rem;
-    color: #8b8f99;
-    letter-spacing: 0.3px;
-  }
-  @media (max-width: 640px) {
-    .rodape-conteudo { grid-template-columns: 1fr; text-align: center; }
-    .rodape-links { align-items: center; }
-  }
-      </style>
+    <style>
+      .rodape-mzlink {
+        background: linear-gradient(180deg, #0f1115, #1a1d24);
+        color: #c9ccd3;
+        margin-top: 60px;
+        padding: 32px 20px 20px;
+        border-top: 3px solid #d4af37;
+      }
+      .rodape-conteudo {
+        max-width: 900px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+      .rodape-marca strong {
+        display: block;
+        font-size: 1.3rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #d4af37, #f5d76e);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        letter-spacing: -0.5px;
+        margin-bottom: 6px;
+      }
+      .rodape-marca p { font-size: 0.82rem; color: #8b8f99; margin: 0; }
+      .rodape-links { display: flex; flex-direction: column; gap: 10px; }
+      .rodape-links a {
+        color: #c9ccd3;
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+      .rodape-links a:hover { color: #d4af37; }
+      .rodape-info p { margin: 0 0 8px; font-size: 0.85rem; }
+      .rodape-info strong { color: #d4af37; font-weight: 800; }
+      .rodape-copy {
+        max-width: 900px;
+        margin: 0 auto;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        text-align: center;
+        font-size: 0.75rem;
+        color: #8b8f99;
+        letter-spacing: 0.3px;
+      }
+      @media (max-width: 640px) {
+        .rodape-conteudo { grid-template-columns: 1fr; text-align: center; }
+        .rodape-links { align-items: center; }
+        .hero-moz h1 { font-size: 2rem; }
+      }
+    </style>
 </body>
-</html>
+            </html>
