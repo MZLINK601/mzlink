@@ -24,7 +24,7 @@
     <link rel="apple-touch-icon" href="favicon.png">
 
     <style>
-        /* ===== ESTILOS DO NOVO HERO (100% MOÇAMBICANO COM A PONTE) ===== */
+        /* ===== ESTILOS DO NOVO HERO (100% MOÇAMBICANO) ===== */
         body {
             font-family: 'Inter', system-ui, sans-serif;
             margin: 0;
@@ -111,9 +111,7 @@
             border: 1px solid #f1f5f9;
         }
 
-        .selo-icone {
-            font-size: 1.3rem;
-        }
+        .selo-icone { font-size: 1.3rem; }
 
         .selo-texto {
             font-size: 0.7rem;
@@ -122,6 +120,39 @@
             line-height: 1.2;
             text-align: left;
             text-transform: uppercase;
+        }
+
+        /* ===== FILTROS MODERNOS ===== */
+        .filtros-container {
+            display: flex;
+            gap: 12px;
+            margin: 20px auto;
+            max-width: 90%;
+        }
+
+        .filtro-select {
+            flex: 1;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #0f1115;
+            background: #ffffff;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23009639%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px top 50%;
+            background-size: 12px auto;
+        }
+
+        .filtro-select:hover, .filtro-select:focus {
+            border-color: #009639; /* Verde de Moz */
+            box-shadow: 0 4px 12px rgba(0, 150, 57, 0.15);
         }
 
         /* Ajuste das Categorias */
@@ -145,6 +176,11 @@
             border-color: #009639; /* Verde da bandeira */
             color: #009639;
             background: #f0fdf4;
+        }
+
+        @media (max-width: 600px) {
+            .filtros-container { flex-direction: column; }
+            .hero-moz h1 { font-size: 2rem; }
         }
     </style>
 </head>
@@ -197,6 +233,33 @@
                 </div>
             </div>
         </section>
+
+        <!-- ===== FILTROS ===== -->
+        <div class="filtros-container">
+            <select id="filtroCategoria" class="filtro-select">
+                <option value="">Todas as Categorias</option>
+                <option value="produtos">Produtos</option>
+                <option value="servicos">Serviços</option>
+                <option value="vendedores">Vendedores</option>
+                <option value="profissionais">Profissionais</option>
+                <option value="instituicoes">Instituições</option>
+                <option value="empresas">Empresas</option>
+            </select>
+
+            <select id="filtroProvincia" class="filtro-select">
+                <option value="">Todas as Províncias</option>
+                <option value="Maputo">Maputo</option>
+                <option value="Gaza">Gaza</option>
+                <option value="Inhambane">Inhambane</option>
+                <option value="Sofala">Sofala</option>
+                <option value="Manica">Manica</option>
+                <option value="Tete">Tete</option>
+                <option value="Zambézia">Zambézia</option>
+                <option value="Nampula">Nampula</option>
+                <option value="Niassa">Niassa</option>
+                <option value="Cabo Delgado">Cabo Delgado</option>
+            </select>
+        </div>
 
         <div id="results"></div>
 
@@ -303,8 +366,7 @@
       @media (max-width: 640px) {
         .rodape-conteudo { grid-template-columns: 1fr; text-align: center; }
         .rodape-links { align-items: center; }
-        .hero-moz h1 { font-size: 2rem; }
       }
     </style>
 </body>
-</html>
+    </html>
