@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MZLINK - Encontre, Compare, Resolva</title>
     
-    <!-- Fontes Profissionais -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
-    <!-- Estilos do MZLINK -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="cartoes.css">
     <link rel="stylesheet" href="premium-cards.css">
@@ -24,169 +22,77 @@
     <link rel="apple-touch-icon" href="favicon.png">
 
     <style>
-        /* ===== ESTILOS DO NOVO HERO (100% MOÇAMBICANO) ===== */
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-            margin: 0;
-            background: #f8f9fb;
-        }
-
+        /* ===== ESTILOS DO HERO (PONTE E CORES DE MOÇAMBIQUE) ===== */
+        body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
+        
         .hero-moz {
-            /* Fundo escuro transparente + A nossa foto da Ponte Maputo-Catembe */
             background: linear-gradient(rgba(15, 17, 21, 0.65), rgba(15, 17, 21, 0.85)), url('ponte.jpg') center/cover no-repeat;
-            padding: 60px 20px 50px;
-            text-align: center;
-            border-bottom: 3px solid #d4af37;
+            padding: 60px 20px 50px; text-align: center; border-bottom: 3px solid #d4af37;
         }
-
         .badge-moz {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #E31937; /* Vermelho da bandeira */
-            color: #ffffff;
-            font-weight: 800;
-            font-size: 0.75rem;
-            padding: 8px 16px;
-            border-radius: 999px;
-            margin-bottom: 20px;
-            letter-spacing: 0.5px;
+            display: inline-flex; align-items: center; gap: 6px; background: #E31937;
+            color: #fff; font-weight: 800; font-size: 0.75rem; padding: 8px 16px;
+            border-radius: 999px; margin-bottom: 20px; letter-spacing: 0.5px;
             box-shadow: 0 4px 12px rgba(227, 25, 55, 0.4);
         }
-
         .hero-moz h1 {
-            font-size: 2.4rem;
-            font-weight: 900;
-            color: #ffffff; /* Branco para contrastar com a foto */
-            line-height: 1.1;
-            margin: 0 0 12px 0;
-            letter-spacing: -1px;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.8); /* Sombra forte */
+            font-size: 2.4rem; font-weight: 900; color: #fff; line-height: 1.1;
+            margin: 0 0 12px 0; letter-spacing: -1px; text-shadow: 0 4px 15px rgba(0,0,0,0.8);
         }
-
         .texto-ouro {
             background: linear-gradient(135deg, #f5d76e, #d4af37);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0px 2px 15px rgba(212, 175, 55, 0.6); /* Brilho dourado */
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            text-shadow: 0px 2px 15px rgba(212, 175, 55, 0.6);
         }
-
         .hero-moz p {
-            font-size: 1rem;
-            color: #f8f9fa; /* Branco suave */
-            margin: 0 auto 28px;
-            max-width: 400px;
-            line-height: 1.5;
-            font-weight: 500;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            font-size: 1rem; color: #f8f9fa; margin: 0 auto 28px; max-width: 400px;
+            line-height: 1.5; font-weight: 500; text-shadow: 0 2px 8px rgba(0,0,0,0.8);
         }
-
         .search-box {
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-            background: #fff;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); border-radius: 16px;
+            overflow: hidden; border: 1px solid #e2e8f0; background: #fff;
         }
 
-        /* Selos de Confiança */
-        .selos-confianca {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-
+        /* SELOS */
+        .selos-confianca { display: flex; justify-content: center; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
         .selo-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(5px);
-            padding: 10px 16px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border: 1px solid #f1f5f9;
+            display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px); padding: 10px 16px; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #f1f5f9;
         }
-
         .selo-icone { font-size: 1.3rem; }
-
         .selo-texto {
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: #1e293b;
-            line-height: 1.2;
-            text-align: left;
-            text-transform: uppercase;
+            font-size: 0.7rem; font-weight: 800; color: #1e293b;
+            line-height: 1.2; text-align: left; text-transform: uppercase;
         }
 
-        /* ===== FILTROS MODERNOS ===== */
-        .filtros-container {
-            display: flex;
-            gap: 12px;
-            margin: 20px auto;
-            max-width: 90%;
-        }
-
+        /* FILTROS */
+        .filtros-container { display: flex; gap: 10px; margin: 20px auto; max-width: 90%; flex-wrap: wrap; }
         .filtro-select {
-            flex: 1;
-            padding: 14px 16px;
-            border-radius: 12px;
-            border: 2px solid #e2e8f0;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #0f1115;
-            background: #ffffff;
-            font-family: inherit;
-            outline: none;
-            transition: all 0.2s;
-            cursor: pointer;
-            appearance: none;
+            flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 12px;
+            border: 2px solid #e2e8f0; font-size: 0.85rem; font-weight: 700;
+            color: #0f1115; background-color: #ffffff; font-family: inherit;
+            outline: none; transition: all 0.2s; cursor: pointer; appearance: none;
             background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23009639%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px top 50%;
-            background-size: 12px auto;
+            background-repeat: no-repeat; background-position: right 14px top 50%; background-size: 10px auto;
         }
+        .filtro-select:hover, .filtro-select:focus { border-color: #009639; box-shadow: 0 4px 12px rgba(0, 150, 57, 0.15); }
 
-        .filtro-select:hover, .filtro-select:focus {
-            border-color: #009639; /* Verde de Moz */
-            box-shadow: 0 4px 12px rgba(0, 150, 57, 0.15);
-        }
-
-        /* Ajuste das Categorias */
-        .categorias {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            padding: 0 20px;
-        }
+        .categorias { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 0 20px; }
         .categorias button {
-            background: #ffffff;
-            border: 2px solid #e2e8f0;
-            color: #0f1115;
-            font-weight: 700;
-            padding: 10px 20px;
-            border-radius: 999px;
-            transition: all 0.2s;
+            background: #ffffff; border: 2px solid #e2e8f0; color: #0f1115;
+            font-weight: 700; padding: 10px 20px; border-radius: 999px; transition: all 0.2s;
         }
-        .categorias button:hover {
-            border-color: #009639; /* Verde da bandeira */
-            color: #009639;
-            background: #f0fdf4;
-        }
+        .categorias button:hover { border-color: #009639; color: #009639; background: #f0fdf4; }
 
         @media (max-width: 600px) {
-            .filtros-container { flex-direction: column; }
             .hero-moz h1 { font-size: 2rem; }
+            .filtros-container { flex-direction: column; }
         }
     </style>
 </head>
 
 <body>
-
     <header>
         <div class="header-topo">
             <a href="index.html" class="logo-header">
@@ -197,7 +103,6 @@
                 <span data-badge-premium></span>
             </span>
         </div>
-
         <nav>
             <button onclick="location.href='premium.html'" class="btn-premium">⭐ Premium</button>
             <button onclick="location.href='login.html'">Entrar</button>
@@ -206,7 +111,6 @@
     </header>
 
     <main>
-        <!-- NOVO HERO COM A PONTE MAPUTO-CATEMBE -->
         <section class="hero-moz">
             <div class="badge-moz">🇲🇿 100% Moçambicano</div>
             <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
@@ -217,24 +121,14 @@
                 <button id="searchButton">Pesquisar</button>
             </div>
 
-            <!-- SELOS DE CONFIANÇA -->
             <div class="selos-confianca">
-                <div class="selo-item">
-                    <span class="selo-icone">🛡️</span>
-                    <span class="selo-texto">Empresas<br>Verificadas</span>
-                </div>
-                <div class="selo-item">
-                    <span class="selo-icone">⚡</span>
-                    <span class="selo-texto">Contacto<br>Imediato</span>
-                </div>
-                <div class="selo-item">
-                    <span class="selo-icone">🇲🇿</span>
-                    <span class="selo-texto">Orgulho<br>Nacional</span>
-                </div>
+                <div class="selo-item"><span class="selo-icone">🛡️</span><span class="selo-texto">Empresas<br>Verificadas</span></div>
+                <div class="selo-item"><span class="selo-icone">⚡</span><span class="selo-texto">Contacto<br>Imediato</span></div>
+                <div class="selo-item"><span class="selo-icone">🇲🇿</span><span class="selo-texto">Orgulho<br>Nacional</span></div>
             </div>
         </section>
 
-        <!-- ===== FILTROS ===== -->
+        <!-- FILTROS (Categoria, Província e Ordenação) -->
         <div class="filtros-container">
             <select id="filtroCategoria" class="filtro-select">
                 <option value="">Todas as Categorias</option>
@@ -258,6 +152,12 @@
                 <option value="Nampula">Nampula</option>
                 <option value="Niassa">Niassa</option>
                 <option value="Cabo Delgado">Cabo Delgado</option>
+            </select>
+
+            <select id="filtroOrdenacao" class="filtro-select">
+                <option value="recentes">Mais Recentes</option>
+                <option value="menor_preco">Preço: Menor</option>
+                <option value="maior_preco">Preço: Maior</option>
             </select>
         </div>
 
@@ -289,26 +189,22 @@
     <script src="header.js"></script>
     <script src="verificar-premium.js"></script>
     
-    <!-- ===== RODAPÉ ===== -->
     <footer class="rodape-mzlink">
         <div class="rodape-conteudo">
             <div class="rodape-marca">
                 <strong>MZLINK</strong>
                 <p>Encontre, Compare, Resolva. 🇲🇿</p>
             </div>
-
             <div class="rodape-links">
                 <a href="sobre.html">Sobre Nós</a>
                 <a href="contacto.html">Contacto</a>
                 <a href="termos.html">Termos e Condições</a>
             </div>
-
             <div class="rodape-info">
                 <p>💬 Suporte: <strong>85 233 7913</strong></p>
                 <p>📧 mzlink601@gmail.com</p>
             </div>
         </div>
-
         <div class="rodape-copy">
             © 2026 MZLINK · Feito em Moçambique 🇲🇿
         </div>
@@ -316,52 +212,33 @@
 
     <style>
       .rodape-mzlink {
-        background: linear-gradient(180deg, #0f1115, #1a1d24);
-        color: #c9ccd3;
-        margin-top: 60px;
-        padding: 32px 20px 20px;
-        border-top: 3px solid #d4af37;
+        background: linear-gradient(180deg, #0f1115, #1a1d24); color: #c9ccd3;
+        margin-top: 60px; padding: 32px 20px 20px; border-top: 3px solid #d4af37;
       }
       .rodape-conteudo {
-        max-width: 900px;
-        margin: 0 auto;
-        display: grid;
+        max-width: 900px; margin: 0 auto; display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 24px;
-        margin-bottom: 24px;
+        gap: 24px; margin-bottom: 24px;
       }
       .rodape-marca strong {
-        display: block;
-        font-size: 1.3rem;
-        font-weight: 900;
+        display: block; font-size: 1.3rem; font-weight: 900;
         background: linear-gradient(135deg, #d4af37, #f5d76e);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        letter-spacing: -0.5px;
-        margin-bottom: 6px;
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+        letter-spacing: -0.5px; margin-bottom: 6px;
       }
       .rodape-marca p { font-size: 0.82rem; color: #8b8f99; margin: 0; }
       .rodape-links { display: flex; flex-direction: column; gap: 10px; }
       .rodape-links a {
-        color: #c9ccd3;
-        text-decoration: none;
-        font-size: 0.88rem;
-        font-weight: 600;
-        transition: color 0.2s;
+        color: #c9ccd3; text-decoration: none; font-size: 0.88rem;
+        font-weight: 600; transition: color 0.2s;
       }
       .rodape-links a:hover { color: #d4af37; }
       .rodape-info p { margin: 0 0 8px; font-size: 0.85rem; }
       .rodape-info strong { color: #d4af37; font-weight: 800; }
       .rodape-copy {
-        max-width: 900px;
-        margin: 0 auto;
-        padding-top: 20px;
+        max-width: 900px; margin: 0 auto; padding-top: 20px;
         border-top: 1px solid rgba(255,255,255,0.08);
-        text-align: center;
-        font-size: 0.75rem;
-        color: #8b8f99;
-        letter-spacing: 0.3px;
+        text-align: center; font-size: 0.75rem; color: #8b8f99; letter-spacing: 0.3px;
       }
       @media (max-width: 640px) {
         .rodape-conteudo { grid-template-columns: 1fr; text-align: center; }
@@ -369,4 +246,4 @@
       }
     </style>
 </body>
-    </html>
+</html>
