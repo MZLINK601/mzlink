@@ -490,3 +490,67 @@ header nav::-webkit-scrollbar {
     color: #009639 !important;
     transform: scale(0.98);
 }
+
+
+/* ============================================================
+   MZLINK · ESTILOS DOS FILTROS E AJUSTES MÓVEIS
+   ============================================================ */
+
+/* Container dos filtros */
+.filtros-container {
+    display: flex;
+    gap: 12px;
+    margin: 20px auto;
+    max-width: 90%;
+    position: relative;
+    z-index: 5;
+}
+
+/* Botões de filtro (Select) */
+.filtro-select {
+    flex: 1;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0f1115;
+    background-color: #ffffff;
+    font-family: 'Inter', system-ui, sans-serif;
+    outline: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    /* Ícone da seta verde */
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23009639%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px top 50%;
+    background-size: 12px auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+/* Efeito ao passar o dedo/rato */
+.filtro-select:hover, .filtro-select:focus {
+    border-color: #009639;
+    box-shadow: 0 4px 16px rgba(0, 150, 57, 0.15);
+}
+
+/* ===== AJUSTES PARA TELEMÓVEL (Ecrãs pequenos) ===== */
+@media (max-width: 600px) {
+    .filtros-container {
+        flex-direction: column; /* Fica um por cima do outro */
+        gap: 10px;
+    }
+    
+    .filtro-select {
+        width: 100%;
+    }
+
+    /* Títulos das secções mais pequenos no telemóvel */
+    h2 {
+        font-size: 1.3rem;
+        text-align: center;
+        margin-top: 20px;
+    }
+}
