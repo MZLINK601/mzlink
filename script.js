@@ -95,7 +95,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const media = Number(item.media_estrelas) || 0;
       const total = Number(item.total_avaliacoes) || 0;
 
-      // Mensagem para partilhar no WhatsApp
       const msgPartilha = encodeURIComponent(
         "Olha este anúncio no MZLINK: " + item.nome + " (" + item.tipo + " em " + item.local + "). Fala com ele aqui: https://mzlink601.github.io/mzlink/"
       );
@@ -122,7 +121,6 @@ document.addEventListener("DOMContentLoaded", function () {
           '" data-anuncio-nome="' + limpar(item.nome) + '">⭐ Avaliar</button>';
       }
 
-      // ⭐ FOTO PRINCIPAL (clicável)
       const fotos = item.fotos || [];
       let fotoHTML = "";
       if (fotos.length > 0) {
@@ -166,7 +164,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     results.innerHTML = html;
 
-    // Ligar botões "Avaliar"
     results.querySelectorAll(".btn-avaliar").forEach(function (btn) {
       btn.addEventListener("click", function () {
         const id = btn.getAttribute("data-anuncio-id");
@@ -177,7 +174,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    // ⭐ Tornar fotos clicáveis (PC + TELEMÓVEL)
     results.querySelectorAll(".foto-principal-card[data-fotos]").forEach(function (el) {
       el.onclick = function () {
         try {
@@ -227,6 +223,35 @@ document.addEventListener("DOMContentLoaded", function () {
       mostrar(filtrados, "Categoria: " + botao.textContent);
     });
   });
+
+  // ===== LÓGICA DOS FILTROS NOVOS =====
+  const filtroCategoria = document.getElementById("filtroCategoria");
+  const filtroProvincia = document.getElementById("filtroProvincia");
+
+  if (filtroCategoria && filtroProvincia) {
+    function aplicarFiltros() {
+      const catSelecionada = filtroCategoria.value;
+      const provSelecionada = filtroProvincia.value;
+      let listaFiltrada = dados;
+
+      if (catSelecionada) {
+        listaFiltrada = listaFiltrada.filter(function(item) {
+          return item.categoria === catSelecionada;
+        });
+      }
+
+      if (provSelecionada) {
+        listaFiltrada = listaFiltrada.filter(function(item) {
+          return normalizar(item.local).includes(normalizar(provSelecionada));
+        });
+      }
+
+      mostrar(listaFiltrada, "Resultados Filtrados");
+    }
+
+    filtroCategoria.addEventListener("change", aplicarFiltros);
+    filtroProvincia.addEventListener("change", aplicarFiltros);
+  }
 
   // Iniciar
   (async function init() {
