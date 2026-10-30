@@ -30,17 +30,42 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Função que ordena por Preço ou Data (Mais Recentes)
+  function ordenarLista(lista) {
+    const filtroOrdenacao = document.getElementById("filtroOrdenacao");
+    const tipoOrdem = filtroOrdenacao ? filtroOrdenacao.value : "recentes";
+    
+    let listaOrdenada = lista.slice();
+
+    if (tipoOrdem === "menor_preco") {
+      listaOrdenada.sort((a, b) => {
+        const precoA = parseFloat(a.preco) || 999999999; // Preço a combinar vai para o fim
+        const precoB = parseFloat(b.preco) || 999999999;
+        return precoA - precoB;
+      });
+    } else if (tipoOrdem === "maior_preco") {
+      listaOrdenada.sort((a, b) => {
+        const precoA = parseFloat(a.preco) || 0;
+        const precoB = parseFloat(b.preco) || 0;
+        return precoB - precoA;
+      });
+    } else {
+      // "recentes" - usa a data de criação
+      listaOrdenada.sort((a, b) => {
+        return new Date(b.criado_em || 0) - new Date(a.criado_em || 0);
+      });
+    }
+
+    return listaOrdenada;
+  }
+
   function gerarEstrelasHTML(media) {
     const num = Number(media) || 0;
     let html = "";
     for (let i = 1; i <= 5; i++) {
-      if (num >= i) {
-        html += "★";
-      } else if (num >= i - 0.5) {
-        html += "½";
-      } else {
-        html += "☆";
-      }
+      if (num >= i) { html += "★"; } 
+      else if (num >= i - 0.5) { html += "½"; } 
+      else { html += "☆"; }
     }
     return html;
   }
@@ -70,6 +95,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (!resposta.ok) throw new Error("Erro " + resposta.status);
       dados = await resposta.json();
+      
+      // Mostrar logo os anúncios ao carregar a página
+      mostrar(dados, "Anúncios Recentes");
+
     } catch (erro) {
       console.error("Nao foi possivel carregar os dados:", erro);
       results.innerHTML = "<p style='text-align:center'>Não foi possível carregar os dados. Verifique a internet e atualize a página.</p>";
@@ -78,12 +107,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function mostrar(lista, titulo) {
     if (lista.length === 0) {
-      results.innerHTML =
-        '<h3 class="results-title">Nenhum resultado encontrado.</h3>' +
-        '<p style="text-align:center">Tente pesquisar outro produto ou serviço.</p>';
+      results.innerHTML = '<h3 class="results-title">Nenhum resultado encontrado.</h3><p style="text-align:center">Tente pesquisar outro produto ou serviço.</p>';
       return;
     }
 
+    // 1. Aplica a ordenação escolhida (Preço ou Recentes)
+    lista = ordenarLista(lista);
+    // 2. Garante que os Premium ficam sempre no topo
     lista = ordenarPremiumPrimeiro(lista);
 
     let html = '<h3 class="results-title">' + limpar(titulo) + '</h3>';
@@ -99,44 +129,27 @@ document.addEventListener("DOMContentLoaded", function () {
         "Olha este anúncio no MZLINK: " + item.nome + " (" + item.tipo + " em " + item.local + "). Fala com ele aqui: https://mzlink601.github.io/mzlink/"
       );
 
-      const badgePremium = ehPremium
-        ? '<span class="badge-premium-card">👑 PREMIUM</span>'
-        : '';
+      const badgePremium = ehPremium ? '<span class="badge-premium-card">👑 PREMIUM</span>' : '';
 
       let avaliacaoHTML = "";
       if (total > 0) {
-        avaliacaoHTML =
-          '<div class="avaliacao-info">' +
-            '<span class="estrelas-mini">' + gerarEstrelasHTML(media) + '</span>' +
-            '<span class="media">' + media.toFixed(1) + '</span>' +
-            '<span class="total">(' + total + ' avalia' + (total === 1 ? 'ção' : 'ções') + ')</span>' +
-          '</div>';
+        avaliacaoHTML = '<div class="avaliacao-info"><span class="estrelas-mini">' + gerarEstrelasHTML(media) + '</span><span class="media">' + media.toFixed(1) + '</span><span class="total">(' + total + ' avalia' + (total === 1 ? 'ção' : 'ções') + ')</span></div>';
       } else {
         avaliacaoHTML = '<div class="avaliacao-info sem-avaliacoes">Ainda sem avaliações</div>';
       }
 
       let btnAvaliar = "";
       if (userAtual && String(userAtual.id) !== String(item.user_id)) {
-        btnAvaliar = '<button class="btn-avaliar" data-anuncio-id="' + item.id +
-          '" data-anuncio-nome="' + limpar(item.nome) + '">⭐ Avaliar</button>';
+        btnAvaliar = '<button class="btn-avaliar" data-anuncio-id="' + item.id + '" data-anuncio-nome="' + limpar(item.nome) + '">⭐ Avaliar</button>';
       }
 
       const fotos = item.fotos || [];
       let fotoHTML = "";
       if (fotos.length > 0) {
         const fotosJSON = encodeURIComponent(JSON.stringify(fotos));
-        fotoHTML =
-          '<div class="foto-principal-card" data-fotos="' + fotosJSON + '" data-nome="' + limpar(item.nome) + '">' +
-            '<img src="' + fotos[0] + '" alt="' + limpar(item.nome) + '" loading="lazy">' +
-            (fotos.length > 1 ? '<span class="contador-fotos">📸 ' + fotos.length + '</span>' : '') +
-            '<span class="icone-zoom">🔍 Ver fotos</span>' +
-          '</div>';
+        fotoHTML = '<div class="foto-principal-card" data-fotos="' + fotosJSON + '" data-nome="' + limpar(item.nome) + '"><img src="' + fotos[0] + '" alt="' + limpar(item.nome) + '" loading="lazy">' + (fotos.length > 1 ? '<span class="contador-fotos">📸 ' + fotos.length + '</span>' : '') + '<span class="icone-zoom">🔍 Ver fotos</span></div>';
       } else {
-        fotoHTML =
-          '<div class="foto-principal-card sem-foto">' +
-            '<span>📸</span>' +
-            '<small>Sem fotos</small>' +
-          '</div>';
+        fotoHTML = '<div class="foto-principal-card sem-foto"><span>📸</span><small>Sem fotos</small></div>';
       }
 
       html +=
@@ -168,9 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.addEventListener("click", function () {
         const id = btn.getAttribute("data-anuncio-id");
         const nome = btn.getAttribute("data-anuncio-nome");
-        if (window.MZAvaliacao) {
-          window.MZAvaliacao.abrir(id, nome);
-        }
+        if (window.MZAvaliacao) window.MZAvaliacao.abrir(id, nome);
       });
     });
 
@@ -179,37 +190,25 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
           const fotosData = JSON.parse(decodeURIComponent(el.getAttribute("data-fotos")));
           const nome = el.getAttribute("data-nome") || "";
-          if (window.MZGaleria) {
-            window.MZGaleria.abrir(fotosData, nome);
-          }
-        } catch (err) {
-          console.warn("Erro ao abrir galeria:", err);
-        }
+          if (window.MZGaleria) window.MZGaleria.abrir(fotosData, nome);
+        } catch (err) { console.warn("Erro ao abrir galeria:", err); }
       };
     });
   }
 
   function pesquisar() {
     const termo = normalizar(searchInput.value.trim());
-
     if (termo === "") {
       results.innerHTML = "<p style='text-align:center'>Digite o que você procura.</p>";
       return;
     }
-
     const encontrados = dados.filter(function (item) {
-      return (
-        normalizar(item.nome).includes(termo) ||
-        normalizar(item.tipo).includes(termo) ||
-        normalizar(item.local).includes(termo)
-      );
+      return normalizar(item.nome).includes(termo) || normalizar(item.tipo).includes(termo) || normalizar(item.local).includes(termo);
     });
-
     mostrar(encontrados, "Resultados encontrados");
   }
 
   searchButton.addEventListener("click", pesquisar);
-
   searchInput.addEventListener("keydown", function (e) {
     if (e.key === "Enter") pesquisar();
   });
@@ -217,40 +216,49 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-categoria]").forEach(function (botao) {
     botao.addEventListener("click", function () {
       const cat = botao.dataset.categoria;
-      const filtrados = dados.filter(function (item) {
-        return item.categoria === cat;
-      });
+      const filtrados = dados.filter(function (item) { return item.categoria === cat; });
       mostrar(filtrados, "Categoria: " + botao.textContent);
     });
   });
 
-  // ===== LÓGICA DOS FILTROS NOVOS =====
+  // ===== LÓGICA DOS FILTROS (Categoria, Província e Ordenação) =====
   const filtroCategoria = document.getElementById("filtroCategoria");
   const filtroProvincia = document.getElementById("filtroProvincia");
+  const filtroOrdenacao = document.getElementById("filtroOrdenacao");
 
-  if (filtroCategoria && filtroProvincia) {
-    function aplicarFiltros() {
-      const catSelecionada = filtroCategoria.value;
-      const provSelecionada = filtroProvincia.value;
-      let listaFiltrada = dados;
+  function aplicarFiltros() {
+    const catSelecionada = filtroCategoria ? filtroCategoria.value : "";
+    const provSelecionada = filtroProvincia ? filtroProvincia.value : "";
+    
+    let listaFiltrada = dados;
 
-      if (catSelecionada) {
-        listaFiltrada = listaFiltrada.filter(function(item) {
-          return item.categoria === catSelecionada;
-        });
-      }
-
-      if (provSelecionada) {
-        listaFiltrada = listaFiltrada.filter(function(item) {
-          return normalizar(item.local).includes(normalizar(provSelecionada));
-        });
-      }
-
-      mostrar(listaFiltrada, "Resultados Filtrados");
+    if (catSelecionada) {
+      listaFiltrada = listaFiltrada.filter(item => item.categoria === catSelecionada);
     }
 
-    filtroCategoria.addEventListener("change", aplicarFiltros);
-    filtroProvincia.addEventListener("change", aplicarFiltros);
+    if (provSelecionada) {
+      listaFiltrada = listaFiltrada.filter(item => normalizar(item.local).includes(normalizar(provSelecionada)));
+    }
+
+    mostrar(listaFiltrada, "Resultados Filtrados");
+  }
+
+  if (filtroCategoria) filtroCategoria.addEventListener("change", aplicarFiltros);
+  if (filtroProvincia) filtroProvincia.addEventListener("change", aplicarFiltros);
+  
+  // Se mudar a ordenação, re-aplica a ordenação na lista que já está visível
+  if (filtroOrdenacao) {
+    filtroOrdenacao.addEventListener("change", function() {
+      // Pega na lista que está filtrada no momento
+      const catSelecionada = filtroCategoria ? filtroCategoria.value : "";
+      const provSelecionada = filtroProvincia ? filtroProvincia.value : "";
+      let listaFiltrada = dados;
+
+      if (catSelecionada) listaFiltrada = listaFiltrada.filter(item => item.categoria === catSelecionada);
+      if (provSelecionada) listaFiltrada = listaFiltrada.filter(item => normalizar(item.local).includes(normalizar(provSelecionada)));
+
+      mostrar(listaFiltrada, "Resultados Ordenados");
+    });
   }
 
   // Iniciar
