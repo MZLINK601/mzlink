@@ -25,7 +25,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
-    <!-- Estilos do MZLINK -->
+    <!-- Estilos do MZLINK (Ficheiros Externos) -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="cartoes.css">
     <link rel="stylesheet" href="premium-cards.css">
@@ -39,54 +39,113 @@
     <link rel="apple-touch-icon" href="favicon.png">
 
     <style>
-        /* ===== ESTILOS DO HERO (PONTE E CORES DE MOÇAMBIQUE) ===== */
+        /* ===== ESTILOS DO HERO VIP (PONTE E CORES DE MOÇAMBIQUE) ===== */
         body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
         
+        /* O CARTÃO VIP DA PONTE */
         .hero-moz {
-            background: linear-gradient(rgba(15, 17, 21, 0.65), rgba(15, 17, 21, 0.85)), url('ponte.jpg') center/cover no-repeat;
-            padding: 60px 20px 50px; text-align: center; border-bottom: 3px solid #d4af37;
+            background: linear-gradient(rgba(15, 17, 21, 0.7), rgba(15, 17, 21, 0.9)), url('ponte.jpg') center/cover no-repeat !important;
+            padding: 50px 20px 40px !important; 
+            text-align: center; 
+            
+            width: 92% !important; 
+            max-width: 1100px !important;
+            margin: 20px auto !important; 
+            border-radius: 12px !important; 
+            border: 2px solid #d4af37 !important; /* Borda Dourada */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important; /* Sombra Profunda */
+            position: relative;
+            overflow: hidden;
         }
+
+        /* Brilho interno na moldura */
+        .hero-moz::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            pointer-events: none;
+        }
+
         .badge-moz {
             display: inline-flex; align-items: center; gap: 6px; background: #E31937;
             color: #fff; font-weight: 800; font-size: 0.75rem; padding: 8px 16px;
             border-radius: 999px; margin-bottom: 20px; letter-spacing: 0.5px;
             box-shadow: 0 4px 12px rgba(227, 25, 55, 0.4);
+            position: relative; z-index: 2;
         }
+        
         .hero-moz h1 {
-            font-size: 2.4rem; font-weight: 900; color: #fff; line-height: 1.1;
+            font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1.1;
             margin: 0 0 12px 0; letter-spacing: -1px; text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            position: relative; z-index: 2;
         }
+        
         .texto-ouro {
             background: linear-gradient(135deg, #f5d76e, #d4af37);
             -webkit-background-clip: text; background-clip: text; color: transparent;
             text-shadow: 0px 2px 15px rgba(212, 175, 55, 0.6);
         }
+        
         .hero-moz p {
-            font-size: 1rem; color: #f8f9fa; margin: 0 auto 28px; max-width: 400px;
+            font-size: 0.95rem; color: #f8f9fa; margin: 0 auto 25px; max-width: 400px;
             line-height: 1.5; font-weight: 500; text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-        }
-        .search-box {
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); border-radius: 16px;
-            overflow: hidden; border: 1px solid #e2e8f0; background: #fff;
+            position: relative; z-index: 2;
         }
 
-        /* SELOS */
-        .selos-confianca { display: flex; justify-content: center; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
-        .selo-item {
-            display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(5px); padding: 10px 16px; border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #f1f5f9;
+        /* BARRA DE PESQUISA (ESTILO APP) */
+        .search-box {
+            display: flex !important;
+            max-width: 500px !important;
+            margin: 0 auto !important;
+            border-radius: 8px !important; 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important; 
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            background: #fff !important;
+            overflow: hidden !important;
+            position: relative; z-index: 2;
         }
-        .selo-icone { font-size: 1.3rem; }
+        
+        .search-box input {
+            flex: 1 !important;
+            border: none !important;
+            padding: 16px 20px !important;
+            font-size: 0.95rem !important;
+            outline: none !important;
+            background: transparent !important;
+            color: #0f1115 !important;
+        }
+        
+        .search-box button {
+            background: #009639 !important; /* Verde MZ */
+            color: white !important;
+            border: none !important;
+            padding: 0 20px !important;
+            font-weight: 800 !important;
+            font-size: 0.9rem !important;
+            cursor: pointer !important;
+            transition: background 0.2s !important;
+        }
+        .search-box button:hover { background: #007a2e !important; }
+
+        /* SELOS */
+        .selos-confianca { display: flex; justify-content: center; gap: 10px; margin-top: 25px; flex-wrap: wrap; position: relative; z-index: 2; }
+        .selo-item {
+            display: flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.95);
+            padding: 8px 12px; border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: none;
+        }
+        .selo-icone { font-size: 1.1rem; }
         .selo-texto {
-            font-size: 0.7rem; font-weight: 800; color: #1e293b;
-            line-height: 1.2; text-align: left; text-transform: uppercase;
+            font-size: 0.65rem; font-weight: 800; color: #1e293b;
+            line-height: 1.1; text-align: left; text-transform: uppercase;
         }
 
         /* FILTROS */
         .filtros-container { display: flex; gap: 10px; margin: 20px auto; max-width: 90%; flex-wrap: wrap; }
         .filtro-select {
-            flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 12px;
+            flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 8px;
             border: 2px solid #e2e8f0; font-size: 0.85rem; font-weight: 700;
             color: #0f1115; background-color: #ffffff; font-family: inherit;
             outline: none; transition: all 0.2s; cursor: pointer; appearance: none;
@@ -103,8 +162,10 @@
         .categorias button:hover { border-color: #009639; color: #009639; background: #f0fdf4; }
 
         @media (max-width: 600px) {
-            .hero-moz h1 { font-size: 2rem; }
+            .hero-moz h1 { font-size: 1.9rem; }
             .filtros-container { flex-direction: column; }
+            .search-box { flex-direction: column; border-radius: 12px !important; }
+            .search-box button { padding: 14px !important; }
         }
     </style>
 </head>
@@ -128,6 +189,7 @@
     </header>
 
     <main>
+        <!-- HERO COM MOLDURA VIP -->
         <section class="hero-moz">
             <div class="badge-moz">🇲🇿 100% Moçambicano</div>
             <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
@@ -178,6 +240,7 @@
             </select>
         </div>
 
+        <!-- ONDE OS ANÚNCIOS APARECEM -->
         <div id="results"></div>
 
         <h2>Categorias</h2>
@@ -185,7 +248,7 @@
             <button data-categoria="produtos">Produtos</button>
             <button data-categoria="servicos">Serviços</button>
             <button data-categoria="vendedores">Vendedores</button>
-            <button data-categoria="profissionais">profissionais</button>
+            <button data-categoria="profissionais">Profissionais</button>
             <button data-categoria="instituicoes">Instituições</button>
             <button data-categoria="empresas">Empresas</button>
         </div>
@@ -197,6 +260,7 @@
         </div>
     </main>
 
+    <!-- SCRIPTS DO PROJETO -->
     <script src="script.js"></script>
     <script src="sessao.js" charset="UTF-8"></script>
     <script src="badge-premium.js"></script>
@@ -206,6 +270,7 @@
     <script src="header.js"></script>
     <script src="verificar-premium.js"></script>
     
+    <!-- FOOTER -->
     <footer class="rodape-mzlink">
         <div class="rodape-conteudo">
             <div class="rodape-marca">
@@ -227,6 +292,7 @@
         </div>
     </footer>
 
+    <!-- ESTILO DO FOOTER -->
     <style>
       .rodape-mzlink {
         background: linear-gradient(180deg, #0f1115, #1a1d24); color: #c9ccd3;
@@ -263,4 +329,4 @@
       }
     </style>
 </body>
-                                                             </html>
+    </html>
