@@ -161,11 +161,30 @@
         }
         .categorias button:hover { border-color: #009639; color: #009639; background: #f0fdf4; }
 
+        /* ===== AJUSTES PARA TELEMÓVEL ===== */
         @media (max-width: 600px) {
             .hero-moz h1 { font-size: 1.9rem; }
             .filtros-container { flex-direction: column; }
-            .search-box { flex-direction: column; border-radius: 12px !important; }
-            .search-box button { padding: 14px !important; }
+            
+            /* Barra de pesquisa lado a lado no telemóvel */
+            .search-box { 
+                flex-direction: row !important; 
+                border-radius: 8px !important; 
+                width: 100% !important;
+            }
+            .search-box input { 
+                padding: 12px 15px !important; 
+                font-size: 0.85rem !important;
+            }
+            .search-box button { 
+                padding: 0 15px !important; 
+                font-size: 0.85rem !important;
+            }
+
+            /* Selos mais compactos */
+            .selos-confianca { gap: 5px !important; margin-top: 15px !important; }
+            .selo-item { padding: 6px 10px !important; }
+            .selo-texto { font-size: 0.6rem !important; }
         }
     </style>
 </head>
@@ -329,4 +348,4 @@
       }
     </style>
 </body>
-    </html>
+        </html>
