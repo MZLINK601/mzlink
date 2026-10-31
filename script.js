@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Função que ordena por Preço ou Data (Mais Recentes)
   function ordenarLista(lista) {
     const filtroOrdenacao = document.getElementById("filtroOrdenacao");
     const tipoOrdem = filtroOrdenacao ? filtroOrdenacao.value : "recentes";
@@ -39,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (tipoOrdem === "menor_preco") {
       listaOrdenada.sort((a, b) => {
-        const precoA = parseFloat(a.preco) || 999999999; // Preço a combinar vai para o fim
+        const precoA = parseFloat(a.preco) || 999999999;
         const precoB = parseFloat(b.preco) || 999999999;
         return precoA - precoB;
       });
@@ -50,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return precoB - precoA;
       });
     } else {
-      // "recentes" - usa a data de criação
       listaOrdenada.sort((a, b) => {
         return new Date(b.criado_em || 0) - new Date(a.criado_em || 0);
       });
@@ -97,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
       dados = await resposta.json();
       
       // Mostrar logo os anúncios ao carregar a página
-      mostrar(dados, "Anúncios Recentes");
+      filtrarEExibir();
 
     } catch (erro) {
       console.error("Nao foi possivel carregar os dados:", erro);
@@ -107,13 +105,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function mostrar(lista, titulo) {
     if (lista.length === 0) {
-      results.innerHTML = '<h3 class="results-title">Nenhum resultado encontrado.</h3><p style="text-align:center">Tente pesquisar outro produto ou serviço.</p>';
+      results.innerHTML = '<h3 class="results-title">Nenhum resultado encontrado.</h3><p style="text-align:center">Tente pesquisar outro produto ou serviço, ou limpar os filtros.</p>';
       return;
     }
 
-    // 1. Aplica a ordenação escolhida (Preço ou Recentes)
     lista = ordenarLista(lista);
-    // 2. Garante que os Premium ficam sempre no topo
     lista = ordenarPremiumPrimeiro(lista);
 
     let html = '<h3 class="results-title">' + limpar(titulo) + '</h3>';
@@ -196,72 +192,74 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function pesquisar() {
-    const termo = normalizar(searchInput.value.trim());
-    if (termo === "") {
-      results.innerHTML = "<p style='text-align:center'>Digite o que você procura.</p>";
-      return;
-    }
-    const encontrados = dados.filter(function (item) {
-      return normalizar(item.nome).includes(termo) || normalizar(item.tipo).includes(termo) || normalizar(item.local).includes(termo);
-    });
-    mostrar(encontrados, "Resultados encontrados");
-  }
-
-  searchButton.addEventListener("click", pesquisar);
-  searchInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") pesquisar();
-  });
-
-  document.querySelectorAll("[data-categoria]").forEach(function (botao) {
-    botao.addEventListener("click", function () {
-      const cat = botao.dataset.categoria;
-      const filtrados = dados.filter(function (item) { return item.categoria === cat; });
-      mostrar(filtrados, "Categoria: " + botao.textContent);
-    });
-  });
-
-  // ===== LÓGICA DOS FILTROS (Categoria, Província e Ordenação) =====
-  const filtroCategoria = document.getElementById("filtroCategoria");
-  const filtroProvincia = document.getElementById("filtroProvincia");
-  const filtroOrdenacao = document.getElementById("filtroOrdenacao");
-
-  function aplicarFiltros() {
-    const catSelecionada = filtroCategoria ? filtroCategoria.value : "";
-    const provSelecionada = filtroProvincia ? filtroProvincia.value : "";
+  // ===== A MÁGICA ACONTECE AQUI: CENTRAL DE FILTROS =====
+  function filtrarEExibir() {
+    const termo = searchInput ? normalizar(searchInput.value.trim()) : "";
+    const catSelecionada = document.getElementById("filtroCategoria") ? document.getElementById("filtroCategoria").value : "";
+    const provSelecionada = document.getElementById("filtroProvincia") ? document.getElementById("filtroProvincia").value : "";
     
     let listaFiltrada = dados;
 
+    // 1. Filtro de Categoria
     if (catSelecionada) {
       listaFiltrada = listaFiltrada.filter(item => item.categoria === catSelecionada);
     }
 
+    // 2. Filtro de Província
     if (provSelecionada) {
       listaFiltrada = listaFiltrada.filter(item => normalizar(item.local).includes(normalizar(provSelecionada)));
     }
 
-    mostrar(listaFiltrada, "Resultados Filtrados");
+    // 3. Filtro de Pesquisa de Texto (nome, tipo, local ou categoria)
+    if (termo) {
+      listaFiltrada = listaFiltrada.filter(item => 
+        normalizar(item.nome).includes(termo) || 
+        normalizar(item.tipo).includes(termo) || 
+        normalizar(item.local).includes(termo) ||
+        normalizar(item.categoria || "").includes(termo)
+      );
+    }
+
+    // Definir o título dinâmico
+    let titulo = "Anúncios Recentes";
+    if (termo || catSelecionada || provSelecionada) {
+      titulo = "Resultados da busca";
+    }
+
+    mostrar(listaFiltrada, titulo);
   }
 
-  if (filtroCategoria) filtroCategoria.addEventListener("change", aplicarFiltros);
-  if (filtroProvincia) filtroProvincia.addEventListener("change", aplicarFiltros);
-  
-  // Se mudar a ordenação, re-aplica a ordenação na lista que já está visível
-  if (filtroOrdenacao) {
-    filtroOrdenacao.addEventListener("change", function() {
-      // Pega na lista que está filtrada no momento
-      const catSelecionada = filtroCategoria ? filtroCategoria.value : "";
-      const provSelecionada = filtroProvincia ? filtroProvincia.value : "";
-      let listaFiltrada = dados;
-
-      if (catSelecionada) listaFiltrada = listaFiltrada.filter(item => item.categoria === catSelecionada);
-      if (provSelecionada) listaFiltrada = listaFiltrada.filter(item => normalizar(item.local).includes(normalizar(provSelecionada)));
-
-      mostrar(listaFiltrada, "Resultados Ordenados");
+  // Eventos de clique e teclado
+  if (searchButton) searchButton.addEventListener("click", filtrarEExibir);
+  if (searchInput) {
+    searchInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault(); // Evita recarregar a página
+        filtrarEExibir();
+      }
     });
   }
 
-  // Iniciar
+  // Sincronizar os botões de categoria (lá em baixo) com o menu dropdown (lá em cima)
+  document.querySelectorAll("[data-categoria]").forEach(function (botao) {
+    botao.addEventListener("click", function () {
+      const cat = botao.dataset.categoria;
+      const dropdown = document.getElementById("filtroCategoria");
+      if (dropdown) dropdown.value = cat; // Atualiza o dropdown
+      filtrarEExibir(); // Aplica o filtro
+    });
+  });
+
+  // Eventos dos Dropdowns (Mudar Categoria, Província ou Ordenação)
+  const filtroCategoria = document.getElementById("filtroCategoria");
+  const filtroProvincia = document.getElementById("filtroProvincia");
+  const filtroOrdenacao = document.getElementById("filtroOrdenacao");
+
+  if (filtroCategoria) filtroCategoria.addEventListener("change", filtrarEExibir);
+  if (filtroProvincia) filtroProvincia.addEventListener("change", filtrarEExibir);
+  if (filtroOrdenacao) filtroOrdenacao.addEventListener("change", filtrarEExibir);
+
+  // Iniciar a aplicação
   (async function init() {
     await carregarUserLogado();
     await carregarDados();
