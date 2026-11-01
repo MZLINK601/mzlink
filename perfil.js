@@ -49,9 +49,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         conteudo.innerHTML = `<div class="aviso erro visivel" style="margin:20px;">Erro de ligação. Tenta novamente.</div>`;
     }
 
-    // ==========================================
-    // ECRÃ DE BOAS-VINDAS
-    // ==========================================
     function renderizarOnboarding() {
         let nomeAuth = userMeta.nome || userMeta.name || user.email.split("@")[0];
         let telAuth = String(userMeta.whatsapp || "").replace(/^258/, "");
@@ -171,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 }
 
-                // DADOS DA LOJA (A linha 'descricao' foi removida para não dar erro)
+                // O PAYLOAD FINAL (Sem 'descricao' e com 'preco' numérico nulo)
                 const dadosLoja = {
                     user_id: user.id,
                     nome: nome,
@@ -180,7 +177,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     plano: "basico",
                     categoria: "loja",
                     tipo: "Perfil da Loja",
-                    preco: "A combinar",
+                    preco: null, 
                     fotos: []
                 };
 
@@ -193,7 +190,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (res.ok) {
                     msg.style.color = "green";
                     msg.textContent = "Loja criada com sucesso! A carregar...";
-                    setTimeout(() => window.location.href = "perfil.html?v=3000", 1000);
+                    setTimeout(() => window.location.href = "perfil.html?v=4000", 1000);
                 } else {
                     const erro = await res.json();
                     msg.textContent = "Erro: " + (erro.message || "Tenta novamente.");
@@ -208,9 +205,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
-    // ==========================================
-    // ECRÃ NORMAL DO PERFIL
-    // ==========================================
     function renderizarPerfil() {
         const nome = perfilDB.nome;
         const telefone = String(perfilDB.whatsapp).replace(/^258/, "");
@@ -275,7 +269,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 });
 
                 userMeta = novoMeta;
-                window.location.href = "perfil.html?v=3001";
+                window.location.href = "perfil.html?v=4001";
             } catch (err) { alert("Erro de ligação."); }
         });
     }
@@ -323,7 +317,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 sessao.name = dados.nome;
                 localStorage.setItem(CHAVE, JSON.stringify(sessao));
             }
-            window.location.href = "perfil.html?v=3002";
+            window.location.href = "perfil.html?v=4002";
         } catch (e) { alert("Erro ao guardar. Tenta de novo."); }
     }
 });
