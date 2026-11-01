@@ -86,11 +86,13 @@
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
 
+    /* CORREÇÃO DO LAYOUT DO FUNDO DO CARTÃO */
     .card-base {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       z-index: 2;
+      width: 100%;
     }
 
     .chip-ouro {
@@ -103,6 +105,14 @@
     .chip-linha-v { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: rgba(0,0,0,0.3); transform: translateX(-50%); }
     .chip-centro { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 15px; border: 2px solid rgba(0,0,0,0.3); border-radius: 4px; }
 
+    /* Agrupamento da data e status para não sobrepor */
+    .card-info-direita {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
     .card-status {
       font-family: 'Inter', sans-serif;
       font-size: 0.65rem; font-weight: 800; color: #d4af37;
@@ -111,7 +121,6 @@
 
     .data-expiracao {
       display: flex; flex-direction: column; align-items: flex-end;
-      position: absolute; bottom: 25px; right: 30px;
     }
     .data-expiracao span {
       font-family: 'Inter', sans-serif; font-size: 0.55rem;
@@ -155,11 +164,16 @@
           <div class="chip-linha-v"></div>
           <div class="chip-centro"></div>
         </div>
-        <div class="data-expiracao">
-          <span>VÁLIDO ATÉ</span>
-          <strong id="dataExpiracaoCard">--/--/----</strong>
+        
+        <!-- INFO DIREITA CORRIGIDA -->
+        <div class="card-info-direita">
+          <div class="data-expiracao">
+            <span>VÁLIDO ATÉ</span>
+            <strong id="dataExpiracaoCard">--/--/----</strong>
+          </div>
+          <span class="card-status">MEMBRO 🇲🇿</span>
         </div>
-        <span class="card-status">MEMBRO 🇲🇿</span>
+
       </div>
     </div>
   </section>
@@ -314,30 +328,31 @@
   </footer>
 
   <script src="premium.js"></script>
+  <script src="sessao.js" charset="UTF-8"></script>
   
-  <!-- ===== SCRIPT PARA PUXAR A DATA DO SUPABASE ===== -->
+  <!-- ===== SCRIPT CORRIGIDO PARA PUXAR A DATA ===== -->
   <script>
     document.addEventListener("DOMContentLoaded", async function() {
-      const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
-      const SUPABASE_KEY = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
       const dataElement = document.getElementById("dataExpiracaoCard");
 
       try {
-        // 1. Verifica se o utilizador está logado
+        // 1. Usa as variáveis globais MZ do teu projeto (que já sabemos que funcionam)
         if (typeof MZ === "undefined" || !MZ.sessaoValida) return;
+        
         const sessao = await MZ.sessaoValida();
         if (!sessao || !sessao.access_token) return;
 
         // 2. Vai buscar os dados do utilizador logado
-        const resUser = await fetch(SUPABASE_URL + "/auth/v1/user", {
-          headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
+        const resUser = await fetch(MZ.url + "/auth/v1/user", {
+          headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
         if (!resUser.ok) return;
         const user = await resUser.json();
 
-        // 3. Procura o perfil do utilizador na tabela 'profissionais' (coluna premium_ate)
-        const resPerfil = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + user.id + "&select=premium_ate", {
-          headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
+        // 3. Procura o perfil do utilizador na tabela 'profissionais'
+        // Usamos encodeURIComponent para garantir que o ID não quebra a URL
+        const resPerfil = await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + encodeURIComponent(user.id) + "&select=premium_ate", {
+          headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
         
         const dadosPerfil = await resPerfil.json();
@@ -355,7 +370,7 @@
             dataElement.innerText = `${dia}/${mes}/${ano}`;
           }
         } else {
-          // Se não for premium (ou se a data for nula), mostra um traço
+          // Se não encontrar data, mostra um traço
           if (dataElement) dataElement.innerText = "--/--/----";
         }
 
@@ -366,4 +381,4 @@
     });
   </script>
 </body>
-  </html>
+                                                    </html>
