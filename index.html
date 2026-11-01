@@ -42,7 +42,7 @@
         /* ===== ESTILOS DO HERO VIP (PONTE E CORES DE MOÇAMBIQUE) ===== */
         body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
         
-        /* O CARTÃO VIP DA PONTE */
+        /* O CARTÃO VIP DA PONTE (Visão PC) */
         .hero-moz {
             background: linear-gradient(rgba(15, 17, 21, 0.7), rgba(15, 17, 21, 0.9)), url('ponte.jpg') center/cover no-repeat !important;
             padding: 50px 20px 40px !important; 
@@ -190,17 +190,20 @@
             transform: translateY(-5px);
         }
 
-        /* ===== AJUSTES PARA TELEMÓVEL (MODO VIP) ===== */
+        /* ===== AJUSTES PARA TELEMÓVEL (MODO VIP FULL WIDTH) ===== */
         @media (max-width: 600px) {
             .hero-moz h1 { font-size: 1.9rem; }
             .filtros-container { flex-direction: column; }
             
-            /* 1. A MOLDURA MAIS ESTREITA E PROFISSIONAL */
+            /* 1. A MOLDURA FULL WIDTH (COLA NAS LATERAIS) */
             .hero-moz {
-                width: 88% !important; /* Deixa uma margem bonita nas laterais */
-                padding: 30px 15px 25px !important; /* Reduz o espaço em branco por dentro */
-                border-radius: 16px !important; /* Cantos mais suaves */
-                margin: 15px auto !important;
+                width: 100% !important; 
+                max-width: 100% !important;
+                margin: 0 0 15px 0 !important; 
+                border-radius: 0 !important; /* Remove cantos redondos */
+                border: none !important; /* Remove borda dos lados e topo */
+                border-bottom: 3px solid #d4af37 !important; /* Mantém a linha dourada só em baixo */
+                padding: 40px 15px 35px !important; /* Ajusta o espaço interno */
             }
 
             /* 2. CORRIGIR A BARRA DE PESQUISA (O BOTÃO AZUL) */
@@ -208,20 +211,20 @@
                 flex-direction: row !important; 
                 border-radius: 10px !important; 
                 width: 100% !important;
-                overflow: hidden !important; /* Obriga o botão a ficar dentro da caixa */
+                overflow: hidden !important; 
             }
             
             .search-box input { 
                 padding: 12px 10px !important; 
                 font-size: 0.85rem !important;
-                flex: 1 !important; /* Ocupa o espaço que sobrar */
-                min-width: 0 !important; /* IMPEDE QUE O INPUT EMPURRE O BOTÃO PARA FORA */
+                flex: 1 !important; 
+                min-width: 0 !important; /* Impede o botão de sair para fora */
             }
             
             .search-box button { 
                 padding: 0 15px !important; 
                 font-size: 0.85rem !important;
-                flex-shrink: 0 !important; /* O botão não encolhe */
+                flex-shrink: 0 !important; 
             }
 
             /* 3. SELOS MAIS COMPACTOS */
@@ -258,7 +261,7 @@
             <p>Produtos, serviços e profissionais de confiança perto de ti. Fala direto no WhatsApp, sem intermediários.</p>
 
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="O que você precisa encontrar?">
+                <input type="text" id="searchInput" placeholder="O que você procura?">
                 <button id="searchButton">Pesquisar</button>
             </div>
 
@@ -394,4 +397,4 @@
       }
     </style>
 </body>
-</html>
+    </html>
