@@ -4,11 +4,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const CHAVE = "mzlink_sessao";
     const conteudo = document.getElementById("conteudo");
 
-    // ===== 1. VERIFICAR SESSÃO =====
     let sessao = null;
-    try {
-        sessao = JSON.parse(localStorage.getItem(CHAVE));
-    } catch(e) {}
+    try { sessao = JSON.parse(localStorage.getItem(CHAVE)); } catch(e) {}
 
     if (!sessao || !sessao.access_token) {
         window.location.href = "login.html?next=perfil.html";
@@ -18,37 +15,30 @@ document.addEventListener("DOMContentLoaded", async function () {
     let user = null;
     let userMeta = null;
     let perfilDB = null;
+    let arquivoAvatarOnboarding = null; // Guarda a foto nova
 
     const headers = {
         "apikey": SUPABASE_KEY,
         "Authorization": "Bearer " + sessao.access_token
     };
 
-    // ===== 2. CARREGAR DADOS =====
     try {
-        // A) Vai buscar o utilizador (Auth)
         const rUser = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: headers });
-        
         if (!rUser.ok) {
             localStorage.removeItem(CHAVE);
             window.location.href = "login.html";
             return;
         }
-        
         user = await rUser.json();
         userMeta = user.user_metadata || {};
 
-        // B) Vai buscar o perfil (Marketplace)
         const rPerfil = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + encodeURIComponent(user.id) + "&limit=1", { headers: headers });
         
         if (rPerfil.ok) {
             const lista = await rPerfil.json();
-            if (lista && lista.length > 0) {
-                perfilDB = lista[0];
-            }
+            if (lista && lista.length > 0) perfilDB = lista[0];
         }
 
-        // C) Decidir o que mostrar
         if (!perfilDB) {
             renderizarOnboarding();
         } else {
@@ -56,23 +46,27 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
     } catch (erro) {
-        console.error("Erro detetado:", erro);
-        conteudo.innerHTML = `
-            <div class="aviso erro visivel" style="margin: 20px; line-height: 1.6;">
-                <strong>Não foi possível ligar ao servidor.</strong><br>
-                Verifica a tua ligação à internet ou tenta fazer login novamente.<br><br>
-                <button onclick="localStorage.clear(); window.location.href='login.html';" style="padding:10px; background:#b42318; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Ir para o Login</button>
-            </div>`;
+        conteudo.innerHTML = `<div class="aviso erro visivel" style="margin:20px;">Erro de ligação. Tenta novamente.</div>`;
     }
 
-    // ===== FUNÇÃO: ECRÃ DE BOAS-VINDAS (CRIAR LOJA) =====
+    // ==========================================
+    // ECRÃ DE BOAS-VINDAS COM FOTO
+    // ==========================================
     function renderizarOnboarding() {
         let nomeAuth = userMeta.nome || userMeta.name || user.email.split("@")[0];
         let telAuth = String(userMeta.whatsapp || "").replace(/^258/, "");
+        let inicial = nomeAuth.charAt(0).toUpperCase();
 
         conteudo.innerHTML = `
             <div class="hero" style="padding-top: 10px;">
-                <h1 style="color: #1E40AF; font-size: 1.6rem;">👋 Bem-vindo ao MZLINK!</h1>
+                <div class="avatar-grande" id="avatarContainerOnboarding" onclick="document.getElementById('inputAvatarOnboarding').click()">
+                    <span id="avatarLetraOnboarding">${inicial}</span>
+                    <img id="avatarImagemOnboarding" style="display:none;">
+                    <div class="icone-camara">📷</div>
+                </div>
+                <input type="file" id="inputAvatarOnboarding" accept="image/*" style="display: none;">
+                
+                <h1 style="color: #1E40AF; font-size: 1.6rem; margin-top: 15px;">👋 Bem-vindo ao MZLINK!</h1>
                 <p style="color: #667085; margin-bottom: 20px; font-size: 0.95rem;">A tua conta foi criada. Para começares a vender, preenche os dados da tua loja abaixo.</p>
             </div>
 
@@ -115,6 +109,23 @@ document.addEventListener("DOMContentLoaded", async function () {
             </div>
         `;
 
+        // Lógica de Preview da foto
+        document.getElementById("inputAvatarOnboarding").addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) { alert("Foto maior que 2MB."); return; }
+                arquivoAvatarOnboarding = file;
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    document.getElementById("avatarLetraOnboarding").style.display = "none";
+                    const img = document.getElementById("avatarImagemOnboarding");
+                    img.src = ev.target.result;
+                    img.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         document.getElementById("formOnboarding").addEventListener("submit", async function (e) {
             e.preventDefault();
             const btn = document.getElementById("btnCriarLoja");
@@ -132,17 +143,51 @@ document.addEventListener("DOMContentLoaded", async function () {
             btn.textContent = "A criar loja...";
             btn.disabled = true;
 
-            const dadosLoja = {
-                user_id: user.id,
-                nome: nome,
-                whatsapp: "258" + whats,
-                local: local,
-                plano: "basico",
-                categoria: "servicos",
-                tipo: "Geral" // <--- CORREÇÃO DO ERRO AQUI
-            };
-
             try {
+                let urlAvatarFinal = userMeta.avatar_url || null;
+
+                // 1. Se escolheu foto, faz upload PRIMEIRO
+                if (arquivoAvatarOnboarding) {
+                    const ext = arquivoAvatarOnboarding.name.split(".").pop() || "jpg";
+                    const caminho = user.id + "/avatar." + ext;
+
+                    const rUpload = await fetch(SUPABASE_URL + "/storage/v1/object/avatares/" + caminho, {
+                        method: "POST",
+                        headers: {
+                            "apikey": SUPABASE_KEY,
+                            "Authorization": "Bearer " + sessao.access_token,
+                            "Content-Type": arquivoAvatarOnboarding.type,
+                            "x-upsert": "true"
+                        },
+                        body: arquivoAvatarOnboarding
+                    });
+
+                    if (rUpload.ok) {
+                        urlAvatarFinal = SUPABASE_URL + "/storage/v1/object/public/avatares/" + caminho;
+                        // Atualiza o Auth com a foto
+                        await fetch(SUPABASE_URL + "/auth/v1/user", {
+                            method: "PUT",
+                            headers: { ...headers, "Content-Type": "application/json" },
+                            body: JSON.stringify({ data: { ...userMeta, nome: nome, whatsapp: "258" + whats, avatar_url: urlAvatarFinal } })
+                        });
+                        userMeta.avatar_url = urlAvatarFinal;
+                    }
+                }
+
+                // 2. Cria o perfil
+                const dadosLoja = {
+                    user_id: user.id,
+                    nome: nome,
+                    whatsapp: "258" + whats,
+                    local: local,
+                    plano: "basico",
+                    categoria: "servicos",
+                    tipo: "Geral",
+                    preco: "A combinar",
+                    fotos: [],
+                    descricao: "Loja criada no MZLINK."
+                };
+
                 const res = await fetch(SUPABASE_URL + "/rest/v1/profissionais", {
                     method: "POST",
                     headers: { ...headers, "Content-Type": "application/json" },
@@ -152,14 +197,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (res.ok) {
                     msg.style.color = "green";
                     msg.textContent = "Loja criada com sucesso! A carregar...";
-                    
-                    await fetch(SUPABASE_URL + "/auth/v1/user", {
-                        method: "PUT",
-                        headers: { ...headers, "Content-Type": "application/json" },
-                        body: JSON.stringify({ data: { nome: nome, whatsapp: "258" + whats } })
-                    });
-
-                    setTimeout(() => window.location.reload(), 1000);
+                    setTimeout(() => window.location.href = "perfil.html?v=2000", 1000);
                 } else {
                     const erro = await res.json();
                     msg.textContent = "Erro: " + (erro.message || "Tenta novamente.");
@@ -174,7 +212,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
-    // ===== FUNÇÃO: MOSTRAR PERFIL NORMAL =====
+    // ==========================================
+    // ECRÃ NORMAL DO PERFIL
+    // ==========================================
     function renderizarPerfil() {
         const nome = perfilDB.nome;
         const telefone = String(perfilDB.whatsapp).replace(/^258/, "");
@@ -184,73 +224,39 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         conteudo.innerHTML = `
             <div class="hero">
-                <div class="avatar-grande ${ehPremium ? 'premium' : ''}" id="avatarContainer" onclick="document.getElementById('inputAvatar').click()">
+                <div class="avatar-grande ${ehPremium ? 'premium' : ''}" onclick="document.getElementById('inputAvatar').click()">
                     <span id="avatarLetra" style="${urlAvatar ? 'display:none;' : ''}">${inicial}</span>
-                    <img id="avatarImagem" src="${urlAvatar || ''}" style="${urlAvatar ? 'display:block;' : 'display:none;'}">
+                    <img src="${urlAvatar || ''}" style="${urlAvatar ? 'display:block; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;' : 'display:none;'}">
                     <div class="icone-camara">📷</div>
                 </div>
                 <input type="file" id="inputAvatar" accept="image/*" style="display: none;">
-                
                 <div class="badge-moz">🇲🇿 Orgulho Nacional</div>
                 <h1>${nome}</h1>
                 <p class="email">${user.email}</p>
-                <span class="plano-badge ${ehPremium ? 'premium' : 'basico'}">
-                    ${ehPremium ? '⭐ PREMIUM' : '🆓 Básico'}
-                </span>
+                <span class="plano-badge ${ehPremium ? 'premium' : 'basico'}">${ehPremium ? '⭐ PREMIUM' : '🆓 Básico'}</span>
             </div>
-
             <div class="card">
                 <h2>📝 Dados da Loja</h2>
-                <div class="campo">
-                    <div class="campo-info">
-                        <label>Nome do Negócio</label>
-                        <div class="valor">${nome}</div>
-                    </div>
-                    <button class="btn-editar" onclick="window.MZPerfil.editarNome()">✏️ Editar</button>
-                </div>
-                <div class="campo">
-                    <div class="campo-info">
-                        <label>WhatsApp</label>
-                        <div class="valor">${telefone ? '258' + telefone : '—'}</div>
-                    </div>
-                    <button class="btn-editar" onclick="window.MZPerfil.editarTelefone()">✏️ Editar</button>
-                </div>
-                <div class="campo">
-                    <div class="campo-info">
-                        <label>Localização</label>
-                        <div class="valor">📍 ${perfilDB.local}</div>
-                    </div>
-                </div>
-                <div class="campo">
-                    <div class="campo-info">
-                        <label>Email</label>
-                        <div class="valor bloqueado">${user.email}</div>
-                    </div>
-                </div>
-                <div class="aviso" id="avisoPerfil"></div>
+                <div class="campo"><div class="campo-info"><label>Nome do Negócio</label><div class="valor">${nome}</div></div><button class="btn-editar" onclick="window.MZPerfil.editarNome()">✏️ Editar</button></div>
+                <div class="campo"><div class="campo-info"><label>WhatsApp</label><div class="valor">${telefone ? '258' + telefone : '—'}</div></div><button class="btn-editar" onclick="window.MZPerfil.editarTelefone()">✏️ Editar</button></div>
+                <div class="campo"><div class="campo-info"><label>Localização</label><div class="valor">📍 ${perfilDB.local}</div></div></div>
             </div>
-
             <div class="card">
                 <h2>📢 Os meus anúncios</h2>
                 <a href="publicar.html" class="btn-acao principal">📢 Publicar novo anúncio</a>
                 <a href="index.html" class="btn-voltar" style="margin-top:10px; border-color:#ccc;">Ver anúncios no site</a>
             </div>
-
             <div class="card">
                 <h2>🔐 Segurança</h2>
                 <button class="btn-acao sair" onclick="window.MZPerfil.sair()">🚪 Sair da conta</button>
             </div>
         `;
 
-        // Lógica de upload da foto
+        // Lógica de upload da foto no perfil normal
         document.getElementById("inputAvatar").addEventListener("change", async function (e) {
             const file = e.target.files[0];
             if (!file) return;
-
-            if (file.size > 2 * 1024 * 1024) {
-                alert("A foto é muito grande. Escolhe uma menor que 2MB.");
-                return;
-            }
+            if (file.size > 2 * 1024 * 1024) { alert("A foto é muito grande. Máximo 2MB."); return; }
 
             try {
                 document.getElementById("avatarLetra").textContent = "...";
@@ -259,19 +265,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 const rUpload = await fetch(SUPABASE_URL + "/storage/v1/object/avatares/" + caminho, {
                     method: "POST",
-                    headers: {
-                        "apikey": SUPABASE_KEY,
-                        "Authorization": "Bearer " + sessao.access_token,
-                        "Content-Type": file.type,
-                        "x-upsert": "true"
-                    },
+                    headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + sessao.access_token, "Content-Type": file.type, "x-upsert": "true" },
                     body: file
                 });
-
-                if (!rUpload.ok) {
-                    alert("Erro ao enviar a foto.");
-                    return;
-                }
+                if (!rUpload.ok) { alert("Erro ao enviar a foto."); return; }
 
                 const urlPublica = SUPABASE_URL + "/storage/v1/object/public/avatares/" + caminho;
                 const novoMeta = { ...userMeta, avatar_url: urlPublica };
@@ -283,20 +280,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 });
 
                 userMeta = novoMeta;
-                window.location.reload();
-            } catch (err) {
-                alert("Erro de ligação ao enviar a foto.");
-            }
+                window.location.href = "perfil.html?v=2001";
+            } catch (err) { alert("Erro de ligação."); }
         });
-    }
-
-    // ===== FUNÇÕES AUXILIARES (EDITAR, GUARDAR, SAIR) =====
-    function mostrarAviso(texto, tipo) {
-        const el = document.getElementById("avisoPerfil");
-        if (!el) return;
-        el.textContent = texto;
-        el.className = "aviso visivel " + (tipo === "ok" ? "ok" : "erro");
-        setTimeout(() => el.classList.remove("visivel"), 3500);
     }
 
     window.MZPerfil = {
@@ -322,13 +308,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function guardar(dados) {
         try {
-            const resDB = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + user.id, {
+            await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + user.id, {
                 method: "PATCH",
                 headers: { ...headers, "Content-Type": "application/json" },
                 body: JSON.stringify(dados)
             });
-
-            if (!resDB.ok) throw new Error("Erro DB");
 
             const novoMeta = { ...userMeta, ...dados };
             await fetch(SUPABASE_URL + "/auth/v1/user", {
@@ -344,10 +328,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 sessao.name = dados.nome;
                 localStorage.setItem(CHAVE, JSON.stringify(sessao));
             }
-
-            window.location.reload();
-        } catch (e) {
-            mostrarAviso("Erro ao guardar. Tenta de novo.", "erro");
-        }
+            window.location.href = "perfil.html?v=2002";
+        } catch (e) { alert("Erro ao guardar. Tenta de novo."); }
     }
 });
