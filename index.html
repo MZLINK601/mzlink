@@ -163,27 +163,68 @@
         }
         .categorias button:hover { border-color: #1E40AF; color: #1E40AF; background: #eff6ff; }
 
-        /* ===== AJUSTES PARA TELEMÓVEL ===== */
+        /* BOTÃO VOLTAR AO TOPO */
+        #btnTopo {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99;
+            background-color: #0f1115;
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            align-items: center;
+            justify-content: center;
+        }
+        #btnTopo:hover {
+            background-color: #d4af37;
+            color: #0f1115;
+            transform: translateY(-5px);
+        }
+
+        /* ===== AJUSTES PARA TELEMÓVEL (MODO VIP) ===== */
         @media (max-width: 600px) {
             .hero-moz h1 { font-size: 1.9rem; }
             .filtros-container { flex-direction: column; }
             
-            /* Barra de pesquisa lado a lado no telemóvel */
+            /* 1. A MOLDURA MAIS ESTREITA E PROFISSIONAL */
+            .hero-moz {
+                width: 88% !important; /* Deixa uma margem bonita nas laterais */
+                padding: 30px 15px 25px !important; /* Reduz o espaço em branco por dentro */
+                border-radius: 16px !important; /* Cantos mais suaves */
+                margin: 15px auto !important;
+            }
+
+            /* 2. CORRIGIR A BARRA DE PESQUISA (O BOTÃO AZUL) */
             .search-box { 
                 flex-direction: row !important; 
-                border-radius: 8px !important; 
+                border-radius: 10px !important; 
                 width: 100% !important;
+                overflow: hidden !important; /* Obriga o botão a ficar dentro da caixa */
             }
+            
             .search-box input { 
-                padding: 12px 15px !important; 
+                padding: 12px 10px !important; 
                 font-size: 0.85rem !important;
+                flex: 1 !important; /* Ocupa o espaço que sobrar */
+                min-width: 0 !important; /* IMPEDE QUE O INPUT EMPURRE O BOTÃO PARA FORA */
             }
+            
             .search-box button { 
                 padding: 0 15px !important; 
                 font-size: 0.85rem !important;
+                flex-shrink: 0 !important; /* O botão não encolhe */
             }
 
-            /* Selos mais compactos */
+            /* 3. SELOS MAIS COMPACTOS */
             .selos-confianca { gap: 5px !important; margin-top: 15px !important; }
             .selo-item { padding: 6px 10px !important; }
             .selo-texto { font-size: 0.6rem !important; }
@@ -280,6 +321,9 @@
             <div class="card"><h3>Resolva</h3><p>Resolva a sua necessidade com confiança</p></div>
         </div>
     </main>
+
+    <!-- Botão Voltar ao Topo -->
+    <button id="btnTopo" title="Voltar ao topo">⬆️</button>
 
     <!-- SCRIPTS DO PROJETO -->
     <script src="script.js"></script>
