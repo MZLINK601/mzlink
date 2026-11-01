@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         btnPedirCodigo.disabled = true;
 
         try {
-            // 'create_user: true' cria a conta automaticamente se não existir!
+            // O 'create_user: true' cria a conta se for a primeira vez, ou só manda o código se já existir.
             let res = await fetch(SUPABASE_URL + "/auth/v1/otp", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY },
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await res.json();
 
             if (res.ok) {
-                // O código está certo! A conta é confirmada e ele entra logo.
+                // Código correto! Guarda a sessão e entra.
                 const sessao = {
                     access_token: data.access_token,
                     refresh_token: data.refresh_token,
