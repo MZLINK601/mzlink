@@ -12,7 +12,7 @@
     catch (e) { return null; }
   }
 
-  function ativarModoPremium(nomeUser) {
+  function ativarModoPremium(nomeUser, dataExpiracao) {
     if (document.body.classList.contains('premium-mode')) return;
 
     document.body.classList.add('premium-mode');
@@ -23,13 +23,17 @@
 
     if (document.querySelector('.premium-banner')) return;
 
+    var textoData = dataExpiracao 
+      ? '<br><span style="font-size:0.8em; opacity:0.85;">Válido até: <strong>' + dataExpiracao + '</strong></span>' 
+      : '';
+
     var banner = document.createElement('div');
     banner.className = 'premium-banner';
     banner.innerHTML =
       '<span class="coroa">👑</span>' +
       '<div class="texto">' +
         'Bem-vindo, <strong>' + (nomeUser || 'Premium') + '</strong>!<br>' +
-        'Estás no <strong>MODO PREMIUM</strong> — aproveita o destaque.' +
+        'Estás no <strong>MODO PREMIUM</strong> — aproveita o destaque.' + textoData +
       '</div>' +
       '<a href="premium.html" class="link-premium">Ver vantagens</a>';
 
@@ -53,9 +57,9 @@
       if (!rUser.ok) return;
       var user = await rUser.json();
 
-      // 2. Verificar o plano na tabela
+      // 2. Verificar o plano na tabela (AGORA BUSCA O NOME TAMBÉM)
       var rPlano = await fetch(
-        MZ.url + '/rest/v1/profissionais?select=plano&user_id=eq.' +
+        MZ.url + '/rest/v1/profissionais?select=nome,plano,premium_ate&user_id=eq.' +
         encodeURIComponent(user.id) + '&limit=1',
         {
           headers: {
@@ -68,12 +72,26 @@
       if (rPlano.ok) {
         var lista = await rPlano.json();
         var plano = (lista && lista[0] && lista[0].plano) || 'basico';
+        var premiumAte = (lista && lista[0]) ? lista[0].premium_ate : null;
         
         if (plano === 'premium') {
-          // 3. AQUI ESTÁ A CORREÇÃO: Usar o nome da sessão em vez do anúncio
-          var nome = sessao.name || user.user_metadata?.name || user.email.split('@')[0] || "Premium";
+          // 3. PUXA O NOME DA BASE DE DADOS (lista[0].nome)
+          var nomePerfil = (lista && lista[0]) ? lista[0].nome : null;
           
-          ativarModoPremium(nome);
+          // Se não houver nome no perfil, tenta na sessão, depois no login, e por fim "Premium"
+          var nome = nomePerfil || sessao.name || (user.user_metadata && user.user_metadata.name) || user.email.split('@')[0] || "Premium";
+          
+          // Formatar a data
+          var dataFormatada = "";
+          if (premiumAte) {
+            var d = new Date(premiumAte);
+            var dia = String(d.getDate()).padStart(2, '0');
+            var mes = String(d.getMonth() + 1).padStart(2, '0');
+            var ano = d.getFullYear();
+            dataFormatada = dia + '/' + mes + '/' + ano;
+          }
+          
+          ativarModoPremium(nome, dataFormatada);
         }
       }
     } catch (e) {
