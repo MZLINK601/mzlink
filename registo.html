@@ -1,48 +1,113 @@
 <!DOCTYPE html>
 <html lang="pt">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Criar conta - MZLINK</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body class="auth-page">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar conta / Entrar - MZLINK</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilo extra para o olhinho da palavra-passe */
+        .input-senha-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        .input-senha-wrapper input {
+            width: 100%;
+            padding-right: 40px; /* Espaço para o olho */
+            box-sizing: border-box;
+        }
+        .toggle-senha {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2rem;
+            user-select: none;
+        }
+        .divisor-ou {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: #667085;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .divisor-ou::before, .divisor-ou::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #eef1f5;
+        }
+        .divisor-ou::before { margin-right: 10px; }
+        .divisor-ou::after { margin-left: 10px; }
+        
+        .btn-secundario {
+            background: #fff;
+            color: #0f1115;
+            border: 2px solid #e2e8f0;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-secundario:hover {
+            border-color: #1E40AF;
+            color: #1E40AF;
+        }
+    </style>
+</head>
+<body class="auth-page">
 
-        <div class="auth-card">
-            <a href="index.html" class="auth-logo">MZLINK</a>
-            <h2>Criar conta / Entrar</h2>
+    <div class="auth-card">
+        <a href="index.html" class="auth-logo">MZLINK</a>
+        <h2>Criar conta / Entrar</h2>
 
-            <!-- PASSO 1: Pedir o Email -->
-            <form id="formEmail">
-                <label for="email">O teu Email</label>
-                <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
-                <button type="submit" id="btnEnviarCodigo">Receber Código</button>
-                <p id="msgEmail" style="color:red; margin-top:10px; font-weight:bold;"></p>
-            </form>
-
-            <!-- PASSO 2: Inserir o Código (Escondido no início) -->
-            <form id="formCodigo" style="display: none; margin-top: 20px;">
-                <label for="codigo">Insere o código que recebeste no email</label>
-                <input type="text" id="codigo" placeholder="Código do email" required maxlength="10">
-                <button type="submit" id="btnEntrar">Entrar na Conta</button>
-                <p id="msgCodigo" style="color:red; margin-top:10px; font-weight:bold;"></p>
-            </form>
-
-            <p class="auth-link">Já tem conta? <a href="login.html">Entrar com Palavra-passe</a></p>
-
-            <!-- Botão do WhatsApp para Empresas (Mantido) -->
-            <div style="text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid #eef1f5;">
-                <p style="color: #667085; margin-bottom: 12px; font-weight: 600; font-size: 0.9rem;">
-                    É dono de um negócio e quer um perfil profissional?
-                </p>
-                <a href="https://wa.me/258852337913?text=Ol%C3%A1%2C%20Am%C3%B3s!%20Quero%20cadastrar%20a%20minha%20empresa%20no%20MZLINK." 
-                   target="_blank" 
-                   style="display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 16px; background: #25D366; color: white; font-weight: 800; font-size: 1rem; text-decoration: none; border-radius: 12px; box-shadow: 0 8px 24px rgba(37,211,102,0.3);">
-                    💬 Cadastrar via WhatsApp
-                </a>
+        <!-- PASSO 1: Email e Palavra-passe -->
+        <form id="formPrincipal">
+            <label for="email">O teu Email</label>
+            <input type="email" id="email" placeholder="seuemail@exemplo.com" required style="margin-bottom: 16px;">
+            
+            <label for="password">Palavra-passe</label>
+            <div class="input-senha-wrapper">
+                <input type="password" id="password" placeholder="Cria ou insere a tua senha" required>
+                <span class="toggle-senha" id="toggleSenha">👁️</span>
             </div>
-        </div>
+            
+            <button type="submit" id="btnAcao" style="background: #1E40AF;">Entrar / Criar Conta</button>
+            <p id="msgPrincipal" style="color:red; margin-top:10px; font-weight:bold; font-size: 0.9rem; text-align: center;"></p>
+        </form>
 
-        <script src="registo.js"></script>
-    </body>
+        <div class="divisor-ou">OU</div>
+
+        <!-- PASSO 2: Alternativa OTP (Código no Email) -->
+        <button id="btnPedirCodigo" class="btn-secundario">Receber Código por E-mail</button>
+        <p id="msgEmail" style="color:#25D366; margin-top:10px; font-weight:bold; font-size: 0.9rem; text-align: center;"></p>
+
+        <!-- PASSO 3: Inserir o Código OTP (Escondido) -->
+        <form id="formCodigo" style="display: none; margin-top: 20px;">
+            <label for="codigo">Insere o código que recebeste no email</label>
+            <input type="text" id="codigo" placeholder="Código do email" required maxlength="10">
+            <button type="submit" id="btnEntrarOtp">Validar Código e Entrar</button>
+            <p id="msgCodigo" style="color:red; margin-top:10px; font-weight:bold;"></p>
+        </form>
+
+        <!-- Botão do WhatsApp para Empresas -->
+        <div style="text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid #eef1f5;">
+            <p style="color: #667085; margin-bottom: 12px; font-weight: 600; font-size: 0.9rem;">
+                É dono de um negócio e quer um perfil profissional?
+            </p>
+            <a href="https://wa.me/258852337913?text=Ol%C3%A1%2C%20Am%C3%B3s!%20Quero%20cadastrar%20a%20minha%20empresa%20no%20MZLINK." 
+               target="_blank" 
+               style="display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 16px; background: #25D366; color: white; font-weight: 800; font-size: 1rem; text-decoration: none; border-radius: 12px; box-shadow: 0 8px 24px rgba(37,211,102,0.3);">
+                💬 Cadastrar via WhatsApp
+            </a>
+        </div>
+    </div>
+
+    <script src="registo.js"></script>
+</body>
 </html>
