@@ -342,6 +342,7 @@
     aviso("A publicar...", false);
 
     try {
+      // ===== A CORREÇÃO ESTÁ AQUI NO BODY =====
       var r = await fetch(MZ.url + "/rest/v1/profissionais", {
         method: "POST",
         headers: cabecalhos({
@@ -355,7 +356,12 @@
           categoria: categoria,
           preco: precoInput ? Number(precoInput) : null,
           whatsapp: "258" + telefone,
-          user_id: usuario.id
+          user_id: usuario.id,
+          plano: planoUser,      // Evita erro null do plano
+          fotos: [],             // Evita erro null das fotos (envia vazio primeiro)
+          descricao: "",         // Evita erro null da descrição
+          media_estrelas: 0,     // Inicializa avaliação
+          total_avaliacoes: 0
         })
       });
 
@@ -414,7 +420,7 @@
       document.getElementById("tipo").value = "";
       document.getElementById("local").value = "";
       document.getElementById("categoria").value = "";
-      document.getElementById("preco").value = ""; // Limpa o preço
+      document.getElementById("preco").value = ""; 
 
       ficheiros.forEach(function (item) { URL.revokeObjectURL(item.url); });
       ficheiros = [];
