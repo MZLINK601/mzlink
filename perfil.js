@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 }
 
-                // AQUI ESTÁ A CORREÇÃO: categoria "loja" para não aparecer na página inicial
+                // DADOS DA LOJA (A linha 'descricao' foi removida para não dar erro)
                 const dadosLoja = {
                     user_id: user.id,
                     nome: nome,
@@ -181,8 +181,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     categoria: "loja",
                     tipo: "Perfil da Loja",
                     preco: "A combinar",
-                    fotos: [],
-                    descricao: "Loja criada no MZLINK."
+                    fotos: []
                 };
 
                 const res = await fetch(SUPABASE_URL + "/rest/v1/profissionais", {
@@ -194,7 +193,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (res.ok) {
                     msg.style.color = "green";
                     msg.textContent = "Loja criada com sucesso! A carregar...";
-                    setTimeout(() => window.location.href = "perfil.html?v=2000", 1000);
+                    setTimeout(() => window.location.href = "perfil.html?v=3000", 1000);
                 } else {
                     const erro = await res.json();
                     msg.textContent = "Erro: " + (erro.message || "Tenta novamente.");
@@ -276,7 +275,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 });
 
                 userMeta = novoMeta;
-                window.location.href = "perfil.html?v=2001";
+                window.location.href = "perfil.html?v=3001";
             } catch (err) { alert("Erro de ligação."); }
         });
     }
@@ -324,7 +323,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 sessao.name = dados.nome;
                 localStorage.setItem(CHAVE, JSON.stringify(sessao));
             }
-            window.location.href = "perfil.html?v=2002";
+            window.location.href = "perfil.html?v=3002";
         } catch (e) { alert("Erro ao guardar. Tenta de novo."); }
     }
 });
