@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let emailTemporario = "";
 
-    // --- MOSTRAR / OCULTAR PALAVRA-PASSE ---
     if (toggleSenha) {
         toggleSenha.addEventListener("click", function () {
             if (passwordInput.type === "password") {
@@ -29,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- LÓGICA 1: ENTRAR COM PALAVRA-PASSE ---
     if (formLogin) {
         formLogin.addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -68,12 +66,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- LÓGICA 2: ATIVAR FLUXO DE CÓDIGO (OTP) ---
     if (btnAtivarOtp) {
         btnAtivarOtp.addEventListener("click", async function () {
             const email = emailInput.value.trim();
             
-            // Limpar mensagens antigas
             msgLogin.textContent = "";
             msgEmail.textContent = "";
 
@@ -103,14 +99,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     formCodigoLogin.style.display = "block";
                     
                     msgEmail.style.color = "green";
-                    msgEmail.textContent = "Código enviado! Verifica a caixa de entrada.";
+                    msgEmail.textContent = "Código enviado! Verifica a caixa de entrada ou o Spam.";
                 } else {
-                    // Mostra o erro exato que o Supabase devolveu
                     msgLogin.style.color = "red";
+                    // Mostrar erro real do Supabase
                     if (res.status === 429) {
-                        msgLogin.textContent = "Muitos pedidos. Espera uns minutos antes de tentar novamente.";
+                        msgLogin.textContent = "Limite de e-mails atingido. Espera alguns minutos e tenta de novo.";
                     } else {
-                        msgLogin.textContent = data.msg || data.error_description || "Erro ao enviar o código. Verifica se a conta existe.";
+                        msgLogin.textContent = data.msg || data.error_description || "Erro ao enviar código. Verifica se a conta existe.";
                     }
                 }
             } catch (err) {
@@ -123,7 +119,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- LÓGICA 3: VALIDAR O CÓDIGO (OTP) ---
     if (formCodigoLogin) {
         formCodigoLogin.addEventListener("submit", async function (e) {
             e.preventDefault();
