@@ -190,44 +190,43 @@
             transform: translateY(-5px);
         }
 
-        /* ===== AJUSTES PARA TELEMÓVEL (MODO VIP FULL WIDTH) ===== */
+        /* ===== AJUSTES PARA TELEMÓVEL (A MOLDURA OURO DE MOÇAMBIQUE) ===== */
         @media (max-width: 600px) {
             .hero-moz h1 { font-size: 1.9rem; }
             .filtros-container { flex-direction: column; }
             
-            /* 1. A MOLDURA FULL WIDTH (COLA NAS LATERAIS) */
+            /* O SEGREDO DO DESIGN PREMIUM MOBILE */
             .hero-moz {
-                width: 100% !important; 
+                width: 92% !important; /* Quase colado à borda, mas não muito */
                 max-width: 100% !important;
-                margin: 0 0 15px 0 !important; 
-                border-radius: 0 !important; /* Remove cantos redondos */
-                border: none !important; /* Remove borda dos lados e topo */
-                border-bottom: 3px solid #d4af37 !important; /* Mantém a linha dourada só em baixo */
-                padding: 40px 15px 35px !important; /* Ajusta o espaço interno */
+                margin: 15px auto 25px auto !important; 
+                border-radius: 16px !important; /* Cantos modernos */
+                border: 2px solid #d4af37 !important; /* Borda dourada */
+                /* Sombra preta profunda + brilho dourado (glow) */
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.3) !important; 
+                padding: 40px 15px 35px !important; 
             }
 
-            /* 2. CORRIGIR A BARRA DE PESQUISA (O BOTÃO AZUL) */
+            /* BARRA DE PESQUISA */
             .search-box { 
                 flex-direction: row !important; 
                 border-radius: 10px !important; 
                 width: 100% !important;
                 overflow: hidden !important; 
             }
-            
             .search-box input { 
                 padding: 12px 10px !important; 
                 font-size: 0.85rem !important;
                 flex: 1 !important; 
-                min-width: 0 !important; /* Impede o botão de sair para fora */
+                min-width: 0 !important; 
             }
-            
             .search-box button { 
                 padding: 0 15px !important; 
                 font-size: 0.85rem !important;
                 flex-shrink: 0 !important; 
             }
 
-            /* 3. SELOS MAIS COMPACTOS */
+            /* SELOS MAIS COMPACTOS */
             .selos-confianca { gap: 5px !important; margin-top: 15px !important; }
             .selo-item { padding: 6px 10px !important; }
             .selo-texto { font-size: 0.6rem !important; }
@@ -397,4 +396,4 @@
       }
     </style>
 </body>
-    </html>
+            </html>
