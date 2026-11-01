@@ -16,7 +16,7 @@
   <style>
     /* ===== ESTILOS DO CARTÃO VIP ===== */
     .cartao-vip-seccao {
-      display: flex;
+      display: none; /* ESCONDIDO POR DEFEITO (Só o JS mostra se for Premium) */
       justify-content: center;
       margin: 40px auto 20px;
       padding: 0 15px;
@@ -86,7 +86,6 @@
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
 
-    /* CORREÇÃO DO LAYOUT DO FUNDO DO CARTÃO */
     .card-base {
       display: flex;
       justify-content: space-between;
@@ -105,7 +104,6 @@
     .chip-linha-v { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: rgba(0,0,0,0.3); transform: translateX(-50%); }
     .chip-centro { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 15px; border: 2px solid rgba(0,0,0,0.3); border-radius: 4px; }
 
-    /* Agrupamento da data e status para não sobrepor */
     .card-info-direita {
       display: flex;
       flex-direction: column;
@@ -147,7 +145,7 @@
     </nav>
   </header>
 
-  <!-- ===== CARTÃO VIP DE LUXO ===== -->
+  <!-- ===== CARTÃO VIP DE LUXO (Só aparece para Premium) ===== -->
   <section class="cartao-vip-seccao">
     <div class="card-vip">
       <div class="costura-vip"></div>
@@ -165,7 +163,6 @@
           <div class="chip-centro"></div>
         </div>
         
-        <!-- INFO DIREITA CORRIGIDA -->
         <div class="card-info-direita">
           <div class="data-expiracao">
             <span>VÁLIDO ATÉ</span>
@@ -173,7 +170,6 @@
           </div>
           <span class="card-status">MEMBRO 🇲🇿</span>
         </div>
-
       </div>
     </div>
   </section>
@@ -330,13 +326,14 @@
   <script src="premium.js"></script>
   <script src="sessao.js" charset="UTF-8"></script>
   
-  <!-- ===== SCRIPT CORRIGIDO PARA PUXAR A DATA ===== -->
+  <!-- ===== SCRIPT DE LÓGICA DE CEO: MOSTRAR CARTÃO SÓ PARA PREMIUM ===== -->
   <script>
     document.addEventListener("DOMContentLoaded", async function() {
       const dataElement = document.getElementById("dataExpiracaoCard");
+      const seccaoCartao = document.querySelector(".cartao-vip-seccao");
 
       try {
-        // 1. Usa as variáveis globais MZ do teu projeto (que já sabemos que funcionam)
+        // 1. Verifica se o utilizador está logado
         if (typeof MZ === "undefined" || !MZ.sessaoValida) return;
         
         const sessao = await MZ.sessaoValida();
@@ -349,19 +346,22 @@
         if (!resUser.ok) return;
         const user = await resUser.json();
 
-        // 3. Procura o perfil do utilizador na tabela 'profissionais'
-        // Usamos encodeURIComponent para garantir que o ID não quebra a URL
-        const resPerfil = await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + encodeURIComponent(user.id) + "&select=premium_ate", {
+        // 3. Procura o perfil do utilizador (plano e data)
+        const resPerfil = await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + encodeURIComponent(user.id) + "&select=plano,premium_ate", {
           headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
         
         const dadosPerfil = await resPerfil.json();
 
-        // 4. Se encontrou e tem data, formata e mostra no cartão
-        if (dadosPerfil.length > 0 && dadosPerfil[0].premium_ate) {
+        // 4. A LÓGICA: Só mostra o cartão se o plano for premium e tiver data
+        if (dadosPerfil.length > 0 && dadosPerfil[0].plano === 'premium' && dadosPerfil[0].premium_ate) {
+          
+          if (seccaoCartao) {
+            seccaoCartao.style.display = "flex"; // Revela o cartão
+          }
+
           const dataExpiracao = new Date(dadosPerfil[0].premium_ate);
           
-          // Formata para DD/MM/AAAA
           const dia = String(dataExpiracao.getDate()).padStart(2, '0');
           const mes = String(dataExpiracao.getMonth() + 1).padStart(2, '0');
           const ano = dataExpiracao.getFullYear();
@@ -370,15 +370,16 @@
             dataElement.innerText = `${dia}/${mes}/${ano}`;
           }
         } else {
-          // Se não encontrar data, mostra um traço
-          if (dataElement) dataElement.innerText = "--/--/----";
+          // Se for básico, garante que o cartão fica escondido
+          if (seccaoCartao) {
+            seccaoCartao.style.display = "none";
+          }
         }
 
       } catch (erro) {
         console.error("Erro ao buscar data de expiração:", erro);
-        if (dataElement) dataElement.innerText = "ERRO";
       }
     });
   </script>
 </body>
-                                                    </html>
+</html>
