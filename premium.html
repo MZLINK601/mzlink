@@ -14,9 +14,9 @@
   <link rel="stylesheet" href="premium.css">
 
   <style>
-    /* ===== ESTILOS DO CARTÃO VIP ===== */
+    /* ===== ESTILOS DO CARTÃO VIP BLACK ===== */
     .cartao-vip-seccao {
-      display: none; /* ESCONDIDO POR DEFEITO (Só o JS mostra se for Premium) */
+      display: none; /* Começa escondido, o JS revela se for Premium */
       justify-content: center;
       margin: 40px auto 20px;
       padding: 0 15px;
@@ -26,11 +26,11 @@
       width: 100%;
       max-width: 380px;
       height: 230px;
-      background: radial-gradient(circle at 50% 0%, #2a2a2a, #0a0a0a 80%);
+      background: radial-gradient(circle at 10% 20%, #2a2a2a 0%, #0a0a0a 90%);
       border-radius: 16px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.1);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.1);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -40,15 +40,32 @@
       transition: transform 0.4s ease, box-shadow 0.4s ease;
     }
 
+    /* Efeito de Brilho a passar no cartão */
+    .card-vip::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.15), transparent);
+      transform: skewX(-25deg);
+      animation: brilhoCartao 4s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes brilhoCartao {
+      0% { left: -100%; }
+      20% { left: 200%; }
+      100% { left: 200%; }
+    }
+
     .card-vip:hover {
       transform: translateY(-5px) rotateX(5deg) rotateY(-5deg);
-      box-shadow: 0 30px 50px rgba(0,0,0,0.9), 0 0 20px rgba(212, 175, 55, 0.2);
+      box-shadow: 0 30px 50px rgba(0,0,0,0.9), 0 0 30px rgba(212, 175, 55, 0.3);
     }
 
     .costura-vip {
       position: absolute;
       top: 10px; left: 10px; right: 10px; bottom: 10px;
-      border: 1.5px dashed rgba(212, 175, 55, 0.5);
+      border: 1.5px dashed rgba(212, 175, 55, 0.4);
       border-radius: 12px;
       pointer-events: none;
     }
@@ -94,15 +111,18 @@
       width: 100%;
     }
 
+    /* CHIP DOURADO 3D */
     .chip-ouro {
       width: 45px; height: 35px;
-      background: linear-gradient(135deg, #e6c27a, #b38728);
+      background: linear-gradient(135deg, #fcf6ba, #bf953f, #b38728);
       border-radius: 6px; position: relative;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5); overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.5); 
+      overflow: hidden;
+      border: 1px solid #aa771c;
     }
-    .chip-linha-h { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(0,0,0,0.3); transform: translateY(-50%); }
-    .chip-linha-v { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: rgba(0,0,0,0.3); transform: translateX(-50%); }
-    .chip-centro { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 15px; border: 2px solid rgba(0,0,0,0.3); border-radius: 4px; }
+    .chip-linha-h { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(0,0,0,0.4); transform: translateY(-50%); }
+    .chip-linha-v { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: rgba(0,0,0,0.4); transform: translateX(-50%); }
+    .chip-centro { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 15px; border: 2px solid rgba(0,0,0,0.4); border-radius: 4px; }
 
     .card-info-direita {
       display: flex;
@@ -145,7 +165,7 @@
     </nav>
   </header>
 
-  <!-- ===== CARTÃO VIP DE LUXO (Só aparece para Premium) ===== -->
+  <!-- ===== CARTÃO VIP DE LUXO ===== -->
   <section class="cartao-vip-seccao">
     <div class="card-vip">
       <div class="costura-vip"></div>
@@ -191,8 +211,6 @@
     <p class="subtitulo-seccao">Começa grátis. Faz upgrade quando quiseres.</p>
 
     <div class="planos-grid">
-
-      <!-- BÁSICO -->
       <article class="plano-card">
         <header>
           <h3>Básico</h3>
@@ -209,7 +227,6 @@
         <button class="btn-plano-basico" disabled>Plano atual</button>
       </article>
 
-      <!-- PREMIUM -->
       <article class="plano-card plano-destaque">
         <span class="fita-premium">MAIS ESCOLHIDO</span>
         <header>
@@ -230,50 +247,37 @@
         </ul>
         <a href="#pagamento" class="btn-plano-ouro">Ativar Premium</a>
       </article>
-
     </div>
   </section>
 
   <!-- ===== PAGAMENTO ===== -->
   <section class="pagamento-seccao" id="pagamento">
     <div class="pagamento-box">
-
       <div class="pagamento-topo">
         <span class="icone-coroa">👑</span>
         <h2>Ativar Conta Premium</h2>
-        <p class="sub">
-          Paga por <strong>M-Pesa</strong> ou <strong>e-Mola</strong> e envia o comprovativo por WhatsApp.
-          Ativação em menos de 5 minutos. ⚡
-        </p>
+        <p class="sub">Paga por <strong>M-Pesa</strong> ou <strong>e-Mola</strong> e envia o comprovativo por WhatsApp. Ativação em menos de 5 minutos. ⚡</p>
       </div>
-
       <p id="preco" class="preco-destaque">99 MT / mês</p>
 
-      <!-- M-PESA -->
       <div class="metodo-pagamento">
         <div class="metodo-logo mpesa">M-P</div>
         <div class="metodo-info">
           <strong id="numMpesa">—</strong>
           <small id="nomeMpesa">—</small>
         </div>
-        <button class="btn-copiar" data-copiar="numMpesa" aria-label="Copiar número M-Pesa">
-          📋 Copiar
-        </button>
+        <button class="btn-copiar" data-copiar="numMpesa">📋 Copiar</button>
       </div>
 
-      <!-- E-MOLA -->
       <div class="metodo-pagamento">
         <div class="metodo-logo emola">e-M</div>
         <div class="metodo-info">
           <strong id="numEmola">—</strong>
           <small id="nomeEmola">—</small>
         </div>
-        <button class="btn-copiar" data-copiar="numEmola" aria-label="Copiar número e-Mola">
-          📋 Copiar
-        </button>
+        <button class="btn-copiar" data-copiar="numEmola">📋 Copiar</button>
       </div>
 
-      <!-- PASSOS -->
       <div class="passos">
         <div class="passo"><span>1</span> Faz o pagamento</div>
         <div class="passo"><span>2</span> Guarda o comprovativo</div>
@@ -281,44 +285,32 @@
         <div class="passo"><span>4</span> Conta ativada ✅</div>
       </div>
 
-      <!-- BOTÃO WHATSAPP -->
-      <a id="btnWa" class="btn-whatsapp" target="_blank" rel="noopener">
-        📲 Enviar comprovativo por WhatsApp
-      </a>
-
-      <p class="nota-seguranca">
-        🔒 Todos os pagamentos são confirmados manualmente pela equipa MZLINK.
-      </p>
-
+      <a id="btnWa" class="btn-whatsapp" target="_blank" rel="noopener">📲 Enviar comprovativo por WhatsApp</a>
+      <p class="nota-seguranca">🔒 Todos os pagamentos são confirmados manualmente pela equipa MZLINK.</p>
     </div>
   </section>
 
   <!-- ===== FAQ ===== -->
   <section class="faq-wrap">
     <h2 class="titulo-seccao">Perguntas frequentes</h2>
-
     <details class="faq-item">
       <summary>Quanto tempo demora a ativação?</summary>
       <p>Normalmente menos de 5 minutos após o envio do comprovativo. Em horário de pico pode levar até 30 minutos.</p>
     </details>
-
     <details class="faq-item">
       <summary>Posso cancelar quando quiser?</summary>
       <p>Sim. O Premium é mensal e podes voltar ao plano Básico em qualquer altura, sem penalizações.</p>
     </details>
-
     <details class="faq-item">
       <summary>As 20 fotos são por anúncio ou no total?</summary>
       <p>É por anúncio. Podes ter vários anúncios, cada um com até 20 fotos.</p>
     </details>
-
     <details class="faq-item">
       <summary>Como recebo o selo Verificado?</summary>
       <p>Após a ativação, o selo aparece automaticamente no teu perfil e em todos os teus anúncios.</p>
     </details>
   </section>
 
-  <!-- ===== RODAPÉ ===== -->
   <footer class="rodape">
     <p>© 2026 MZLINK — Encontre, Compare, Resolva. 🇲🇿</p>
   </footer>
@@ -326,60 +318,45 @@
   <script src="premium.js"></script>
   <script src="sessao.js" charset="UTF-8"></script>
   
-  <!-- ===== SCRIPT DE LÓGICA DE CEO: MOSTRAR CARTÃO SÓ PARA PREMIUM ===== -->
+  <!-- Lógica de exibição do cartão -->
   <script>
     document.addEventListener("DOMContentLoaded", async function() {
       const dataElement = document.getElementById("dataExpiracaoCard");
       const seccaoCartao = document.querySelector(".cartao-vip-seccao");
 
       try {
-        // 1. Verifica se o utilizador está logado
         if (typeof MZ === "undefined" || !MZ.sessaoValida) return;
-        
         const sessao = await MZ.sessaoValida();
         if (!sessao || !sessao.access_token) return;
 
-        // 2. Vai buscar os dados do utilizador logado
         const resUser = await fetch(MZ.url + "/auth/v1/user", {
           headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
         if (!resUser.ok) return;
         const user = await resUser.json();
 
-        // 3. Procura o perfil do utilizador (plano e data)
         const resPerfil = await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + encodeURIComponent(user.id) + "&select=plano,premium_ate", {
           headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
         
         const dadosPerfil = await resPerfil.json();
 
-        // 4. A LÓGICA: Só mostra o cartão se o plano for premium e tiver data
         if (dadosPerfil.length > 0 && dadosPerfil[0].plano === 'premium' && dadosPerfil[0].premium_ate) {
+          if (seccaoCartao) seccaoCartao.style.display = "flex";
           
-          if (seccaoCartao) {
-            seccaoCartao.style.display = "flex"; // Revela o cartão
-          }
-
           const dataExpiracao = new Date(dadosPerfil[0].premium_ate);
-          
           const dia = String(dataExpiracao.getDate()).padStart(2, '0');
           const mes = String(dataExpiracao.getMonth() + 1).padStart(2, '0');
           const ano = dataExpiracao.getFullYear();
           
-          if (dataElement) {
-            dataElement.innerText = `${dia}/${mes}/${ano}`;
-          }
+          if (dataElement) dataElement.innerText = `${dia}/${mes}/${ano}`;
         } else {
-          // Se for básico, garante que o cartão fica escondido
-          if (seccaoCartao) {
-            seccaoCartao.style.display = "none";
-          }
+          if (seccaoCartao) seccaoCartao.style.display = "none";
         }
-
       } catch (erro) {
         console.error("Erro ao buscar data de expiração:", erro);
       }
     });
   </script>
 </body>
-</html>
+          </html>
