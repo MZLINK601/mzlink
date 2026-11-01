@@ -1,179 +1,369 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Torne-se Premium no MZLINK — publique até 20 fotos, destaque-se e venda mais.">
-  <title>Conta Premium — MZLINK</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Torne-se Premium no MZLINK — publique até 20 fotos, destaque-se e venda mais.">
+  <title>Conta Premium — MZLINK</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="premium.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="premium.css">
+
+  <style>
+    /* ===== ESTILOS DO CARTÃO VIP ===== */
+    .cartao-vip-seccao {
+      display: flex;
+      justify-content: center;
+      margin: 40px auto 20px;
+      padding: 0 15px;
+    }
+
+    .card-vip {
+      width: 100%;
+      max-width: 380px;
+      height: 230px;
+      background: radial-gradient(circle at 50% 0%, #2a2a2a, #0a0a0a 80%);
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 25px 30px;
+      box-sizing: border-box;
+      border: 1px solid #333;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .card-vip:hover {
+      transform: translateY(-5px) rotateX(5deg) rotateY(-5deg);
+      box-shadow: 0 30px 50px rgba(0,0,0,0.9), 0 0 20px rgba(212, 175, 55, 0.2);
+    }
+
+    .costura-vip {
+      position: absolute;
+      top: 10px; left: 10px; right: 10px; bottom: 10px;
+      border: 1.5px dashed rgba(212, 175, 55, 0.5);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    .card-topo { text-align: center; z-index: 2; }
+    .card-logo {
+      font-family: 'Inter', sans-serif;
+      color: #d4af37;
+      font-weight: 900;
+      font-size: 1.2rem;
+      letter-spacing: 4px;
+      text-shadow: 0 2px 5px rgba(212, 175, 55, 0.4);
+    }
+
+    .card-meio { text-align: center; z-index: 2; margin-top: -10px; }
+    .texto-bem-vindo {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.8rem;
+      margin: 0;
+      background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1;
+      text-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+    }
+    .texto-modo {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 3px;
+      margin: 5px 0 0 0;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .card-base {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      z-index: 2;
+    }
+
+    .chip-ouro {
+      width: 45px; height: 35px;
+      background: linear-gradient(135deg, #e6c27a, #b38728);
+      border-radius: 6px; position: relative;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5); overflow: hidden;
+    }
+    .chip-linha-h { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(0,0,0,0.3); transform: translateY(-50%); }
+    .chip-linha-v { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: rgba(0,0,0,0.3); transform: translateX(-50%); }
+    .chip-centro { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 15px; border: 2px solid rgba(0,0,0,0.3); border-radius: 4px; }
+
+    .card-status {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 800; color: #d4af37;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+
+    .data-expiracao {
+      display: flex; flex-direction: column; align-items: flex-end;
+      position: absolute; bottom: 25px; right: 30px;
+    }
+    .data-expiracao span {
+      font-family: 'Inter', sans-serif; font-size: 0.55rem;
+      font-weight: 700; color: #a0a0a0; letter-spacing: 1px;
+    }
+    .data-expiracao strong {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1rem; font-weight: 800;
+      background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      letter-spacing: 1px;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ===== HEADER ===== -->
-  <header class="header">
-    <a href="index.html" class="logo">MZ<span>LINK</span></a>
-    <nav>
-      <a href="index.html">Início</a>
-      <a href="publicar.html">Publicar</a>
-      <a href="login.html">Entrar</a>
-    </nav>
-  </header>
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <a href="index.html" class="logo">MZ<span>LINK</span></a>
+    <nav>
+      <a href="index.html">Início</a>
+      <a href="publicar.html">Publicar</a>
+      <a href="login.html">Entrar</a>
+    </nav>
+  </header>
 
-  <!-- ===== HERO PREMIUM ===== -->
-  <section class="premium-hero">
-    <div class="premium-hero-content">
-      <span class="badge-dourado">⭐ Conta Premium</span>
-      <h1>Vende <span class="texto-dourado">3× mais</span> com o MZLINK Premium</h1>
-      <p>Mais fotos, mais destaque, mais clientes. Feito para quem leva o negócio a sério. 🇲🇿</p>
-      <a href="#pagamento" class="btn-ouro">Quero ser Premium →</a>
-    </div>
-    <div class="premium-hero-brilho"></div>
-  </section>
+  <!-- ===== CARTÃO VIP DE LUXO ===== -->
+  <section class="cartao-vip-seccao">
+    <div class="card-vip">
+      <div class="costura-vip"></div>
+      <div class="card-topo">
+        <span class="card-logo">MZLINK</span>
+      </div>
+      <div class="card-meio">
+        <p class="texto-bem-vindo">bem-vindo</p>
+        <p class="texto-modo">MODO PREMIUM</p>
+      </div>
+      <div class="card-base">
+        <div class="chip-ouro">
+          <div class="chip-linha-h"></div>
+          <div class="chip-linha-v"></div>
+          <div class="chip-centro"></div>
+        </div>
+        <div class="data-expiracao">
+          <span>VÁLIDO ATÉ</span>
+          <strong id="dataExpiracaoCard">--/--/----</strong>
+        </div>
+        <span class="card-status">MEMBRO 🇲🇿</span>
+      </div>
+    </div>
+  </section>
 
-  <!-- ===== COMPARAÇÃO DE PLANOS ===== -->
-  <section class="planos-wrap">
-    <h2 class="titulo-seccao">Escolhe o teu plano</h2>
-    <p class="subtitulo-seccao">Começa grátis. Faz upgrade quando quiseres.</p>
+  <!-- ===== HERO PREMIUM ===== -->
+  <section class="premium-hero">
+    <div class="premium-hero-content">
+      <span class="badge-dourado">⭐ Conta Premium</span>
+      <h1>Vende <span class="texto-dourado">3× mais</span> com o MZLINK Premium</h1>
+      <p>Mais fotos, mais destaque, mais clientes. Feito para quem leva o negócio a sério. 🇲🇿</p>
+      <a href="#pagamento" class="btn-ouro">Quero ser Premium →</a>
+    </div>
+    <div class="premium-hero-brilho"></div>
+  </section>
 
-    <div class="planos-grid">
+  <!-- ===== COMPARAÇÃO DE PLANOS ===== -->
+  <section class="planos-wrap">
+    <h2 class="titulo-seccao">Escolhe o teu plano</h2>
+    <p class="subtitulo-seccao">Começa grátis. Faz upgrade quando quiseres.</p>
 
-      <!-- BÁSICO -->
-      <article class="plano-card">
-        <header>
-          <h3>Básico</h3>
-          <p class="plano-preco">Grátis</p>
-        </header>
-        <ul class="plano-lista">
-          <li class="ok">Até <strong>4 fotos</strong> por anúncio</li>
-          <li class="ok">Até <strong>3 anúncios</strong> ativos</li>
-          <li class="ok">Contacto por WhatsApp</li>
-          <li class="no">Sem destaque na busca</li>
-          <li class="no">Sem selo verificado</li>
-          <li class="no">Sem estatísticas</li>
-        </ul>
-        <button class="btn-plano-basico" disabled>Plano atual</button>
-      </article>
+    <div class="planos-grid">
 
-      <!-- PREMIUM -->
-      <article class="plano-card plano-destaque">
-        <span class="fita-premium">MAIS ESCOLHIDO</span>
-        <header>
-          <h3>⭐ Premium</h3>
-          <p class="plano-preco">
-            <span class="valor">99</span>
-            <span class="mt">MT</span>
-            <span class="periodo">/mês</span>
-          </p>
-        </header>
-        <ul class="plano-lista">
-          <li class="ok">Até <strong>20 fotos</strong> por anúncio</li>
-          <li class="ok"><strong>Anúncios ilimitados</strong></li>
-          <li class="ok"><strong>Destaque na busca</strong> 🔝</li>
-          <li class="ok">Selo <strong>Verificado ✔️</strong></li>
-          <li class="ok">Estatísticas dos anúncios</li>
-          <li class="ok">Suporte prioritário</li>
-        </ul>
-        <a href="#pagamento" class="btn-plano-ouro">Ativar Premium</a>
-      </article>
+      <!-- BÁSICO -->
+      <article class="plano-card">
+        <header>
+          <h3>Básico</h3>
+          <p class="plano-preco">Grátis</p>
+        </header>
+        <ul class="plano-lista">
+          <li class="ok">Até <strong>4 fotos</strong> por anúncio</li>
+          <li class="ok">Até <strong>3 anúncios</strong> ativos</li>
+          <li class="ok">Contacto por WhatsApp</li>
+          <li class="no">Sem destaque na busca</li>
+          <li class="no">Sem selo verificado</li>
+          <li class="no">Sem estatísticas</li>
+        </ul>
+        <button class="btn-plano-basico" disabled>Plano atual</button>
+      </article>
 
-    </div>
-  </section>
+      <!-- PREMIUM -->
+      <article class="plano-card plano-destaque">
+        <span class="fita-premium">MAIS ESCOLHIDO</span>
+        <header>
+          <h3>⭐ Premium</h3>
+          <p class="plano-preco">
+            <span class="valor">99</span>
+            <span class="mt">MT</span>
+            <span class="periodo">/mês</span>
+          </p>
+        </header>
+        <ul class="plano-lista">
+          <li class="ok">Até <strong>20 fotos</strong> por anúncio</li>
+          <li class="ok"><strong>Anúncios ilimitados</strong></li>
+          <li class="ok"><strong>Destaque na busca</strong> 🔝</li>
+          <li class="ok">Selo <strong>Verificado ✔️</strong></li>
+          <li class="ok">Estatísticas dos anúncios</li>
+          <li class="ok">Suporte prioritário</li>
+        </ul>
+        <a href="#pagamento" class="btn-plano-ouro">Ativar Premium</a>
+      </article>
 
-  <!-- ===== PAGAMENTO ===== -->
-  <section class="pagamento-seccao" id="pagamento">
-    <div class="pagamento-box">
+    </div>
+  </section>
 
-      <div class="pagamento-topo">
-        <span class="icone-coroa">👑</span>
-        <h2>Ativar Conta Premium</h2>
-        <p class="sub">
-          Paga por <strong>M-Pesa</strong> ou <strong>e-Mola</strong> e envia o comprovativo por WhatsApp.
-          Ativação em menos de 5 minutos. ⚡
-        </p>
-      </div>
+  <!-- ===== PAGAMENTO ===== -->
+  <section class="pagamento-seccao" id="pagamento">
+    <div class="pagamento-box">
 
-      <p id="preco" class="preco-destaque">99 MT / mês</p>
+      <div class="pagamento-topo">
+        <span class="icone-coroa">👑</span>
+        <h2>Ativar Conta Premium</h2>
+        <p class="sub">
+          Paga por <strong>M-Pesa</strong> ou <strong>e-Mola</strong> e envia o comprovativo por WhatsApp.
+          Ativação em menos de 5 minutos. ⚡
+        </p>
+      </div>
 
-      <!-- M-PESA -->
-      <div class="metodo-pagamento">
-        <div class="metodo-logo mpesa">M-P</div>
-        <div class="metodo-info">
-          <strong id="numMpesa">—</strong>
-          <small id="nomeMpesa">—</small>
-        </div>
-        <button class="btn-copiar" data-copiar="numMpesa" aria-label="Copiar número M-Pesa">
-          📋 Copiar
-        </button>
-      </div>
+      <p id="preco" class="preco-destaque">99 MT / mês</p>
 
-      <!-- E-MOLA -->
-      <div class="metodo-pagamento">
-        <div class="metodo-logo emola">e-M</div>
-        <div class="metodo-info">
-          <strong id="numEmola">—</strong>
-          <small id="nomeEmola">—</small>
-        </div>
-        <button class="btn-copiar" data-copiar="numEmola" aria-label="Copiar número e-Mola">
-          📋 Copiar
-        </button>
-      </div>
+      <!-- M-PESA -->
+      <div class="metodo-pagamento">
+        <div class="metodo-logo mpesa">M-P</div>
+        <div class="metodo-info">
+          <strong id="numMpesa">—</strong>
+          <small id="nomeMpesa">—</small>
+        </div>
+        <button class="btn-copiar" data-copiar="numMpesa" aria-label="Copiar número M-Pesa">
+          📋 Copiar
+        </button>
+      </div>
 
-      <!-- PASSOS -->
-      <div class="passos">
-        <div class="passo"><span>1</span> Faz o pagamento</div>
-        <div class="passo"><span>2</span> Guarda o comprovativo</div>
-        <div class="passo"><span>3</span> Envia por WhatsApp</div>
-        <div class="passo"><span>4</span> Conta ativada ✅</div>
-      </div>
+      <!-- E-MOLA -->
+      <div class="metodo-pagamento">
+        <div class="metodo-logo emola">e-M</div>
+        <div class="metodo-info">
+          <strong id="numEmola">—</strong>
+          <small id="nomeEmola">—</small>
+        </div>
+        <button class="btn-copiar" data-copiar="numEmola" aria-label="Copiar número e-Mola">
+          📋 Copiar
+        </button>
+      </div>
 
-      <!-- BOTÃO WHATSAPP -->
-      <a id="btnWa" class="btn-whatsapp" target="_blank" rel="noopener">
-        📲 Enviar comprovativo por WhatsApp
-      </a>
+      <!-- PASSOS -->
+      <div class="passos">
+        <div class="passo"><span>1</span> Faz o pagamento</div>
+        <div class="passo"><span>2</span> Guarda o comprovativo</div>
+        <div class="passo"><span>3</span> Envia por WhatsApp</div>
+        <div class="passo"><span>4</span> Conta ativada ✅</div>
+      </div>
 
-      <p class="nota-seguranca">
-        🔒 Todos os pagamentos são confirmados manualmente pela equipa MZLINK.
-      </p>
+      <!-- BOTÃO WHATSAPP -->
+      <a id="btnWa" class="btn-whatsapp" target="_blank" rel="noopener">
+        📲 Enviar comprovativo por WhatsApp
+      </a>
 
-    </div>
-  </section>
+      <p class="nota-seguranca">
+        🔒 Todos os pagamentos são confirmados manualmente pela equipa MZLINK.
+      </p>
 
-  <!-- ===== FAQ ===== -->
-  <section class="faq-wrap">
-    <h2 class="titulo-seccao">Perguntas frequentes</h2>
+    </div>
+  </section>
 
-    <details class="faq-item">
-      <summary>Quanto tempo demora a ativação?</summary>
-      <p>Normalmente menos de 5 minutos após o envio do comprovativo. Em horário de pico pode levar até 30 minutos.</p>
-    </details>
+  <!-- ===== FAQ ===== -->
+  <section class="faq-wrap">
+    <h2 class="titulo-seccao">Perguntas frequentes</h2>
 
-    <details class="faq-item">
-      <summary>Posso cancelar quando quiser?</summary>
-      <p>Sim. O Premium é mensal e podes voltar ao plano Básico em qualquer altura, sem penalizações.</p>
-    </details>
+    <details class="faq-item">
+      <summary>Quanto tempo demora a ativação?</summary>
+      <p>Normalmente menos de 5 minutos após o envio do comprovativo. Em horário de pico pode levar até 30 minutos.</p>
+    </details>
 
-    <details class="faq-item">
-      <summary>As 20 fotos são por anúncio ou no total?</summary>
-      <p>É por anúncio. Podes ter vários anúncios, cada um com até 20 fotos.</p>
-    </details>
+    <details class="faq-item">
+      <summary>Posso cancelar quando quiser?</summary>
+      <p>Sim. O Premium é mensal e podes voltar ao plano Básico em qualquer altura, sem penalizações.</p>
+    </details>
 
-    <details class="faq-item">
-      <summary>Como recebo o selo Verificado?</summary>
-      <p>Após a ativação, o selo aparece automaticamente no teu perfil e em todos os teus anúncios.</p>
-    </details>
-  </section>
+    <details class="faq-item">
+      <summary>As 20 fotos são por anúncio ou no total?</summary>
+      <p>É por anúncio. Podes ter vários anúncios, cada um com até 20 fotos.</p>
+    </details>
 
-  <!-- ===== RODAPÉ ===== -->
-  <footer class="rodape">
-    <p>© 2026 MZLINK — Encontre, Compare, Resolva. 🇲🇿</p>
-  </footer>
+    <details class="faq-item">
+      <summary>Como recebo o selo Verificado?</summary>
+      <p>Após a ativação, o selo aparece automaticamente no teu perfil e em todos os teus anúncios.</p>
+    </details>
+  </section>
 
-  <script src="premium.js"></script>
+  <!-- ===== RODAPÉ ===== -->
+  <footer class="rodape">
+    <p>© 2026 MZLINK — Encontre, Compare, Resolva. 🇲🇿</p>
+  </footer>
+
+  <script src="premium.js"></script>
+  
+  <!-- ===== SCRIPT PARA PUXAR A DATA DO SUPABASE ===== -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async function() {
+      const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
+      const dataElement = document.getElementById("dataExpiracaoCard");
+
+      try {
+        // 1. Verifica se o utilizador está logado
+        if (typeof MZ === "undefined" || !MZ.sessaoValida) return;
+        const sessao = await MZ.sessaoValida();
+        if (!sessao || !sessao.access_token) return;
+
+        // 2. Vai buscar os dados do utilizador logado
+        const resUser = await fetch(SUPABASE_URL + "/auth/v1/user", {
+          headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
+        });
+        if (!resUser.ok) return;
+        const user = await resUser.json();
+
+        // 3. Procura o perfil do utilizador na tabela 'profissionais' (coluna premium_ate)
+        const resPerfil = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + user.id + "&select=premium_ate", {
+          headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
+        });
+        
+        const dadosPerfil = await resPerfil.json();
+
+        // 4. Se encontrou e tem data, formata e mostra no cartão
+        if (dadosPerfil.length > 0 && dadosPerfil[0].premium_ate) {
+          const dataExpiracao = new Date(dadosPerfil[0].premium_ate);
+          
+          // Formata para DD/MM/AAAA
+          const dia = String(dataExpiracao.getDate()).padStart(2, '0');
+          const mes = String(dataExpiracao.getMonth() + 1).padStart(2, '0');
+          const ano = dataExpiracao.getFullYear();
+          
+          if (dataElement) {
+            dataElement.innerText = `${dia}/${mes}/${ano}`;
+          }
+        } else {
+          // Se não for premium (ou se a data for nula), mostra um traço
+          if (dataElement) dataElement.innerText = "--/--/----";
+        }
+
+      } catch (erro) {
+        console.error("Erro ao buscar data de expiração:", erro);
+        if (dataElement) dataElement.innerText = "ERRO";
+      }
+    });
+  </script>
 </body>
-</html>
+  </html>
