@@ -32,7 +32,6 @@
 
     // ===== USER LOGADO =====
     if (sessao && sessao.access_token) {
-      // Usa "name" (como o login.js guarda)
       var nome = sessao.name || sessao.nome || sessao.email || "Utilizador";
 
       if (nomeEl) {
@@ -54,10 +53,10 @@
     else {
       if (nomeEl) nomeEl.textContent = "...";
 
+      // AQUI ESTÁ A CORREÇÃO: O botão de Registar foi apagado!
       nav.innerHTML =
         '<button onclick="location.href=\'premium.html\'" class="btn-premium">⭐ Premium</button>' +
-        '<button onclick="location.href=\'login.html\'" class="btn-nav">Entrar</button>' +
-        '<button onclick="location.href=\'registo.html\'" class="btn-nav">📝 Registar</button>';
+        '<button onclick="location.href=\'login.html\'" class="btn-nav">Entrar</button>';
     }
   }
 
