@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     let user = null;
     let userMeta = null;
     let perfilDB = null;
-    let arquivoAvatarOnboarding = null; // Guarda a foto nova
+    let arquivoAvatarOnboarding = null; 
 
     const headers = {
         "apikey": SUPABASE_KEY,
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // ==========================================
-    // ECRÃ DE BOAS-VINDAS COM FOTO
+    // ECRÃ DE BOAS-VINDAS
     // ==========================================
     function renderizarOnboarding() {
         let nomeAuth = userMeta.nome || userMeta.name || user.email.split("@")[0];
@@ -109,7 +109,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             </div>
         `;
 
-        // Lógica de Preview da foto
         document.getElementById("inputAvatarOnboarding").addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -146,7 +145,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             try {
                 let urlAvatarFinal = userMeta.avatar_url || null;
 
-                // 1. Se escolheu foto, faz upload PRIMEIRO
                 if (arquivoAvatarOnboarding) {
                     const ext = arquivoAvatarOnboarding.name.split(".").pop() || "jpg";
                     const caminho = user.id + "/avatar." + ext;
@@ -164,7 +162,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     if (rUpload.ok) {
                         urlAvatarFinal = SUPABASE_URL + "/storage/v1/object/public/avatares/" + caminho;
-                        // Atualiza o Auth com a foto
                         await fetch(SUPABASE_URL + "/auth/v1/user", {
                             method: "PUT",
                             headers: { ...headers, "Content-Type": "application/json" },
@@ -174,15 +171,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 }
 
-                // 2. Cria o perfil
+                // AQUI ESTÁ A CORREÇÃO: categoria "loja" para não aparecer na página inicial
                 const dadosLoja = {
                     user_id: user.id,
                     nome: nome,
                     whatsapp: "258" + whats,
                     local: local,
                     plano: "basico",
-                    categoria: "servicos",
-                    tipo: "Geral",
+                    categoria: "loja",
+                    tipo: "Perfil da Loja",
                     preco: "A combinar",
                     fotos: [],
                     descricao: "Loja criada no MZLINK."
@@ -252,7 +249,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             </div>
         `;
 
-        // Lógica de upload da foto no perfil normal
         document.getElementById("inputAvatar").addEventListener("change", async function (e) {
             const file = e.target.files[0];
             if (!file) return;
