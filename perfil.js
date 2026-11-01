@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 }
 
-                // O PAYLOAD FINAL (Sem 'descricao' e com 'preco' numérico nulo)
+                // O PREÇO AGORA VAI COMO NULL (vazio), NÃO COMO TEXTO!
                 const dadosLoja = {
                     user_id: user.id,
                     nome: nome,
@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (res.ok) {
                     msg.style.color = "green";
                     msg.textContent = "Loja criada com sucesso! A carregar...";
-                    setTimeout(() => window.location.href = "perfil.html?v=4000", 1000);
+                    setTimeout(() => window.location.href = "perfil.html?v=5000", 1000);
                 } else {
                     const erro = await res.json();
                     msg.textContent = "Erro: " + (erro.message || "Tenta novamente.");
@@ -269,7 +269,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 });
 
                 userMeta = novoMeta;
-                window.location.href = "perfil.html?v=4001";
+                window.location.href = "perfil.html?v=5001";
             } catch (err) { alert("Erro de ligação."); }
         });
     }
@@ -317,7 +317,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 sessao.name = dados.nome;
                 localStorage.setItem(CHAVE, JSON.stringify(sessao));
             }
-            window.location.href = "perfil.html?v=4002";
+            window.location.href = "perfil.html?v=5002";
         } catch (e) { alert("Erro ao guardar. Tenta de novo."); }
     }
 });
