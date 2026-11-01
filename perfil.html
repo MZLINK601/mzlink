@@ -9,7 +9,7 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
         font-family: 'Inter', system-ui, sans-serif;
-        background: #f4f7f6; /* Fundo ligeiramente esverdeado para dar aquele toque de Moz */
+        background: #f4f7f6;
         color: #1a1a1a;
         line-height: 1.6;
         min-height: 100vh;
@@ -24,11 +24,11 @@
         position: sticky;
         top: 0;
         z-index: 10;
-        border-bottom: 3px solid #E31937; /* Linha vermelha da bandeira */
+        border-bottom: 3px solid #E31937;
       }
       .header img { height: 38px; }
       .header a.voltar {
-        color: #009639; /* Verde de Moz */
+        color: #009639;
         text-decoration: none;
         font-weight: 800;
         font-size: 0.9rem;
@@ -40,12 +40,11 @@
       }
       .hero { text-align: center; padding: 20px 0 24px; position: relative; }
       
-      /* Avatar com botão de câmara */
       .avatar-grande {
         width: 110px;
         height: 110px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #009639, #006b28); /* Verde */
+        background: linear-gradient(135deg, #009639, #006b28);
         color: #fff;
         display: grid;
         place-items: center;
@@ -59,16 +58,16 @@
         overflow: hidden;
       }
       .avatar-grande.premium {
-        background: linear-gradient(135deg, #d4af37, #f5d76e); /* Dourado */
+        background: linear-gradient(135deg, #d4af37, #f5d76e);
         color: #1a1a1a;
         box-shadow: 0 8px 24px rgba(212,175,55,.4);
-        border-color: #1a1a1a; /* Borda preta para destacar o ouro */
+        border-color: #1a1a1a;
       }
       .avatar-grande img {
         width: 100%; height: 100%; object-fit: cover; display: none; position: absolute; top: 0; left: 0;
       }
       .icone-camara {
-        position: absolute; bottom: 0; right: 0; background: #E31937; color: white; /* Vermelho */
+        position: absolute; bottom: 0; right: 0; background: #E31937; color: white;
         border-radius: 50%; width: 32px; height: 32px; display: grid; place-items: center;
         font-size: 1rem; border: 2px solid white; z-index: 2;
       }
@@ -76,7 +75,6 @@
       .hero h1 { font-size: 1.4rem; font-weight: 900; color: #0f1115; margin-bottom: 4px; }
       .hero .email { font-size: 0.85rem; color: #667085; margin-bottom: 12px; }
       
-      /* Banner de Orgulho Nacional */
       .badge-moz {
         display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
         background: #fff; border: 1px solid #e2e8f0; border-radius: 999px;
@@ -96,7 +94,7 @@
       .card {
         background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 14px;
         box-shadow: 0 4px 16px rgba(0,0,0,.04); border: 1px solid #eef1f5;
-        border-left: 4px solid #009639; /* Detalhe Verde */
+        border-left: 4px solid #009639;
       }
       .card h2 {
         font-size: 0.8rem; font-weight: 800; color: #667085;
@@ -158,8 +156,8 @@
         <div class="loading">A carregar perfil...</div>
     </main>
 
-    <script src="sessao.js" charset="UTF-8"></script>
-    <script src="perfil.js?v=2"></script>
+    <!-- Sem o sessao.js para não haver conflitos -->
+    <script src="perfil.js?v=5"></script>
 
 </body>
 </html>
