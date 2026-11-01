@@ -1,258 +1,163 @@
-/* ============================================================
-   MZLINK · Perfil do Utilizador 👤 (100% Moçambicano)
-   ============================================================ */
+document.addEventListener("DOMContentLoaded", async function () {
+    const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
+    const conteudo = document.getElementById("conteudo");
 
-(async function () {
-  'use strict';
-
-  var conteudo = document.getElementById("conteudo");
-  var CHAVE = "mzlink_sessao";
-
-  function lerSessao() {
-    try { return JSON.parse(localStorage.getItem(CHAVE)); } catch (e) { return null; }
-  }
-
-  var sessao = lerSessao();
-
-  if (!sessao || !sessao.access_token) {
-    window.location.href = "login.html?next=perfil.html";
-    return;
-  }
-
-  var user = null;
-  var plano = "basico";
-  var userMeta = null;
-
-  function cabecalhos() {
-    return {
-      apikey: MZ.key,
-      Authorization: "Bearer " + sessao.access_token
-    };
-  }
-
-  function limpar(t) {
-    var d = document.createElement("div");
-    d.textContent = String(t == null ? "" : t);
-    return d.innerHTML;
-  }
-
-  async function carregar() {
-    try {
-      var rUser = await fetch(MZ.url + "/auth/v1/user", { headers: cabecalhos() });
-      if (!rUser.ok) throw new Error("sessao");
-      user = await rUser.json();
-      userMeta = user.user_metadata || {};
-
-      var rPlano = await fetch(
-        MZ.url + "/rest/v1/profissionais?select=plano&user_id=eq." +
-        encodeURIComponent(user.id) + "&limit=1",
-        { headers: cabecalhos() }
-      );
-
-      if (rPlano.ok) {
-        var lista = await rPlano.json();
-        plano = (lista && lista[0] && lista[0].plano) || "basico";
-      }
-
-      renderizar();
-    } catch (e) {
-      conteudo.innerHTML = '<div class="loading">Sessão expirada. Faz login de novo.</div>';
-      setTimeout(function () { window.location.href = "login.html"; }, 1500);
-    }
-  }
-
-  function renderizar() {
-    var nome = userMeta.nome || userMeta.name || user.email.split("@")[0];
-    var telefone = String(userMeta.whatsapp || "").replace(/^258/, "");
-    var inicial = nome.charAt(0).toUpperCase();
-    var ehPremium = plano === "premium";
-    var urlAvatar = userMeta.avatar_url;
-
-    var html =
-      '<div class="hero">' +
-        '<div class="avatar-grande ' + (ehPremium ? 'premium' : '') + '" id="avatarContainer" onclick="document.getElementById(\'inputAvatar\').click()">' +
-          '<span id="avatarLetra" style="' + (urlAvatar ? 'display:none;' : '') + '">' + limpar(inicial) + '</span>' +
-          '<img id="avatarImagem" src="' + (urlAvatar || '') + '" style="' + (urlAvatar ? 'display:block;' : 'display:none;') + '">' +
-          '<div class="icone-camara">📷</div>' +
-        '</div>' +
-        '<input type="file" id="inputAvatar" accept="image/*" style="display: none;">' +
-        '<div class="badge-moz">🇲🇿 Orgulho Nacional</div>' +
-        '<h1>' + limpar(nome) + '</h1>' +
-        '<p class="email">' + limpar(user.email) + '</p>' +
-        '<span class="plano-badge ' + (ehPremium ? 'premium' : 'basico') + '">' +
-          (ehPremium ? '⭐ PREMIUM' : '🆓 Básico') +
-        '</span>' +
-      '</div>' +
-
-      '<div class="card">' +
-        '<h2>📝 Dados pessoais</h2>' +
-        '<div class="campo">' +
-          '<div class="campo-info">' +
-            '<label>Nome</label>' +
-            '<div class="valor" id="nomeValor">' + limpar(nome) + '</div>' +
-          '</div>' +
-          '<button class="btn-editar" onclick="window.MZPerfil.editarNome()">✏️ Editar</button>' +
-        '</div>' +
-        '<div class="campo">' +
-          '<div class="campo-info">' +
-            '<label>WhatsApp</label>' +
-            '<div class="valor" id="telValor">' + (telefone ? '258' + limpar(telefone) : '—') + '</div>' +
-          '</div>' +
-          '<button class="btn-editar" onclick="window.MZPerfil.editarTelefone()">✏️ Editar</button>' +
-        '</div>' +
-        '<div class="campo">' +
-          '<div class="campo-info">' +
-            '<label>Email (não editável)</label>' +
-            '<div class="valor bloqueado">' + limpar(user.email) + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="aviso" id="avisoPerfil"></div>' +
-      '</div>' +
-
-      '<div class="card">' +
-        '<h2>📢 Os meus anúncios</h2>' +
-        '<a href="publicar.html" class="btn-acao principal">📢 Ver os meus anúncios</a>' +
-      '</div>' +
-
-      '<div class="card">' +
-        '<h2>🔐 Segurança</h2>' +
-        '<button class="btn-acao sair" onclick="window.MZPerfil.sair()">🚪 Sair da conta</button>' +
-      '</div>' +
-
-      '<a href="index.html" class="btn-voltar">← Voltar ao MZLINK</a>';
-
-    conteudo.innerHTML = html;
-
-    // Ligar o upload da foto
-    var inputAvatar = document.getElementById("inputAvatar");
-    inputAvatar.addEventListener("change", async function (e) {
-      var file = e.target.files[0];
-      if (!file) return;
-
-      if (file.size > 2 * 1024 * 1024) {
-        alert("A foto é muito grande. Escolhe uma menor que 2MB.");
+    // 1. Verificar se o utilizador está logado
+    let sessaoStr = localStorage.getItem("mzlink_sessao");
+    if (!sessaoStr) {
+        window.location.href = "login.html";
         return;
-      }
+    }
 
-      try {
-        document.getElementById("avatarLetra").textContent = "...";
-        
-        var ext = file.name.split(".").pop() || "jpg";
-        var caminho = user.id + "/avatar." + ext;
-
-        // 1. Upload para o Supabase Storage (bucket avatares)
-        var rUpload = await fetch(MZ.url + "/storage/v1/object/avatares/" + caminho, {
-          method: "POST",
-          headers: {
-            apikey: MZ.key,
-            Authorization: "Bearer " + sessao.access_token,
-            "Content-Type": file.type,
-            "x-upsert": "true"
-          },
-          body: file
+    let sessao = JSON.parse(sessaoStr);
+    
+    // 2. Buscar dados do perfil do utilizador no Supabase
+    try {
+        const res = await fetch(SUPABASE_URL + `/rest/v1/profissionais?user_id=eq.${sessao.user.id}&select=*`, {
+            headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
         });
+        const perfil = await res.json();
 
-        if (!rUpload.ok) {
-          alert("Erro ao enviar a foto.");
-          renderizar();
-          return;
+        // ==========================================
+        // CENÁRIO A: O UTILIZADOR É NOVO (Não tem perfil)
+        // ==========================================
+        if (perfil.length === 0) {
+            conteudo.innerHTML = `
+                <div class="hero" style="padding-top: 10px;">
+                    <h1 style="color: #1E40AF;">👋 Bem-vindo ao MZLINK!</h1>
+                    <p style="color: #667085; margin-bottom: 20px;">A tua conta foi criada com sucesso. Para começares a vender, completa o teu perfil de vendedor abaixo.</p>
+                </div>
+                <div class="card" style="border-left-color: #1E40AF;">
+                    <h2>Criar Perfil de Vendedor</h2>
+                    <form id="formNovoPerfil">
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:800; color:#667085; margin-bottom:5px;">NOME DA LOJA / NEGÓCIO</label>
+                            <input type="text" id="novoNome" required placeholder="Ex: João Telemóveis" style="width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:8px; font-family:inherit; font-weight:600;">
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:800; color:#667085; margin-bottom:5px;">NÚMERO DE WHATSAPP</label>
+                            <input type="tel" id="novoWhats" required placeholder="Ex: 84 000 0000" style="width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:8px; font-family:inherit; font-weight:600;">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:800; color:#667085; margin-bottom:5px;">PROVÍNCIA</label>
+                            <select id="novoLocal" required style="width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:8px; font-family:inherit; font-weight:600; background:#fff;">
+                                <option value="">Escolhe a tua província</option>
+                                <option value="Maputo">Maputo</option>
+                                <option value="Gaza">Gaza</option>
+                                <option value="Inhambane">Inhambane</option>
+                                <option value="Sofala">Sofala</option>
+                                <option value="Manica">Manica</option>
+                                <option value="Tete">Tete</option>
+                                <option value="Zambézia">Zambézia</option>
+                                <option value="Nampula">Nampula</option>
+                                <option value="Niassa">Niassa</option>
+                                <option value="Cabo Delgado">Cabo Delgado</option>
+                            </select>
+                        </div>
+                        <button type="submit" id="btnCriarPerfil" class="btn-acao principal">Guardar e Começar a Vender</button>
+                        <p id="msgNovoPerfil" style="text-align:center; font-weight:bold; margin-top:10px; color:red;"></p>
+                    </form>
+                </div>
+            `;
+
+            // Lógica para guardar o novo perfil
+            document.getElementById("formNovoPerfil").addEventListener("submit", async function(e) {
+                e.preventDefault();
+                const btn = document.getElementById("btnCriarPerfil");
+                const msg = document.getElementById("msgNovoPerfil");
+                btn.textContent = "A criar perfil...";
+                btn.disabled = true;
+
+                const dadosNovos = {
+                    user_id: sessao.user.id,
+                    nome: document.getElementById("novoNome").value.trim(),
+                    whatsapp: document.getElementById("novoWhats").value.trim(),
+                    local: document.getElementById("novoLocal").value,
+                    plano: "basico"
+                };
+
+                try {
+                    const saveRes = await fetch(SUPABASE_URL + "/rest/v1/profissionais", {
+                        method: "POST",
+                        headers: { 
+                            "Content-Type": "application/json", 
+                            apikey: SUPABASE_KEY,
+                            Authorization: "Bearer " + sessao.access_token
+                        },
+                        body: JSON.stringify(dadosNovos)
+                    });
+
+                    if (saveRes.ok) {
+                        msg.style.color = "green";
+                        msg.textContent = "Perfil criado! A redirecionar...";
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        const erro = await saveRes.json();
+                        msg.textContent = "Erro ao criar: " + (erro.message || "Tenta novamente.");
+                        btn.textContent = "Guardar e Começar a Vender";
+                        btn.disabled = false;
+                    }
+                } catch (err) {
+                    msg.textContent = "Erro de rede.";
+                    btn.textContent = "Guardar e Começar a Vender";
+                    btn.disabled = false;
+                }
+            });
+
+        } 
+        // ==========================================
+        // CENÁRIO B: O UTILIZADOR JÁ EXISTE (Mostrar Perfil Normal)
+        // ==========================================
+        else {
+            const dados = perfil[0];
+            const isPremium = dados.plano === "premium";
+            const inicial = dados.nome ? dados.nome.charAt(0).toUpperCase() : "U";
+
+            conteudo.innerHTML = `
+                <div class="hero">
+                    <div class="avatar-grande ${isPremium ? 'premium' : ''}">
+                        ${inicial}
+                        <div class="icone-camara">📷</div>
+                    </div>
+                    <h1>${dados.nome}</h1>
+                    <p class="email">${sessao.user.email}</p>
+                    
+                    <div class="badge-moz">🇲🇿 Orgulho Nacional</div><br>
+                    
+                    <span class="plano-badge ${isPremium ? 'premium' : 'basico'}">
+                        ${isPremium ? '👑 PREMIUM' : 'Básico'}
+                    </span>
+                </div>
+
+                <div class="card">
+                    <h2>Dados Públicos</h2>
+                    <div class="campo">
+                        <div class="campo-info">
+                            <label>Nome da Loja</label>
+                            <div class="valor">${dados.nome}</div>
+                        </div>
+                    </div>
+                    <div class="campo">
+                        <div class="campo-info">
+                            <label>WhatsApp</label>
+                            <div class="valor">${dados.whatsapp}</div>
+                        </div>
+                    </div>
+                    <div class="campo">
+                        <div class="campo-info">
+                            <label>Localização</label>
+                            <div class="valor">${dados.local}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="index.html" class="btn-voltar">Voltar à Página Inicial</a>
+            `;
         }
 
-        // 2. Link público
-        var urlPublica = MZ.url + "/storage/v1/object/public/avatares/" + caminho;
-
-        // 3. Guardar no perfil do utilizador
-        var novoMeta = Object.assign({}, userMeta, { avatar_url: urlPublica });
-        
-        await fetch(MZ.url + "/auth/v1/user", {
-          method: "PUT",
-          headers: Object.assign({ "Content-Type": "application/json" }, cabecalhos()),
-          body: JSON.stringify({ data: novoMeta })
-        });
-
-        userMeta = novoMeta;
-        renderizar();
-        alert("✅ Foto de perfil atualizada!");
-
-      } catch (err) {
-        alert("Erro de ligação ao enviar a foto.");
-        renderizar();
-      }
-    });
-  }
-
-  function mostrarAviso(texto, tipo) {
-    var el = document.getElementById("avisoPerfil");
-    if (!el) return;
-    el.textContent = texto;
-    el.className = "aviso visivel " + (tipo === "ok" ? "ok" : "erro");
-    setTimeout(function () { el.classList.remove("visivel"); }, 3500);
-  }
-
-  function editarNome() {
-    var atual = userMeta.nome || userMeta.name || "";
-    var novo = prompt("✏️ Editar nome:", atual);
-    if (novo === null) return;
-    novo = novo.trim();
-    if (novo.length < 2) { mostrarAviso("Nome muito curto.", "erro"); return; }
-    if (novo.length > 60) { mostrarAviso("Nome muito longo.", "erro"); return; }
-    if (novo === atual) return;
-    guardar({ nome: novo });
-  }
-
-  function editarTelefone() {
-    var atual = String(userMeta.whatsapp || "").replace(/^258/, "");
-    var novo = prompt("✏️ Editar WhatsApp (ex: 841234567):", atual);
-    if (novo === null) return;
-    novo = novo.replace(/\s/g, "");
-    if (!/^(8[2-7])\d{7}$/.test(novo)) { mostrarAviso("Número inválido.", "erro"); return; }
-    if (novo === atual) return;
-    guardar({ whatsapp: "258" + novo });
-  }
-
-  async function guardar(dados) {
-    try {
-      var novoMeta = Object.assign({}, userMeta, dados);
-
-      var r = await fetch(MZ.url + "/auth/v1/user", {
-        method: "PUT",
-        headers: Object.assign({ "Content-Type": "application/json" }, cabecalhos()),
-        body: JSON.stringify({ data: novoMeta })
-      });
-
-      if (!r.ok) {
-        mostrarAviso("Erro ao guardar. Tenta de novo.", "erro");
-        return;
-      }
-
-      userMeta = novoMeta;
-
-      try {
-        var s = JSON.parse(localStorage.getItem(CHAVE)) || {};
-        if (dados.nome) s.nome = dados.nome;
-        if (dados.whatsapp) s.whatsapp = dados.whatsapp;
-        localStorage.setItem(CHAVE, JSON.stringify(s));
-      } catch (e) {}
-
-      renderizar();
-      mostrarAviso("✅ Guardado com sucesso!", "ok");
-    } catch (e) {
-      mostrarAviso("Sem ligação à internet.", "erro");
+    } catch (erro) {
+        console.error(erro);
+        conteudo.innerHTML = `<div class="aviso erro visivel">Erro ao carregar o perfil. Verifica a tua ligação à internet.</div>`;
     }
-  }
-
-  function sair() {
-    if (!confirm("Queres sair da conta?")) return;
-    try { localStorage.removeItem(CHAVE); } catch (e) {}
-    window.location.href = "index.html";
-  }
-
-  window.MZPerfil = {
-    editarNome: editarNome,
-    editarTelefone: editarTelefone,
-    sair: sair
-  };
-
-  carregar();
-
-})();
+});
