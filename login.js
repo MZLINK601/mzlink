@@ -1,124 +1,161 @@
-/* ============================================================
-   MZLINK · Login via Código (OTP)
-   ============================================================ */
+document.addEventListener("DOMContentLoaded", function () {
+    // Variáveis do Supabase
+    const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
 
-var SUPABASE_URL_LOGIN = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
-var SUPABASE_KEY_LOGIN = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
-var emailGuardadoLogin = "";
+    // Elementos HTML
+    const formLogin = document.getElementById("formLogin");
+    const formCodigoLogin = document.getElementById("formCodigoLogin");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const msgLogin = document.getElementById("msgLogin");
+    const msgEmail = document.getElementById("msgEmail");
+    const msgCodigo = document.getElementById("msgCodigo");
+    
+    const btnEntrarSenha = document.getElementById("btnEntrarSenha");
+    const btnAtivarOtp = document.getElementById("btnAtivarOtp");
+    const toggleSenha = document.getElementById("toggleSenha");
 
-// Função 1: Enviar o código
-window.enviarCodigoLogin = async function() {
-  // TESTE: Se o botão funcionar, este alerta vai aparecer!
-  alert("O botão foi clicado! A ligar ao servidor...");
+    let emailTemporario = ""; // Para o fluxo do OTP
 
-  var emailInput = document.getElementById("email");
-  var btnEnviar = document.getElementById("btnEnviarCodigoLogin");
-  var msgEmail = document.getElementById("msgEmail");
-  
-  if (!emailInput.value || !emailInput.value.includes("@")) {
-    msgEmail.textContent = "Por favor, escreve um email válido.";
-    return;
-  }
-
-  var email = emailInput.value.trim();
-  
-  btnEnviar.disabled = true;
-  btnEnviar.textContent = "A enviar...";
-  msgEmail.textContent = "";
-
-  try {
-    var r = await fetch(SUPABASE_URL_LOGIN + "/auth/v1/otp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_KEY_LOGIN
-      },
-      body: JSON.stringify({
-        email: email,
-        create_user: false 
-      })
+    // --- MOSTRAR / OCULTAR PALAVRA-PASSE ---
+    toggleSenha.addEventListener("click", function () {
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleSenha.textContent = "🙈";
+        } else {
+            passwordInput.type = "password";
+            toggleSenha.textContent = "👁️";
+        }
     });
 
-    if (r.ok) {
-      emailGuardadoLogin = email;
-      document.getElementById("formEmailLogin").style.display = "none";
-      document.getElementById("formCodigoLogin").style.display = "block";
-      
-      var msgCodigo = document.getElementById("msgCodigo");
-      msgCodigo.style.color = "green";
-      msgCodigo.textContent = "✅ Código enviado! Verifica o teu email.";
-    } else {
-      var erro = await r.json();
-      alert("Erro do servidor: " + (erro.msg || "Este email não está registado."));
-      btnEnviar.disabled = false;
-      btnEnviar.textContent = "Receber Código de Acesso";
-    }
-  } catch (err) {
-    alert("Erro de ligação à internet.");
-    btnEnviar.disabled = false;
-    btnEnviar.textContent = "Receber Código de Acesso";
-  }
-};
+    // --- LÓGICA 1: ENTRAR COM PALAVRA-PASSE ---
+    formLogin.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
 
-// Função 2: Validar o código
-window.validarCodigoLogin = async function() {
-  var codigoInput = document.getElementById("codigo");
-  var btnEntrar = document.getElementById("btnEntrar");
-  var msgCodigo = document.getElementById("msgCodigo");
+        btnEntrarSenha.textContent = "A entrar...";
+        btnEntrarSenha.disabled = true;
+        msgLogin.textContent = "";
 
-  if (!codigoInput.value) {
-    msgCodigo.textContent = "Insere o código.";
-    return;
-  }
+        try {
+            let res = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY },
+                body: JSON.stringify({ email: email, password: password })
+            });
 
-  var codigo = codigoInput.value.trim();
-  
-  btnEntrar.disabled = true;
-  btnEntrar.textContent = "A validar...";
-  msgCodigo.textContent = "";
+            let data = await res.json();
 
-  try {
-    var r = await fetch(SUPABASE_URL_LOGIN + "/auth/v1/verify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_KEY_LOGIN
-      },
-      body: JSON.stringify({
-        type: "email",
-        email: emailGuardadoLogin,
-        token: codigo
-      })
+            if (res.ok) {
+                guardarSessao(data);
+                msgLogin.style.color = "green";
+                msgLogin.textContent = "Login efetuado! A redirecionar...";
+                setTimeout(() => window.location.href = "index.html", 1000);
+            } else {
+                msgLogin.style.color = "red";
+                // Se a senha estiver errada ou a conta não existir
+                msgLogin.textContent = "E-mail ou palavra-passe incorretos.";
+            }
+
+        } catch (error) {
+            console.error(error);
+            msgLogin.style.color = "red";
+            msgLogin.textContent = "Erro de rede. Tenta novamente.";
+        } finally {
+            btnEntrarSenha.textContent = "Entrar";
+            btnEntrarSenha.disabled = false;
+        }
     });
 
-    if (r.ok) {
-      var dados = await r.json();
-      
-      try {
-        localStorage.setItem("mzlink_sessao", JSON.stringify({
-          access_token: dados.access_token,
-          refresh_token: dados.refresh_token,
-          expires_at: dados.expires_at,
-          name: (dados.user.user_metadata && dados.user.user_metadata.name) || dados.user.email.split('@')[0],
-          email: dados.user.email
-        }));
-      } catch (e) {}
+    // --- LÓGICA 2: ATIVAR FLUXO DE CÓDIGO (OTP) ---
+    btnAtivarOtp.addEventListener("click", async function () {
+        const email = emailInput.value.trim();
+        if (!email) {
+            msgLogin.style.color = "red";
+            msgLogin.textContent = "Insere o teu e-mail primeiro para receber o código.";
+            return;
+        }
 
-      msgCodigo.style.color = "green";
-      msgCodigo.textContent = "✅ Sucesso! A entrar...";
-      
-      setTimeout(function () {
-        window.location.href = "index.html";
-      }, 1000);
+        btnAtivarOtp.textContent = "A enviar código...";
+        btnAtivarOtp.disabled = true;
+        
+        try {
+            let res = await fetch(SUPABASE_URL + "/auth/v1/otp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY },
+                body: JSON.stringify({ email: email, create_user: false }) // create_user false: só entra se já tiver conta
+            });
 
-    } else {
-      alert("❌ Código inválido ou expirado. Tenta de novo.");
-      btnEntrar.disabled = false;
-      btnEntrar.textContent = "Entrar";
+            if (res.ok) {
+                emailTemporario = email;
+                // Esconde o formulário de senha e mostra o do código
+                formLogin.style.display = "none";
+                document.querySelector(".divisor-ou").style.display = "none";
+                btnAtivarOtp.style.display = "none";
+                formCodigoLogin.style.display = "block";
+                
+                msgEmail.style.color = "green";
+                msgEmail.textContent = "Código enviado! Verifica o teu e-mail.";
+            } else {
+                const data = await res.json();
+                msgLogin.style.color = "red";
+                msgLogin.textContent = data.msg || "Erro ao enviar o código. Verifica se a conta existe.";
+            }
+        } catch (err) {
+            msgLogin.style.color = "red";
+            msgLogin.textContent = "Erro de rede.";
+        } finally {
+            btnAtivarOtp.textContent = "Receber Código por E-mail";
+            btnAtivarOtp.disabled = false;
+        }
+    });
+
+    // --- LÓGICA 3: VALIDAR O CÓDIGO (OTP) ---
+    formCodigoLogin.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const codigo = document.getElementById("codigo").value.trim();
+        const btnValidarOtp = document.getElementById("btnValidarOtp");
+
+        btnValidarOtp.textContent = "A validar...";
+        btnValidarOtp.disabled = true;
+
+        try {
+            let res = await fetch(SUPABASE_URL + "/auth/v1/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY },
+                body: JSON.stringify({ type: "email", email: emailTemporario, token: codigo })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                guardarSessao(data);
+                msgCodigo.style.color = "green";
+                msgCodigo.textContent = "Código válido! A redirecionar...";
+                setTimeout(() => window.location.href = "index.html", 1000);
+            } else {
+                msgCodigo.style.color = "red";
+                msgCodigo.textContent = "Código inválido ou expirado. Tenta novamente.";
+            }
+        } catch (err) {
+            msgCodigo.style.color = "red";
+            msgCodigo.textContent = "Erro ao validar o código.";
+        } finally {
+            btnValidarOtp.textContent = "Validar Código e Entrar";
+            btnValidarOtp.disabled = false;
+        }
+    });
+
+    // --- FUNÇÃO AUXILIAR: GUARDAR SESSÃO ---
+    function guardarSessao(data) {
+        const sessao = {
+            access_token: data.access_token,
+            refresh_token: data.refresh_token,
+            user: data.user,
+            name: data.user.user_metadata?.name || data.user.email.split('@')[0]
+        };
+        localStorage.setItem("mzlink_sessao", JSON.stringify(sessao));
     }
-  } catch (err) {
-    alert("Erro de ligação à internet.");
-    btnEntrar.disabled = false;
-    btnEntrar.textContent = "Entrar";
-  }
-};
+});
