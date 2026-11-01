@@ -6,14 +6,12 @@
     <title>Entrar - MZLINK</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .btn-otp-principal { background: #25D366; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 1rem; width: 100%; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,211,102,0.3); }
+        .btn-otp-principal { 
+            background: #25D366; color: white; border: none; padding: 16px; 
+            border-radius: 12px; font-weight: 800; font-size: 1rem; width: 100%; 
+            cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,211,102,0.3); 
+        }
         .btn-otp-principal:hover { background: #1da851; transform: translateY(-2px); }
-        .btn-secundario { background: #fff; color: #0f1115; border: 2px solid #e2e8f0; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; width: 100%; cursor: pointer; transition: 0.2s; }
-        .btn-secundario:hover { border-color: #1E40AF; color: #1E40AF; }
-        .divisor-ou { display: flex; align-items: center; text-align: center; margin: 20px 0; color: #667085; font-size: 0.85rem; font-weight: 600; }
-        .divisor-ou::before, .divisor-ou::after { content: ''; flex: 1; border-bottom: 1px solid #eef1f5; }
-        .divisor-ou::before { margin-right: 10px; }
-        .divisor-ou::after { margin-left: 10px; }
     </style>
 </head>
 <body class="auth-page">
@@ -21,7 +19,7 @@
         <a href="index.html" class="auth-logo">MZLINK</a>
         <h2>Criar conta / Entrar</h2>
         <p style="text-align: center; color: #667085; font-size: 0.9rem; margin-bottom: 20px;">
-            Insere o teu e-mail para receberes um código de acesso rápido.
+            Insere o teu e-mail para receberes um código de acesso rápido. Sem palavras-passe!
         </p>
 
         <!-- PASSO 1: Pedir o Email -->
@@ -33,18 +31,18 @@
             <p id="msgPrincipal" style="color:red; margin-top:10px; font-weight:bold; text-align: center; font-size: 0.9rem;"></p>
         </form>
 
-        <!-- PASSO 2: Inserir o Código -->
+        <!-- PASSO 2: Inserir o Código (Escondido no início) -->
         <form id="formCodigo" style="display: none; margin-top: 20px;">
             <label for="codigo">Insere o código de 8 dígitos que recebeste</label>
-            <input type="text" id="codigo" placeholder="12345678" required maxlength="10" style="text-align: center; font-size: 1.5rem; letter-spacing: 5px; font-weight: bold;">
+            <input type="text" id="codigo" placeholder="12345678" required maxlength="10" style="text-align: center; font-size: 1.5rem; letter-spacing: 5px; font-weight: bold; margin-bottom: 16px;">
             
-            <button type="submit" id="btnEntrarOtp" class="btn-otp-principal" style="margin-top: 15px;">✅ Entrar na Conta</button>
+            <button type="submit" id="btnEntrarOtp" class="btn-otp-principal">✅ Entrar na Conta</button>
             <p id="msgCodigo" style="color:red; margin-top:10px; font-weight:bold; text-align: center; font-size: 0.9rem;"></p>
         </form>
 
         <!-- Botão do WhatsApp para Empresas -->
         <div style="text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid #eef1f5;">
-            <p style="color: #667085; margin-bottom: 12px; font-weight: 600; font-size: 0.9rem;">É dono de um negócio?</p>
+            <p style="color: #667085; margin-bottom: 12px; font-weight: 600; font-size: 0.9rem;">É dono de um negócio e quer um perfil profissional?</p>
             <a href="https://wa.me/258852337913?text=Ol%C3%A1%2C%20Equipa%20MZLINK!%20Quero%20cadastrar%20a%20minha%20empresa%20no%20site." target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 16px; background: #0f1115; color: white; font-weight: 800; font-size: 1rem; text-decoration: none; border-radius: 12px;">💬 Cadastrar via WhatsApp</a>
         </div>
     </div>
