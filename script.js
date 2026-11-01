@@ -86,15 +86,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function carregarDados() {
     try {
+      // AQUI ESTÁ A CORREÇÃO: categoria=neq.loja (Não mostra os perfis de loja)
       const resposta = await fetch(
-        SUPABASE_URL + "/rest/v1/profissionais?select=*&order=nome",
+        SUPABASE_URL + "/rest/v1/profissionais?select=*&categoria=neq.loja&order=criado_em.desc",
         { headers: { apikey: SUPABASE_KEY } }
       );
 
       if (!resposta.ok) throw new Error("Erro " + resposta.status);
       dados = await resposta.json();
       
-      // Mostrar logo os anúncios ao carregar a página
       filtrarEExibir();
 
     } catch (erro) {
@@ -153,9 +153,13 @@ document.addEventListener("DOMContentLoaded", function () {
           fotoHTML +
           '<div class="card-conteudo">' +
             '<div class="linha-topo">' +
-              '<div class="avatar">' + limpar(item.nome.charAt(0)) + '</div>' +
+              '<a href="vendedor.html?id=' + item.user_id + '" class="avatar-link">' +
+                '<div class="avatar">' + limpar(item.nome.charAt(0)) + '</div>' +
+              '</a>' +
               '<div class="info">' +
-                '<h3>' + limpar(item.nome) + ' ' + badgePremium + '</h3>' +
+                '<a href="vendedor.html?id=' + item.user_id + '" style="text-decoration:none; color:inherit;">' +
+                  '<h3>' + limpar(item.nome) + ' ' + badgePremium + '</h3>' +
+                '</a>' +
                 '<span class="tag">' + limpar(item.tipo) + '</span>' +
                 '<p>📍 ' + limpar(item.local) + '</p>' +
                 (item.preco ? '<p style="color: #16a34a; font-weight: 900; font-size: 1.1rem; margin-top: 4px;">💰 ' + item.preco + ' MT</p>' : '<p style="color: #667085; font-size: 0.85rem; margin-top: 4px; font-style: italic;">Preço a combinar</p>') +
@@ -192,7 +196,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ===== A MÁGICA ACONTECE AQUI: CENTRAL DE FILTROS =====
   function filtrarEExibir() {
     const termo = searchInput ? normalizar(searchInput.value.trim()) : "";
     const catSelecionada = document.getElementById("filtroCategoria") ? document.getElementById("filtroCategoria").value : "";
@@ -200,17 +203,14 @@ document.addEventListener("DOMContentLoaded", function () {
     
     let listaFiltrada = dados;
 
-    // 1. Filtro de Categoria
     if (catSelecionada) {
       listaFiltrada = listaFiltrada.filter(item => item.categoria === catSelecionada);
     }
 
-    // 2. Filtro de Província
     if (provSelecionada) {
       listaFiltrada = listaFiltrada.filter(item => normalizar(item.local).includes(normalizar(provSelecionada)));
     }
 
-    // 3. Filtro de Pesquisa de Texto (nome, tipo, local ou categoria)
     if (termo) {
       listaFiltrada = listaFiltrada.filter(item => 
         normalizar(item.nome).includes(termo) || 
@@ -220,7 +220,6 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     }
 
-    // Definir o título dinâmico
     let titulo = "Anúncios Recentes";
     if (termo || catSelecionada || provSelecionada) {
       titulo = "Resultados da busca";
@@ -229,28 +228,25 @@ document.addEventListener("DOMContentLoaded", function () {
     mostrar(listaFiltrada, titulo);
   }
 
-  // Eventos de clique e teclado
   if (searchButton) searchButton.addEventListener("click", filtrarEExibir);
   if (searchInput) {
     searchInput.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
-        e.preventDefault(); // Evita recarregar a página
+        e.preventDefault();
         filtrarEExibir();
       }
     });
   }
 
-  // Sincronizar os botões de categoria (lá em baixo) com o menu dropdown (lá em cima)
   document.querySelectorAll("[data-categoria]").forEach(function (botao) {
     botao.addEventListener("click", function () {
       const cat = botao.dataset.categoria;
       const dropdown = document.getElementById("filtroCategoria");
-      if (dropdown) dropdown.value = cat; // Atualiza o dropdown
-      filtrarEExibir(); // Aplica o filtro
+      if (dropdown) dropdown.value = cat;
+      filtrarEExibir();
     });
   });
 
-  // Eventos dos Dropdowns (Mudar Categoria, Província ou Ordenação)
   const filtroCategoria = document.getElementById("filtroCategoria");
   const filtroProvincia = document.getElementById("filtroProvincia");
   const filtroOrdenacao = document.getElementById("filtroOrdenacao");
@@ -259,7 +255,6 @@ document.addEventListener("DOMContentLoaded", function () {
   if (filtroProvincia) filtroProvincia.addEventListener("change", filtrarEExibir);
   if (filtroOrdenacao) filtroOrdenacao.addEventListener("change", filtrarEExibir);
 
-  // Iniciar a aplicação
   (async function init() {
     await carregarUserLogado();
     await carregarDados();
