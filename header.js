@@ -31,7 +31,7 @@
       align-items: center;
     }
     .logo-header img {
-      height: 36px; /* Ajusta o tamanho do teu logo se precisares */
+      height: 36px;
     }
     
     .saudacao {
@@ -47,7 +47,7 @@
       gap: 5px;
     }
     .saudacao span:first-child {
-      color: #1E40AF; /* Azul MZLINK */
+      color: #1E40AF;
       font-weight: 900;
     }
 
@@ -55,12 +55,12 @@
     header nav {
       display: flex;
       gap: 8px;
-      overflow-x: auto; /* Permite deslizar para o lado se houver muitos botões */
+      overflow-x: auto; 
       padding-bottom: 4px;
-      scrollbar-width: none; /* Esconde a barra de scroll no Firefox */
+      scrollbar-width: none; 
     }
     header nav::-webkit-scrollbar {
-      display: none; /* Esconde a barra de scroll no Chrome/Safari */
+      display: none; 
     }
 
     /* Botão Premium (Dourado) */
@@ -131,7 +131,6 @@
     // ===== USER LOGADO =====
     if (sessao && sessao.access_token) {
       var nome = sessao.name || sessao.nome || sessao.email || "Utilizador";
-      // Cortar o nome se for muito grande (ex: email)
       if(nome.length > 12) nome = nome.substring(0, 10) + "...";
 
       if (nomeEl) {
@@ -151,9 +150,10 @@
     else {
       if (nomeEl) nomeEl.textContent = "...";
 
+      // AQUI ESTÁ A MUDANÇA: O botão agora diz "Criar Conta" e continua a ir para o login.html
       nav.innerHTML =
         '<button onclick="location.href=\'premium.html\'" class="btn-premium">⭐ Premium</button>' +
-        '<button onclick="location.href=\'login.html\'" class="btn-nav">Entrar</button>';
+        '<button onclick="location.href=\'login.html\'" class="btn-nav">Criar Conta</button>';
     }
   }
 
