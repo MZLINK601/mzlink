@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         const rUser = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: headers });
         
         if (!rUser.ok) {
-            // Se o token expirou ou é inválido
             localStorage.removeItem(CHAVE);
             window.location.href = "login.html";
             return;
@@ -51,9 +50,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // C) Decidir o que mostrar
         if (!perfilDB) {
-            renderizarOnboarding(); // Utilizador novo
+            renderizarOnboarding();
         } else {
-            renderizarPerfil(); // Utilizador com loja
+            renderizarPerfil();
         }
 
     } catch (erro) {
@@ -139,7 +138,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 whatsapp: "258" + whats,
                 local: local,
                 plano: "basico",
-                categoria: "servicos"
+                categoria: "servicos",
+                tipo: "Geral" // <--- CORREÇÃO DO ERRO AQUI
             };
 
             try {
@@ -153,7 +153,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     msg.style.color = "green";
                     msg.textContent = "Loja criada com sucesso! A carregar...";
                     
-                    // Atualiza o Auth para sincronizar o nome
                     await fetch(SUPABASE_URL + "/auth/v1/user", {
                         method: "PUT",
                         headers: { ...headers, "Content-Type": "application/json" },
