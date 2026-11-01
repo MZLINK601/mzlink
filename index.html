@@ -5,27 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MZLINK - Encontre, Compare, Resolva</title>
     
-    <!-- ===== CARTÃO DE PARTILHA (WHATSAPP / FACEBOOK / TWITTER) ===== -->
+    <!-- ===== CARTÃO DE PARTILHA (WHATSAPP / FACEBOOK) ===== -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mzlink601.github.io/mzlink/">
     <meta property="og:title" content="MZLINK - Encontre, Compare, Resolva">
     <meta property="og:description" content="🇲🇿 A plataforma 100% Moçambicana. Encontre produtos, serviços e profissionais perto de ti. Fala direto no WhatsApp!">
     <meta property="og:image" content="https://mzlink601.github.io/mzlink/ponte.jpg">
-
-    <!-- Para o Twitter / X -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://mzlink601.github.io/mzlink/">
-    <meta property="twitter:title" content="MZLINK - Encontre, Compare, Resolva">
-    <meta property="twitter:description" content="A plataforma 100% Moçambicana. Encontre produtos, serviços e profissionais perto de ti.">
-    <meta property="twitter:image" content="https://mzlink601.github.io/mzlink/ponte.jpg">
     <meta name="description" content="MZLINK - O marketplace número 1 de Moçambique. Encontre, Compare e Resolva.">
 
     <!-- Fontes Profissionais -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
 
-    <!-- Estilos do MZLINK (Ficheiros Externos) -->
+    <!-- Estilos do MZLINK -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="cartoes.css">
     <link rel="stylesheet" href="premium-cards.css">
@@ -39,194 +32,135 @@
     <link rel="apple-touch-icon" href="favicon.png">
 
     <style>
-        /* ===== ESTILOS DO HERO VIP (PONTE E CORES DE MOÇAMBIQUE) ===== */
+        /* ===== ESTILOS DO HERO E GERAL ===== */
         body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
         
-        /* O CARTÃO VIP DA PONTE (Visão PC) */
         .hero-moz {
             background: linear-gradient(rgba(15, 17, 21, 0.7), rgba(15, 17, 21, 0.9)), url('ponte.jpg') center/cover no-repeat !important;
-            padding: 50px 20px 40px !important; 
-            text-align: center; 
-            
-            width: 92% !important; 
-            max-width: 1100px !important;
-            margin: 20px auto !important; 
-            border-radius: 12px !important; 
-            border: 2px solid #d4af37 !important; /* Borda Dourada */
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important; /* Sombra Profunda */
-            position: relative;
-            overflow: hidden;
+            padding: 50px 20px 40px !important; text-align: center; 
+            width: 92% !important; max-width: 1100px !important; margin: 20px auto !important; 
+            border-radius: 12px !important; border: 2px solid #d4af37 !important; 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important; position: relative; overflow: hidden;
         }
-
-        /* Brilho interno na moldura */
         .hero-moz::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            pointer-events: none;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.3); pointer-events: none;
         }
-
         .badge-moz {
             display: inline-flex; align-items: center; gap: 6px; background: #E31937;
             color: #fff; font-weight: 800; font-size: 0.75rem; padding: 8px 16px;
             border-radius: 999px; margin-bottom: 20px; letter-spacing: 0.5px;
-            box-shadow: 0 4px 12px rgba(227, 25, 55, 0.4);
-            position: relative; z-index: 2;
+            box-shadow: 0 4px 12px rgba(227, 25, 55, 0.4); position: relative; z-index: 2;
         }
-        
         .hero-moz h1 {
             font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1.1;
             margin: 0 0 12px 0; letter-spacing: -1px; text-shadow: 0 4px 15px rgba(0,0,0,0.8);
             position: relative; z-index: 2;
         }
-        
         .texto-ouro {
             background: linear-gradient(135deg, #f5d76e, #d4af37);
             -webkit-background-clip: text; background-clip: text; color: transparent;
             text-shadow: 0px 2px 15px rgba(212, 175, 55, 0.6);
         }
-        
         .hero-moz p {
             font-size: 0.95rem; color: #f8f9fa; margin: 0 auto 25px; max-width: 400px;
             line-height: 1.5; font-weight: 500; text-shadow: 0 2px 8px rgba(0,0,0,0.8);
             position: relative; z-index: 2;
         }
-
-        /* BARRA DE PESQUISA (ESTILO APP) */
         .search-box {
-            display: flex !important;
-            max-width: 500px !important;
-            margin: 0 auto !important;
-            border-radius: 8px !important; 
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important; 
-            border: 1px solid rgba(255,255,255,0.2) !important;
-            background: #fff !important;
-            overflow: hidden !important;
-            position: relative; z-index: 2;
+            display: flex !important; max-width: 500px !important; margin: 0 auto !important;
+            border-radius: 8px !important; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important; 
+            border: 1px solid rgba(255,255,255,0.2) !important; background: #fff !important;
+            overflow: hidden !important; position: relative; z-index: 2;
         }
-        
         .search-box input {
-            flex: 1 !important;
-            border: none !important;
-            padding: 16px 20px !important;
-            font-size: 0.95rem !important;
-            outline: none !important;
-            background: transparent !important;
-            color: #0f1115 !important;
+            flex: 1 !important; border: none !important; padding: 16px 20px !important;
+            font-size: 0.95rem !important; outline: none !important; background: transparent !important; color: #0f1115 !important;
         }
-        
-        /* BOTÃO DE PESQUISA AZUL */
         .search-box button {
-            background: #1E40AF !important; /* Azul Forte */
-            color: white !important;
-            border: none !important;
-            padding: 0 20px !important;
-            font-weight: 800 !important;
-            font-size: 0.9rem !important;
-            cursor: pointer !important;
-            transition: background 0.2s !important;
+            background: #1E40AF !important; color: white !important; border: none !important;
+            padding: 0 20px !important; font-weight: 800 !important; font-size: 0.9rem !important; cursor: pointer !important;
         }
-        .search-box button:hover { background: #1e3a8a !important; }
-
-        /* SELOS */
         .selos-confianca { display: flex; justify-content: center; gap: 10px; margin-top: 25px; flex-wrap: wrap; position: relative; z-index: 2; }
         .selo-item {
             display: flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.95);
-            padding: 8px 12px; border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: none;
+            padding: 8px 12px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: none;
         }
         .selo-icone { font-size: 1.1rem; }
-        .selo-texto {
-            font-size: 0.65rem; font-weight: 800; color: #1e293b;
-            line-height: 1.1; text-align: left; text-transform: uppercase;
-        }
-
-        /* FILTROS */
+        .selo-texto { font-size: 0.65rem; font-weight: 800; color: #1e293b; line-height: 1.1; text-align: left; text-transform: uppercase; }
         .filtros-container { display: flex; gap: 10px; margin: 20px auto; max-width: 90%; flex-wrap: wrap; }
         .filtro-select {
             flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 8px;
             border: 2px solid #e2e8f0; font-size: 0.85rem; font-weight: 700;
             color: #0f1115; background-color: #ffffff; font-family: inherit;
             outline: none; transition: all 0.2s; cursor: pointer; appearance: none;
-            /* Ícone SVG Azul */
             background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E40AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat; background-position: right 14px top 50%; background-size: 10px auto;
         }
         .filtro-select:hover, .filtro-select:focus { border-color: #1E40AF; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15); }
-
         .categorias { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 0 20px; }
         .categorias button {
             background: #ffffff; border: 2px solid #e2e8f0; color: #0f1115;
             font-weight: 700; padding: 10px 20px; border-radius: 999px; transition: all 0.2s;
         }
         .categorias button:hover { border-color: #1E40AF; color: #1E40AF; background: #eff6ff; }
-
-        /* BOTÃO VOLTAR AO TOPO */
+        
         #btnTopo {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 99;
-            background-color: #0f1115;
-            color: #d4af37;
-            border: 2px solid #d4af37;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
-            align-items: center;
-            justify-content: center;
+            position: fixed; bottom: 20px; right: 20px; z-index: 99; background-color: #0f1115;
+            color: #d4af37; border: 2px solid #d4af37; border-radius: 50%; width: 50px; height: 50px;
+            font-size: 1.2rem; font-weight: bold; cursor: pointer; display: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); transition: all 0.3s ease;
+            align-items: center; justify-content: center;
         }
-        #btnTopo:hover {
-            background-color: #d4af37;
-            color: #0f1115;
-            transform: translateY(-5px);
-        }
+        #btnTopo:hover { background-color: #d4af37; color: #0f1115; transform: translateY(-5px); }
 
-        /* ===== AJUSTES PARA TELEMÓVEL (A MOLDURA OURO DE MOÇAMBIQUE) ===== */
+        /* ===== ESTILOS DO CARTÃO VIP NA PÁGINA INICIAL ===== */
+        .cartao-vip-seccao-home {
+            display: none; /* Escondido por defeito, JS mostra se for premium */
+            justify-content: center;
+            margin: 30px auto 10px;
+            padding: 0 15px;
+        }
+        .card-vip {
+            width: 100%; max-width: 380px; height: 230px;
+            background: radial-gradient(circle at 10% 20%, #2a2a2a 0%, #0a0a0a 90%);
+            border-radius: 16px; position: relative; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: 25px 30px; box-sizing: border-box; border: 1px solid #333;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .card-vip::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.15), transparent);
+            transform: skewX(-25deg); animation: brilhoCartao 4s infinite; pointer-events: none;
+        }
+        @keyframes brilhoCartao { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+        .card-vip:hover { transform: translateY(-5px) rotateX(5deg) rotateY(-5deg); box-shadow: 0 30px 50px rgba(0,0,0,0.9), 0 0 30px rgba(212, 175, 55, 0.3); }
+        .costura-vip { position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 1.5px dashed rgba(212, 175, 55, 0.4); border-radius: 12px; pointer-events: none; }
+        .card-topo { text-align: center; z-index: 2; }
+        .card-logo { font-family: 'Inter', sans-serif; color: #d4af37; font-weight: 900; font-size: 1.2rem; letter-spacing: 4px; text-shadow: 0 2px 5px rgba(212, 175, 55, 0.4); }
+        .card-meio { text-align: center; z-index: 2; margin-top: -10px; }
+        .texto-bem-vindo { font-family: 'Great Vibes', cursive; font-size: 2.8rem; margin: 0; background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1; text-shadow: 0px 4px 10px rgba(0,0,0,0.5); }
+        .texto-modo { font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 800; color: #ffffff; letter-spacing: 3px; margin: 5px 0 0 0; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .card-base { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; width: 100%; }
+        .chip-ouro { width: 45px; height: 35px; background: linear-gradient(135deg, #fcf6ba, #bf953f, #b38728); border-radius: 6px; position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.5); overflow: hidden; border: 1px solid #aa771c; }
+        .chip-linha-h { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(0,0,0,0.4); transform: translateY(-50%); }
+        .chip-linha-v { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: rgba(0,0,0,0.4); transform: translateX(-50%); }
+        .chip-centro { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 15px; border: 2px solid rgba(0,0,0,0.4); border-radius: 4px; }
+        .card-info-direita { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .card-status { font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 800; color: #d4af37; letter-spacing: 1px; text-transform: uppercase; }
+        .data-expiracao { display: flex; flex-direction: column; align-items: flex-end; }
+        .data-expiracao span { font-family: 'Inter', sans-serif; font-size: 0.55rem; font-weight: 700; color: #a0a0a0; letter-spacing: 1px; }
+        .data-expiracao strong { font-family: 'Courier New', Courier, monospace; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: 1px; }
+
         @media (max-width: 600px) {
             .hero-moz h1 { font-size: 1.9rem; }
             .filtros-container { flex-direction: column; }
-            
-            /* O SEGREDO DO DESIGN PREMIUM MOBILE */
-            .hero-moz {
-                width: 92% !important; /* Quase colado à borda, mas não muito */
-                max-width: 100% !important;
-                margin: 15px auto 25px auto !important; 
-                border-radius: 16px !important; /* Cantos modernos */
-                border: 2px solid #d4af37 !important; /* Borda dourada */
-                /* Sombra preta profunda + brilho dourado (glow) */
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.3) !important; 
-                padding: 40px 15px 35px !important; 
-            }
-
-            /* BARRA DE PESQUISA */
-            .search-box { 
-                flex-direction: row !important; 
-                border-radius: 10px !important; 
-                width: 100% !important;
-                overflow: hidden !important; 
-            }
-            .search-box input { 
-                padding: 12px 10px !important; 
-                font-size: 0.85rem !important;
-                flex: 1 !important; 
-                min-width: 0 !important; 
-            }
-            .search-box button { 
-                padding: 0 15px !important; 
-                font-size: 0.85rem !important;
-                flex-shrink: 0 !important; 
-            }
-
-            /* SELOS MAIS COMPACTOS */
+            .hero-moz { width: 88% !important; padding: 30px 15px 25px !important; border-radius: 16px !important; margin: 15px auto !important; }
+            .search-box { flex-direction: row !important; border-radius: 10px !important; width: 100% !important; overflow: hidden !important; }
+            .search-box input { padding: 12px 10px !important; font-size: 0.85rem !important; flex: 1 !important; min-width: 0 !important; }
+            .search-box button { padding: 0 15px !important; font-size: 0.85rem !important; flex-shrink: 0 !important; }
             .selos-confianca { gap: 5px !important; margin-top: 15px !important; }
             .selo-item { padding: 6px 10px !important; }
             .selo-texto { font-size: 0.6rem !important; }
@@ -247,23 +181,49 @@
         </div>
         <nav>
             <button onclick="location.href='premium.html'" class="btn-premium">⭐ Premium</button>
+            <!-- BOTÃO DE REGISTAR REMOVIDO AQUI -->
             <button onclick="location.href='login.html'">Entrar</button>
-            <button onclick="location.href='registo.html'">Criar conta</button>
         </nav>
     </header>
 
     <main>
-        <!-- HERO COM MOLDURA VIP -->
+        <!-- ===== CARTÃO VIP NA PÁGINA INICIAL (Para utilizadores Premium) ===== -->
+        <section class="cartao-vip-seccao-home" id="cartaoHome">
+            <div class="card-vip">
+                <div class="costura-vip"></div>
+                <div class="card-topo">
+                    <span class="card-logo">MZLINK</span>
+                </div>
+                <div class="card-meio">
+                    <p class="texto-bem-vindo">bem-vindo</p>
+                    <p class="texto-modo">MODO PREMIUM</p>
+                </div>
+                <div class="card-base">
+                    <div class="chip-ouro">
+                        <div class="chip-linha-h"></div>
+                        <div class="chip-linha-v"></div>
+                        <div class="chip-centro"></div>
+                    </div>
+                    <div class="card-info-direita">
+                        <div class="data-expiracao">
+                            <span>VÁLIDO ATÉ</span>
+                            <strong id="dataExpiracaoHome">--/--/----</strong>
+                        </div>
+                        <span class="card-status">MEMBRO 🇲🇿</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HERO (A PONTE) -->
         <section class="hero-moz">
             <div class="badge-moz">🇲🇿 100% Moçambicano</div>
             <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
             <p>Produtos, serviços e profissionais de confiança perto de ti. Fala direto no WhatsApp, sem intermediários.</p>
-
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="O que você procura?">
                 <button id="searchButton">Pesquisar</button>
             </div>
-
             <div class="selos-confianca">
                 <div class="selo-item"><span class="selo-icone">🛡️</span><span class="selo-texto">Empresas<br>Verificadas</span></div>
                 <div class="selo-item"><span class="selo-icone">⚡</span><span class="selo-texto">Contacto<br>Imediato</span></div>
@@ -271,7 +231,7 @@
             </div>
         </section>
 
-        <!-- FILTROS (Categoria, Província e Ordenação) -->
+        <!-- FILTROS -->
         <div class="filtros-container">
             <select id="filtroCategoria" class="filtro-select">
                 <option value="">Todas as Categorias</option>
@@ -282,7 +242,6 @@
                 <option value="instituicoes">Instituições</option>
                 <option value="empresas">Empresas</option>
             </select>
-
             <select id="filtroProvincia" class="filtro-select">
                 <option value="">Todas as Províncias</option>
                 <option value="Maputo">Maputo</option>
@@ -296,7 +255,6 @@
                 <option value="Niassa">Niassa</option>
                 <option value="Cabo Delgado">Cabo Delgado</option>
             </select>
-
             <select id="filtroOrdenacao" class="filtro-select">
                 <option value="recentes">Mais Recentes</option>
                 <option value="menor_preco">Preço: Menor</option>
@@ -324,7 +282,6 @@
         </div>
     </main>
 
-    <!-- Botão Voltar ao Topo -->
     <button id="btnTopo" title="Voltar ao topo">⬆️</button>
 
     <!-- SCRIPTS DO PROJETO -->
@@ -361,39 +318,17 @@
 
     <!-- ESTILO DO FOOTER -->
     <style>
-      .rodape-mzlink {
-        background: linear-gradient(180deg, #0f1115, #1a1d24); color: #c9ccd3;
-        margin-top: 60px; padding: 32px 20px 20px; border-top: 3px solid #d4af37;
-      }
-      .rodape-conteudo {
-        max-width: 900px; margin: 0 auto; display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 24px; margin-bottom: 24px;
-      }
-      .rodape-marca strong {
-        display: block; font-size: 1.3rem; font-weight: 900;
-        background: linear-gradient(135deg, #d4af37, #f5d76e);
-        -webkit-background-clip: text; background-clip: text; color: transparent;
-        letter-spacing: -0.5px; margin-bottom: 6px;
-      }
+      .rodape-mzlink { background: linear-gradient(180deg, #0f1115, #1a1d24); color: #c9ccd3; margin-top: 60px; padding: 32px 20px 20px; border-top: 3px solid #d4af37; }
+      .rodape-conteudo { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 24px; }
+      .rodape-marca strong { display: block; font-size: 1.3rem; font-weight: 900; background: linear-gradient(135deg, #d4af37, #f5d76e); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -0.5px; margin-bottom: 6px; }
       .rodape-marca p { font-size: 0.82rem; color: #8b8f99; margin: 0; }
       .rodape-links { display: flex; flex-direction: column; gap: 10px; }
-      .rodape-links a {
-        color: #c9ccd3; text-decoration: none; font-size: 0.88rem;
-        font-weight: 600; transition: color 0.2s;
-      }
+      .rodape-links a { color: #c9ccd3; text-decoration: none; font-size: 0.88rem; font-weight: 600; transition: color 0.2s; }
       .rodape-links a:hover { color: #d4af37; }
       .rodape-info p { margin: 0 0 8px; font-size: 0.85rem; }
       .rodape-info strong { color: #d4af37; font-weight: 800; }
-      .rodape-copy {
-        max-width: 900px; margin: 0 auto; padding-top: 20px;
-        border-top: 1px solid rgba(255,255,255,0.08);
-        text-align: center; font-size: 0.75rem; color: #8b8f99; letter-spacing: 0.3px;
-      }
-      @media (max-width: 640px) {
-        .rodape-conteudo { grid-template-columns: 1fr; text-align: center; }
-        .rodape-links { align-items: center; }
-      }
+      .rodape-copy { max-width: 900px; margin: 0 auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 0.75rem; color: #8b8f99; letter-spacing: 0.3px; }
+      @media (max-width: 640px) { .rodape-conteudo { grid-template-columns: 1fr; text-align: center; } .rodape-links { align-items: center; } }
     </style>
 </body>
-            </html>
+</html>
