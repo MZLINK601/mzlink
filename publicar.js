@@ -116,17 +116,22 @@
   /* ---------- Preview das Fotos ---------- */
   function atualizarContador() {
     contador.textContent = ficheiros.length + "/" + limiteFotos;
+    
     if (ficheiros.length >= limiteFotos) {
       btnAddFoto.disabled = true;
       btnAddFoto.textContent = "Limite atingido";
-      fotosAviso.classList.add("visivel");
+      fotosAviso.style.display = "block"; // Mostra o aviso
     } else {
       btnAddFoto.disabled = false;
       btnAddFoto.textContent = "Adicionar foto (" + (limiteFotos - ficheiros.length) + " restantes)";
-      fotosAviso.classList.remove("visivel");
+      fotosAviso.style.display = "none"; // Esconde o aviso
     }
-    if (ficheiros.length > 0) fotosVazio.classList.add("oculto");
-    else fotosVazio.classList.remove("oculto");
+    
+    if (ficheiros.length > 0) {
+        fotosVazio.style.display = "none";
+    } else {
+        fotosVazio.style.display = "block";
+    }
   }
 
   function renderPreview() {
@@ -174,7 +179,6 @@
   /* ---------- Listar os meus anúncios ---------- */
   async function listarMeus() {
     lista.textContent = "";
-    // Filtramos para não mostrar a "loja" na lista
     var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id,nome,tipo,categoria,preco,fotos&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja&order=criado_em.desc", { headers: cabecalhos({}) });
 
     if (!r.ok) { lista.textContent = "Erro ao carregar."; return; }
@@ -229,10 +233,9 @@
 
     botao.disabled = true;
     aviso("A publicar anúncio...", false);
-    btnPartilharWa.style.display = "none"; // Esconde botão antigo
+    btnPartilharWa.style.display = "none"; 
 
     try {
-      // 1. Cria a linha do anúncio
       var r = await fetch(MZ.url + "/rest/v1/profissionais", {
         method: "POST",
         headers: cabecalhos({ "Content-Type": "application/json", Prefer: "return=representation" }),
@@ -255,15 +258,13 @@
       var criado = await r.json();
       var anuncioId = criado[0].id;
 
-      // 2. Faz o upload das fotos comprimidas
       var urls = [];
       if (ficheiros.length) {
         aviso("A otimizar e enviar fotos...", false);
         for (var i = 0; i < ficheiros.length; i++) {
           var fOriginal = ficheiros[i].file;
-          var fComprimido = await comprimirImagem(fOriginal); // COMPRIME!
-          var ext = "jpg";
-          var caminho = usuario.id + "/" + anuncioId + "/" + i + "." + ext;
+          var fComprimido = await comprimirImagem(fOriginal); 
+          var caminho = usuario.id + "/" + anuncioId + "/" + i + ".jpg";
 
           var rUpload = await fetch(MZ.url + "/storage/v1/object/anuncios-fotos/" + caminho, {
             method: "POST",
@@ -281,7 +282,6 @@
           }
         }
 
-        // Atualiza o anúncio com as fotos
         await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + anuncioId, {
           method: "PATCH",
           headers: cabecalhos({ "Content-Type": "application/json" }),
@@ -291,13 +291,11 @@
 
       aviso("✅ Anúncio publicado com sucesso!", false);
       
-      // 3. MOSTRA O BOTÃO DE PARTILHA DO WHATSAPP
       var urlAnuncio = "https://mzlink601.github.io/mzlink/vendedor.html?id=" + usuario.id;
       var msgZap = encodeURIComponent("Olha o que encontrei no MZLINK! " + tipo + " a " + (precoFinal ? precoFinal + " MT" : "combinar") + ". Fala direto comigo: " + urlAnuncio);
       btnPartilharWa.href = "https://wa.me/?text=" + msgZap;
       btnPartilharWa.style.display = "block";
       
-      // Limpa o form
       document.getElementById("tipo").value = "";
       document.getElementById("descricao").value = "";
       document.getElementById("preco").value = "";
