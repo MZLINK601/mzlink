@@ -1,21 +1,19 @@
 /* ============================================================
-   MZLINK · Publicar Anúncio
-   Básico: 4 fotos + máx 3 anúncios | Premium: 20 fotos + ilimitados
+   MZLINK · Publicar Anúncio (Com Compressão e Partilha)
    ============================================================ */
 
 (async function () {
   'use strict';
 
   var s = await MZ.sessaoValida();
-  if (!s) {
-    window.location.href = "login.html";
-    return;
-  }
+  if (!s) { window.location.href = "login.html"; return; }
 
   var form = document.getElementById("publicarForm");
   var message = document.getElementById("message");
   var lista = document.getElementById("meusAnuncios");
   var botao = form.querySelector("button[type='submit']");
+  var btnPartilharWa = document.getElementById("btnPartilharWa");
+  
   var usuario = null;
   var planoUser = "basico";
   var limiteFotos = 4;
@@ -31,6 +29,20 @@
   var fotosVazio = document.getElementById("fotosVazio");
   var fotosAviso = document.getElementById("fotosAviso");
   var limiteTexto = document.getElementById("limiteTexto");
+  var precoCombinar = document.getElementById("precoCombinar");
+  var inputPreco = document.getElementById("preco");
+
+  // Lógica do Preço a Combinar
+  precoCombinar.addEventListener("change", function() {
+      if(this.checked) {
+          inputPreco.value = "";
+          inputPreco.disabled = true;
+          inputPreco.placeholder = "A combinar";
+      } else {
+          inputPreco.disabled = false;
+          inputPreco.placeholder = "Ex: 1500";
+      }
+  });
 
   function aviso(texto, erro) {
     message.textContent = texto;
@@ -38,41 +50,41 @@
   }
 
   function cabecalhos(extra) {
-    var h = {
-      apikey: MZ.key,
-      Authorization: "Bearer " + s.access_token
-    };
+    var h = { apikey: MZ.key, Authorization: "Bearer " + s.access_token };
     for (var k in extra) h[k] = extra[k];
     return h;
   }
 
-  function sessaoExpirada() {
-    aviso("A sua sessão expirou. Entre de novo.", true);
-    setTimeout(function () {
-      window.location.href = "login.html";
-    }, 1500);
+  // ===== COMPRESSÃO DE IMAGEM NO TELEMÓVEL =====
+  async function comprimirImagem(file) {
+      return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = (event) => {
+              const img = new Image();
+              img.src = event.target.result;
+              img.onload = () => {
+                  const canvas = document.createElement("canvas");
+                  const MAX_WIDTH = 1000; // Largura máxima
+                  let scale = MAX_WIDTH / img.width;
+                  if (scale > 1) scale = 1;
+                  
+                  canvas.width = img.width * scale;
+                  canvas.height = img.height * scale;
+                  
+                  const ctx = canvas.getContext("2d");
+                  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                  
+                  canvas.toBlob((blob) => {
+                      const newFile = new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() });
+                      resolve(newFile);
+                  }, 'image/jpeg', 0.7); // 70% de qualidade (perfeito para web)
+              };
+          };
+      });
   }
 
-  /* ---------- Aviso de limite de anúncios ---------- */
-  function bloquearFormulario() {
-    if (form) form.style.display = "none";
-
-    var aviso = document.createElement("div");
-    aviso.className = "limite-anuncios-aviso";
-    aviso.innerHTML =
-      '<div class="limite-icone">🔒</div>' +
-      '<h3>Atingiste o limite do plano Básico</h3>' +
-      '<p>Já tens <strong>' + totalMeusAnuncios + ' anúncios ativos</strong>.<br>' +
-      'O plano Básico permite até <strong>3 anúncios</strong>.</p>' +
-      '<p class="limite-destaque">👑 Torna-te <strong>Premium</strong> para publicar <strong>anúncios ilimitados</strong>!</p>' +
-      '<a href="premium.html" class="limite-btn">Quero ser Premium →</a>';
-
-    if (form && form.parentNode) {
-      form.parentNode.insertBefore(aviso, form);
-    }
-  }
-
-  /* ---------- Carregar user + plano + contagem ---------- */
+  /* ---------- Carregar user + plano ---------- */
   async function carregarUsuario() {
     var r = await fetch(MZ.url + "/auth/v1/user", { headers: cabecalhos({}) });
     if (!r.ok) throw new Error("sessao");
@@ -82,11 +94,7 @@
     document.getElementById("nome").value = meta.nome || "";
     document.getElementById("whatsapp").value = String(meta.whatsapp || "").replace(/^258/, "");
 
-    var r2 = await fetch(
-      MZ.url + "/rest/v1/profissionais?select=id,plano&user_id=eq." +
-      encodeURIComponent(usuario.id),
-      { headers: cabecalhos({}) }
-    );
+    var r2 = await fetch(MZ.url + "/rest/v1/profissionais?select=id,plano&user_id=eq." + encodeURIComponent(usuario.id), { headers: cabecalhos({}) });
 
     if (r2.ok) {
       var dados = await r2.json();
@@ -96,135 +104,68 @@
 
     limiteFotos = planoUser === "premium" ? 20 : 4;
     limiteAnuncios = planoUser === "premium" ? Infinity : 3;
-
-    document.body.classList.remove("plano-basico", "plano-premium");
-    document.body.classList.add(planoUser === "premium" ? "plano-premium" : "plano-basico");
-
+    
+    // Atualiza visual do limite
+    if (limiteTexto) limiteTexto.textContent = limiteFotos + " fotos";
     if (planoUser === "premium") {
-      fotosInfo.className = "fotos-info premium";
-      fotosInfo.innerHTML = "⭐ Plano <strong>Premium</strong>: até 20 fotos por anúncio.";
-      if (limiteTexto) limiteTexto.textContent = "20 fotos";
-    } else {
-      fotosInfo.className = "fotos-info";
-      fotosInfo.innerHTML =
-        '🆓 Plano <strong>Básico</strong>: até 4 fotos. ' +
-        '<a href="premium.html">Tornar-se Premium</a>';
-      if (limiteTexto) limiteTexto.textContent = "4 fotos";
+        fotosInfo.innerHTML = "⭐ Plano <strong>Premium</strong>: até 20 fotos.";
     }
-
     atualizarContador();
-
-    if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
-      bloquearFormulario();
-    }
   }
 
-  /* ---------- Contador + Estado ---------- */
+  /* ---------- Preview das Fotos ---------- */
   function atualizarContador() {
     contador.textContent = ficheiros.length + "/" + limiteFotos;
-
-    var atingiuLimite = ficheiros.length >= limiteFotos;
-
-    if (atingiuLimite) {
-      contador.classList.add("limite");
+    if (ficheiros.length >= limiteFotos) {
       btnAddFoto.disabled = true;
       btnAddFoto.textContent = "Limite atingido";
-      if (fotosAviso) fotosAviso.classList.add("visivel");
+      fotosAviso.classList.add("visivel");
     } else {
-      contador.classList.remove("limite");
       btnAddFoto.disabled = false;
-      btnAddFoto.textContent = "Adicionar foto (" +
-        (limiteFotos - ficheiros.length) + " restantes)";
-      if (fotosAviso) fotosAviso.classList.remove("visivel");
+      btnAddFoto.textContent = "Adicionar foto (" + (limiteFotos - ficheiros.length) + " restantes)";
+      fotosAviso.classList.remove("visivel");
     }
-
-    if (fotosVazio) {
-      if (ficheiros.length === 0) {
-        fotosVazio.classList.remove("oculto");
-      } else {
-        fotosVazio.classList.add("oculto");
-      }
-    }
+    if (ficheiros.length > 0) fotosVazio.classList.add("oculto");
+    else fotosVazio.classList.remove("oculto");
   }
 
-  /* ---------- Preview ---------- */
   function renderPreview() {
     preview.innerHTML = "";
     ficheiros.forEach(function (item, i) {
       var div = document.createElement("div");
       div.className = "foto-item";
-
-      var img = document.createElement("img");
-      img.src = item.url;
-
-      if (i === 0) {
-        var selo = document.createElement("span");
-        selo.className = "principal";
-        selo.textContent = "PRINCIPAL";
-        div.appendChild(selo);
-      }
-
-      var num = document.createElement("span");
-      num.className = "numero";
-      num.textContent = (i + 1) + "/" + limiteFotos;
-
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "remover";
-      btn.textContent = "×";
-      btn.onclick = function () {
-        URL.revokeObjectURL(ficheiros[i].url);
-        ficheiros.splice(i, 1);
-        renderPreview();
-        atualizarContador();
-      };
-
-      div.appendChild(img);
-      div.appendChild(num);
-      div.appendChild(btn);
+      div.innerHTML = `
+        <img src="${item.url}">
+        ${i === 0 ? '<span class="principal">PRINCIPAL</span>' : ''}
+        <span class="numero">${(i + 1)}/${limiteFotos}</span>
+        <button type="button" class="remover" onclick="window.removerFotoPublicar(${i})">×</button>
+      `;
       preview.appendChild(div);
     });
   }
 
-  /* ---------- Adicionar fotos ---------- */
-  btnAddFoto.addEventListener("click", function () {
-    inputFotos.click();
-  });
+  window.removerFotoPublicar = function(i) {
+      URL.revokeObjectURL(ficheiros[i].url);
+      ficheiros.splice(i, 1);
+      renderPreview();
+      atualizarContador();
+  };
+
+  btnAddFoto.addEventListener("click", function () { inputFotos.click(); });
 
   inputFotos.addEventListener("change", function (e) {
     var novos = Array.prototype.slice.call(e.target.files);
     if (!novos.length) return;
 
     var espaco = limiteFotos - ficheiros.length;
-    if (espaco <= 0) {
-      alert("Limite atingido! Máximo: " + limiteFotos + " fotos.");
-      inputFotos.value = "";
-      return;
-    }
+    if (espaco <= 0) { alert("Limite atingido!"); return; }
 
     var aceitos = novos.slice(0, espaco);
-    var ignorados = novos.length - aceitos.length;
-
     aceitos.forEach(function (f) {
-      if (!f.type.startsWith("image/")) return;
-      if (f.size > 5 * 1024 * 1024) {
-        alert("A foto '" + f.name + "' é maior que 5MB. Ignorada.");
-        return;
+      if (f.type.startsWith("image/")) {
+        ficheiros.push({ file: f, url: URL.createObjectURL(f) });
       }
-      ficheiros.push({ file: f, url: URL.createObjectURL(f) });
     });
-
-    if (ignorados > 0) {
-      if (planoUser === "basico") {
-        alert(
-          "Limite do plano Básico: 4 fotos.\n\n" +
-          "👑 Torna-te Premium para publicar até 20 fotos!"
-        );
-      } else {
-        alert("Foram ignoradas " + ignorados + " fotos (limite de " + limiteFotos + ").");
-      }
-    }
-
     inputFotos.value = "";
     renderPreview();
     atualizarContador();
@@ -233,217 +174,148 @@
   /* ---------- Listar os meus anúncios ---------- */
   async function listarMeus() {
     lista.textContent = "";
-    var r = await fetch(
-      MZ.url + "/rest/v1/profissionais?select=id,nome,tipo,local,categoria,fotos,preco&user_id=eq." +
-        encodeURIComponent(usuario.id) + "&order=criado_em.desc",
-      { headers: cabecalhos({}) }
-    );
+    // Filtramos para não mostrar a "loja" na lista
+    var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id,nome,tipo,categoria,preco,fotos&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja&order=criado_em.desc", { headers: cabecalhos({}) });
 
-    if (!r.ok) {
-      lista.textContent = "Não foi possível carregar os seus anúncios.";
-      return;
-    }
+    if (!r.ok) { lista.textContent = "Erro ao carregar."; return; }
 
     var itens = await r.json();
-    totalMeusAnuncios = itens.length;
-
-    if (itens.length === 0) {
-      var vazio = document.createElement("p");
-      vazio.textContent = "Ainda não publicou nenhum anúncio.";
-      lista.appendChild(vazio);
-      return;
-    }
+    if (itens.length === 0) { lista.innerHTML = "<p>Ainda não tens anúncios.</p>"; return; }
 
     itens.forEach(function (item) {
       var linha = document.createElement("div");
       linha.className = "meu-item";
-
-      var info = document.createElement("div");
-      var titulo = document.createElement("strong");
-      titulo.textContent = item.tipo + " - " + item.nome;
-      var detalhe = document.createElement("small");
       var nFotos = (item.fotos && item.fotos.length) || 0;
-      var precoTxt = item.preco ? " | 💰 " + item.preco + " MT" : "";
-      detalhe.textContent = item.local + " | " + item.categoria + precoTxt +
-        " | 📸 " + nFotos + " foto" + (nFotos === 1 ? "" : "s");
-      info.appendChild(titulo);
-      info.appendChild(detalhe);
-
-      var apagar = document.createElement("button");
-      apagar.type = "button";
-      apagar.textContent = "Apagar";
-      apagar.addEventListener("click", function () {
-        apagarAnuncio(item.id);
-      });
-
-      linha.appendChild(info);
-      linha.appendChild(apagar);
+      var precoTxt = item.preco ? "💰 " + item.preco + " MT" : "A combinar";
+      
+      linha.innerHTML = `
+        <div>
+            <strong>${item.tipo}</strong><br>
+            <small style="color:#667085;">${precoTxt} | 📸 ${nFotos}</small>
+        </div>
+        <button type="button" onclick="apagarAnuncio('${item.id}')" style="background:#fee2e2; color:#E31937; border:none; padding:5px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">Apagar</button>
+      `;
       lista.appendChild(linha);
     });
   }
 
-  /* ---------- Apagar anúncio ---------- */
-  async function apagarAnuncio(id) {
-    if (!confirm("Apagar este anúncio?")) return;
-
-    try {
-      var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + encodeURIComponent(id), {
-        method: "DELETE",
-        headers: cabecalhos({})
-      });
-      if (r.status === 401) { sessaoExpirada(); return; }
-      if (!r.ok) { aviso("Não foi possível apagar.", true); return; }
-      aviso("Anúncio apagado.", false);
-      await listarMeus();
-      window.location.reload();
-    } catch (e) {
-      aviso("Sem ligação à internet.", true);
-    }
-  }
+  window.apagarAnuncio = async function(id) {
+      if (!confirm("Apagar este anúncio?")) return;
+      await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + id, { method: "DELETE", headers: cabecalhos({}) });
+      listarMeus();
+  };
 
   /* ---------- Submeter ---------- */
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
-
-    if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
-      alert(
-        "Limite do plano Básico: 3 anúncios.\n\n" +
-        "👑 Torna-te Premium para publicar anúncios ilimitados!"
-      );
-      window.location.href = "premium.html";
-      return;
-    }
-
+    
     var nome = document.getElementById("nome").value.trim();
     var tipo = document.getElementById("tipo").value.trim();
+    var descricao = document.getElementById("descricao").value.trim();
+    var estado = document.getElementById("estado").value;
     var local = document.getElementById("local").value.trim();
     var categoria = document.getElementById("categoria").value;
     var telefone = document.getElementById("whatsapp").value.replace(/\s/g, "");
-    var precoInput = document.getElementById("preco").value;
+    
+    var precoFinal = null;
+    if (!precoCombinar.checked) {
+        precoFinal = inputPreco.value ? Number(inputPreco.value) : null;
+    }
 
-    if (nome.length < 2 || tipo.length < 2 || local.length < 2) {
-      aviso("Preencha nome, o que oferece e local (mínimo 2 letras).", true);
-      return;
-    }
-    if (nome.length > 60 || tipo.length > 60 || local.length > 60) {
-      aviso("Cada campo pode ter no máximo 60 caracteres.", true);
-      return;
-    }
-    if (!categoria) {
-      aviso("Escolha uma categoria.", true);
-      return;
-    }
-    if (!/^(8[2-7])\d{7}$/.test(telefone)) {
-      aviso("Digite um número válido de Moçambique (ex: 841234567).", true);
+    if (!nome || !tipo || !local || !categoria || !telefone || !descricao) {
+      aviso("Preenche todos os campos obrigatórios.", true);
       return;
     }
 
     botao.disabled = true;
-    aviso("A publicar...", false);
+    aviso("A publicar anúncio...", false);
+    btnPartilharWa.style.display = "none"; // Esconde botão antigo
 
     try {
-      // ===== A CORREÇÃO ESTÁ AQUI NO BODY =====
+      // 1. Cria a linha do anúncio
       var r = await fetch(MZ.url + "/rest/v1/profissionais", {
         method: "POST",
-        headers: cabecalhos({
-          "Content-Type": "application/json",
-          Prefer: "return=representation"
-        }),
+        headers: cabecalhos({ "Content-Type": "application/json", Prefer: "return=representation" }),
         body: JSON.stringify({
           nome: nome,
           tipo: tipo,
+          descricao: descricao,
+          estado: estado,
           local: local,
           categoria: categoria,
-          preco: precoInput ? Number(precoInput) : null,
+          preco: precoFinal,
           whatsapp: "258" + telefone,
           user_id: usuario.id,
-          plano: planoUser,      // Evita erro null do plano
-          fotos: [],             // Evita erro null das fotos (envia vazio primeiro)
-          descricao: "",         // Evita erro null da descrição
-          media_estrelas: 0,     // Inicializa avaliação
-          total_avaliacoes: 0
+          plano: planoUser,
+          fotos: []
         })
       });
 
-      if (r.status === 401) { sessaoExpirada(); botao.disabled = false; return; }
-      if (!r.ok) {
-        aviso("Não foi possível publicar. Tente de novo.", true);
-        botao.disabled = false;
-        return;
-      }
-
+      if (!r.ok) throw new Error("Erro na base de dados");
       var criado = await r.json();
-      var anuncioId = criado && criado[0] && criado[0].id;
+      var anuncioId = criado[0].id;
 
+      // 2. Faz o upload das fotos comprimidas
       var urls = [];
-      if (anuncioId && ficheiros.length) {
-        aviso("A enviar " + ficheiros.length + " foto(s)...", false);
-
+      if (ficheiros.length) {
+        aviso("A otimizar e enviar fotos...", false);
         for (var i = 0; i < ficheiros.length; i++) {
-          var f = ficheiros[i].file;
-          var ext = (f.name.split(".").pop() || "jpg").toLowerCase();
+          var fOriginal = ficheiros[i].file;
+          var fComprimido = await comprimirImagem(fOriginal); // COMPRIME!
+          var ext = "jpg";
           var caminho = usuario.id + "/" + anuncioId + "/" + i + "." + ext;
 
-          try {
-            var rUpload = await fetch(
-              MZ.url + "/storage/v1/object/anuncios-fotos/" + caminho,
-              {
-                method: "POST",
-                headers: {
-                  apikey: MZ.key,
-                  Authorization: "Bearer " + s.access_token,
-                  "Content-Type": f.type || "image/jpeg",
-                  "x-upsert": "true"
-                },
-                body: f
-              }
-            );
+          var rUpload = await fetch(MZ.url + "/storage/v1/object/anuncios-fotos/" + caminho, {
+            method: "POST",
+            headers: {
+              apikey: MZ.key,
+              Authorization: "Bearer " + s.access_token,
+              "Content-Type": "image/jpeg",
+              "x-upsert": "true"
+            },
+            body: fComprimido
+          });
 
-            if (rUpload.ok) {
-              urls.push(MZ.url + "/storage/v1/object/public/anuncios-fotos/" + caminho);
-            }
-          } catch (errFoto) {
-            console.warn("Falha ao enviar foto " + i, errFoto);
+          if (rUpload.ok) {
+            urls.push(MZ.url + "/storage/v1/object/public/anuncios-fotos/" + caminho);
           }
         }
 
-        if (urls.length) {
-          await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + anuncioId, {
-            method: "PATCH",
-            headers: cabecalhos({ "Content-Type": "application/json" }),
-            body: JSON.stringify({ fotos: urls })
-          });
-        }
+        // Atualiza o anúncio com as fotos
+        await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + anuncioId, {
+          method: "PATCH",
+          headers: cabecalhos({ "Content-Type": "application/json" }),
+          body: JSON.stringify({ fotos: urls })
+        });
       }
 
-      aviso("✅ Anúncio publicado com " + urls.length + " foto(s)!", false);
+      aviso("✅ Anúncio publicado com sucesso!", false);
+      
+      // 3. MOSTRA O BOTÃO DE PARTILHA DO WHATSAPP
+      var urlAnuncio = "https://mzlink601.github.io/mzlink/vendedor.html?id=" + usuario.id;
+      var msgZap = encodeURIComponent("Olha o que encontrei no MZLINK! " + tipo + " a " + (precoFinal ? precoFinal + " MT" : "combinar") + ". Fala direto comigo: " + urlAnuncio);
+      btnPartilharWa.href = "https://wa.me/?text=" + msgZap;
+      btnPartilharWa.style.display = "block";
+      
+      // Limpa o form
       document.getElementById("tipo").value = "";
-      document.getElementById("local").value = "";
-      document.getElementById("categoria").value = "";
-      document.getElementById("preco").value = ""; 
-
-      ficheiros.forEach(function (item) { URL.revokeObjectURL(item.url); });
+      document.getElementById("descricao").value = "";
+      document.getElementById("preco").value = "";
       ficheiros = [];
       renderPreview();
       atualizarContador();
+      listarMeus();
 
-      await listarMeus();
-
-      if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
-        setTimeout(function () { window.location.reload(); }, 1500);
-      }
     } catch (err) {
-      aviso("Sem ligação à internet. Tente de novo.", true);
+      console.error(err);
+      aviso("Erro ao publicar. Tenta novamente.", true);
     }
 
     botao.disabled = false;
   });
 
-  /* ---------- Iniciar ---------- */
   try {
     await carregarUsuario();
     await listarMeus();
-  } catch (e) {
-    sessaoExpirada();
-  }
+  } catch (e) { window.location.href = "login.html"; }
 })();
