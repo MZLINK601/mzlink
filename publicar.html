@@ -7,21 +7,39 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="fotos.css">
     <link rel="stylesheet" href="modo-premium.css">
+    <style>
+        /* Estilos extras para os novos campos */
+        .linha-preco { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .linha-preco input[type="number"] { flex: 1; margin-bottom: 0; }
+        .check-combinar { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; font-weight: 700; color: #667085; cursor: pointer; }
+        .check-combinar input { width: 18px; height: 18px; accent-color: #25D366; cursor: pointer; }
+        .estado-select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; font-weight: 600; margin-bottom: 15px; background: #fff; }
+        .btn-partilhar-wa { display: none; background: #25D366; color: white; text-align: center; padding: 15px; border-radius: 8px; font-weight: 800; text-decoration: none; margin-top: 15px; box-shadow: 0 4px 12px rgba(37,211,102,0.3); }
+    </style>
 </head>
 <body class="auth-page">
 
     <div class="publicar-wrap">
-
         <div class="auth-card">
             <a href="index.html" class="auth-logo">MZLINK</a>
             <h2>Publicar anúncio</h2>
 
             <form id="publicarForm">
-                <label for="nome">Nome</label>
+                <label for="nome">Nome da Loja / Vendedor</label>
                 <input type="text" id="nome" placeholder="Ex: João Silva" required maxlength="60">
 
-                <label for="tipo">O que oferece</label>
-                <input type="text" id="tipo" placeholder="Ex: Eletricista, Roupa, Aulas de inglês" required maxlength="60">
+                <label for="tipo">O que oferece (Título)</label>
+                <input type="text" id="tipo" placeholder="Ex: iPhone 13 64GB" required maxlength="60">
+
+                <label for="descricao">Descrição detalhada</label>
+                <textarea id="descricao" placeholder="Ex: Telemóvel em ótimo estado, bateria a 85%, sem riscos. Aceito trocas." required maxlength="300" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc; font-family:inherit; font-size:0.95rem; resize:vertical; height:80px; margin-bottom:15px;"></textarea>
+
+                <label for="estado">Estado do Produto</label>
+                <select id="estado" class="estado-select" required>
+                    <option value="Novo">Novo</option>
+                    <option value="Usado">Usado</option>
+                    <option value="Serviço">Serviço (Ex: Eletricista, Aulas)</option>
+                </select>
 
                 <label for="local">Local</label>
                 <input type="text" id="local" placeholder="Ex: Maputo, Matola" required maxlength="60">
@@ -40,54 +58,41 @@
                 <label for="whatsapp">WhatsApp</label>
                 <input type="tel" id="whatsapp" placeholder="84 123 4567" required>
 
-                <label for="preco">Preço (MT) — opcional</label>
-                <input type="number" id="preco" placeholder="Ex: 1500 (deixa vazio se for a combinar)">
+                <label for="preco">Preço (MT)</label>
+                <div class="linha-preco">
+                    <input type="number" id="preco" placeholder="Ex: 1500">
+                    <label class="check-combinar">
+                        <input type="checkbox" id="precoCombinar"> A combinar
+                    </label>
+                </div>
 
                 <!-- ===== Secção de Fotos ===== -->
                 <div class="fotos-section" id="fotosSection">
-
                     <div class="fotos-header">
-                        <h3 class="fotos-titulo">
-                            <span class="icone">📸</span>
-                            Fotos do anúncio
-                        </h3>
+                        <h3 class="fotos-titulo"><span class="icone">📸</span> Fotos do anúncio</h3>
                         <span class="fotos-contador-badge" id="contadorFotos">0/4</span>
                     </div>
-
                     <div class="fotos-info" id="fotosInfo">
-                        🆓 Plano <strong>Básico</strong>: até 4 fotos.
-                        <a href="premium.html">Tornar-se Premium</a>
+                        🆓 Plano <strong>Básico</strong>: até 4 fotos. <a href="premium.html">Tornar-se Premium</a>
                     </div>
-
                     <div class="fotos-vazio" id="fotosVazio">
                         <div class="icone-vazio">🖼️</div>
-                        <div class="texto-vazio">
-                            Ainda não adicionaste fotos.<br>
-                            Adiciona até <strong id="limiteTexto">4 fotos</strong> para o teu anúncio.
-                        </div>
+                        <div class="texto-vazio">Ainda não adicionaste fotos.<br>Adiciona até <strong id="limiteTexto">4 fotos</strong> para o teu anúncio.</div>
                     </div>
-
                     <input type="file" id="inputFotos" accept="image/*" multiple hidden>
-
                     <div id="previewFotos"></div>
-
-                    <button type="button" id="btnAdicionarFoto" class="btn-add-foto">
-                        Adicionar foto
-                    </button>
-
+                    <button type="button" id="btnAdicionarFoto" class="btn-add-foto">Adicionar foto</button>
                     <div class="fotos-aviso" id="fotosAviso">
                         <span class="emoji">👑</span>
-                        <span>
-                            Limite atingido! <a href="premium.html">Torna-te Premium</a>
-                            para publicar até <strong>20 fotos</strong>.
-                        </span>
+                        <span>Limite atingido! <a href="premium.html">Torna-te Premium</a> para publicar até <strong>20 fotos</strong>.</span>
                     </div>
-
                 </div>
-                <!-- ===== Fim Secção de Fotos ===== -->
 
-                <button type="submit">Publicar</button>
+                <button type="submit" style="margin-top: 20px;">🚀 Publicar Anúncio</button>
                 <p id="message"></p>
+                
+                <!-- Botão de partilha (escondido até publicar) -->
+                <a href="#" id="btnPartilharWa" class="btn-partilhar-wa" target="_blank">📲 Partilhar no WhatsApp / Status</a>
             </form>
         </div>
 
@@ -97,11 +102,10 @@
         </div>
 
         <a class="voltar" href="index.html">Voltar à página inicial</a>
-
     </div>
 
     <script src="sessao.js" charset="UTF-8"></script>
-    <script src="publicar.js" charset="UTF-8"></script>
+    <script src="publicar.js?v=10" charset="UTF-8"></script>
     <script src="modo-premium.js"></script>
 </body>
-</html>
+    </html>
