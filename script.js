@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function carregarDados() {
     try {
-      // AQUI ESTÁ A CORREÇÃO: categoria=neq.loja (Não mostra os perfis de loja)
+      // Ignora a categoria "loja" para os perfis não aparecerem como anúncios
       const resposta = await fetch(
         SUPABASE_URL + "/rest/v1/profissionais?select=*&categoria=neq.loja&order=criado_em.desc",
         { headers: { apikey: SUPABASE_KEY } }
@@ -115,9 +115,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let html = '<h3 class="results-title">' + limpar(titulo) + '</h3>';
 
     lista.forEach(function (item) {
-      const msg = encodeURIComponent("Olá " + item.nome + ", vi o seu perfil no MZLINK e gostaria de falar consigo.");
+      const msg = encodeURIComponent("Olá " + item.nome + ", vi o seu anúncio no MZLINK e gostaria de falar consigo.");
       const numero = String(item.whatsapp).replace(/\D/g, "");
       const ehPremium = item.plano === "premium";
+      const ehEmpresa = item.tipo_conta === "empresa"; // Verifica se é empresa
       const media = Number(item.media_estrelas) || 0;
       const total = Number(item.total_avaliacoes) || 0;
 
@@ -125,7 +126,9 @@ document.addEventListener("DOMContentLoaded", function () {
         "Olha este anúncio no MZLINK: " + item.nome + " (" + item.tipo + " em " + item.local + "). Fala com ele aqui: https://mzlink601.github.io/mzlink/"
       );
 
+      // SELOS
       const badgePremium = ehPremium ? '<span class="badge-premium-card">👑 PREMIUM</span>' : '';
+      const badgeEmpresa = ehEmpresa ? '<span style="background: #E0F2FE; color: #0369A1; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 800; vertical-align: middle; margin-left: 4px;">🏢 EMPRESA</span>' : '';
 
       let avaliacaoHTML = "";
       if (total > 0) {
@@ -148,6 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fotoHTML = '<div class="foto-principal-card sem-foto"><span>📸</span><small>Sem fotos</small></div>';
       }
 
+      // Monta o cartão
       html +=
         '<div class="result-card ' + (ehPremium ? 'card-premium' : '') + '">' +
           fotoHTML +
@@ -158,7 +162,8 @@ document.addEventListener("DOMContentLoaded", function () {
               '</a>' +
               '<div class="info">' +
                 '<a href="vendedor.html?id=' + item.user_id + '" style="text-decoration:none; color:inherit;">' +
-                  '<h3>' + limpar(item.nome) + ' ' + badgePremium + '</h3>' +
+                  // AQUI ESTÃO OS DOIS SELOS (Premium e Empresa)
+                  '<h3>' + limpar(item.nome) + ' ' + badgePremium + ' ' + badgeEmpresa + '</h3>' +
                 '</a>' +
                 '<span class="tag">' + limpar(item.tipo) + '</span>' +
                 '<p>📍 ' + limpar(item.local) + '</p>' +
