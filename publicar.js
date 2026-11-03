@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar Anúncio (Corrigido: Contagem apenas de anúncios)
+   MZLINK · Publicar Anúncio (Corrigido: Plano correto e contagem)
    ============================================================ */
 
 (async function () {
@@ -107,22 +107,32 @@
     document.getElementById("nome").value = meta.nome || "";
     document.getElementById("whatsapp").value = String(meta.whatsapp || "").replace(/^258/, "");
 
-    // CORREÇÃO: categoria=neq.loja para não contar o perfil como anúncio
-    var r2 = await fetch(MZ.url + "/rest/v1/profissionais?select=id,plano&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja", { headers: cabecalhos({}) });
+    // A CORREÇÃO ESTÁ AQUI: Buscar todos os dados do user e separar a loja dos anúncios
+    var r2 = await fetch(MZ.url + "/rest/v1/profissionais?select=id,plano,categoria&user_id=eq." + encodeURIComponent(usuario.id), { headers: cabecalhos({}) });
 
     if (r2.ok) {
       var dados = await r2.json();
-      totalMeusAnuncios = dados.length;
-      planoUser = (dados[0] && dados[0].plano) || "basico";
+      
+      // 1. Encontra a "loja" para saber o plano real
+      var perfilLoja = dados.find(function(item) { return item.categoria === 'loja'; });
+      planoUser = (perfilLoja && perfilLoja.plano) ? perfilLoja.plano : "basico";
+
+      // 2. Conta apenas os anúncios reais (ignora a loja)
+      var anunciosReais = dados.filter(function(item) { return item.categoria !== 'loja'; });
+      totalMeusAnuncios = anunciosReais.length;
     }
 
     limiteFotos = planoUser === "premium" ? 20 : 4;
     limiteAnuncios = planoUser === "premium" ? Infinity : 3;
     
     if (limiteTexto) limiteTexto.textContent = limiteFotos + " fotos";
+    
     if (planoUser === "premium") {
         fotosInfo.innerHTML = "⭐ Plano <strong>Premium</strong>: até 20 fotos.";
+    } else {
+        fotosInfo.innerHTML = "🆓 Plano <strong>Básico</strong>: até 4 fotos. <a href='premium.html'>Tornar-se Premium</a>";
     }
+    
     atualizarContador();
   }
 
