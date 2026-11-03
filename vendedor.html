@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Vendedor - MZLINK</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f7f6; margin: 0; padding-bottom: 40px; }
+        
+        /* Cabeçalho da Loja */
+        .loja-header {
+            background: linear-gradient(135deg, #0f1115 0%, #1a1d24 100%);
+            color: white;
+            padding: 40px 20px 30px;
+            text-align: center;
+            border-bottom: 4px solid #d4af37;
+            position: relative;
+        }
+        .loja-avatar {
+            width: 100px; height: 100px;
+            border-radius: 50%; background: #1E40AF; color: white;
+            font-size: 3rem; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px;
+            border: 4px solid #d4af37;
+            background-size: cover; background-position: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .loja-nome { font-size: 1.8rem; font-weight: 900; margin: 0 0 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .loja-badges { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+        .badge { padding: 4px 12px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-premium { background: linear-gradient(135deg, #f5d76e, #d4af37); color: #000; box-shadow: 0 0 10px rgba(212,175,55,0.4); }
+        .badge-empresa { background: #E0F2FE; color: #0369A1; }
+        .badge-basico { background: #f0f4f9; color: #667085; }
+        .loja-local { color: #a0a0a0; font-size: 0.9rem; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .loja-avaliacao { color: #d4af37; font-weight: bold; font-size: 1rem; margin-bottom: 20px; }
+        
+        .btn-voltar-loja {
+            display: inline-block; color: #d4af37; text-decoration: none;
+            font-weight: 800; font-size: 0.9rem; margin-top: 10px;
+        }
+
+        /* Grelha de Anúncios */
+        .container-anuncios { max-width: 1100px; margin: -20px auto 0; padding: 0 15px; position: relative; z-index: 2; }
+        .titulo-seccao { color: #0f2a5c; text-align: center; margin: 30px 0 20px; font-weight: 900; font-size: 1.4rem; }
+        
+        .grid-anuncios { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media(min-width: 768px) { .grid-anuncios { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
+
+        /* Cartão de Anúncio (Reutilizado do index) */
+        .card-anuncio {
+            background: #fff; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eef1f5;
+            display: flex; flex-direction: column;
+        }
+        .card-anuncio img { width: 100%; height: 200px; object-fit: cover; }
+        .card-anuncio .conteudo { padding: 15px; display: flex; flex-direction: column; flex: 1; }
+        .card-anuncio h3 { margin: 0 0 5px; font-size: 1.1rem; color: #0f1115; }
+        .card-anuncio .preco { color: #16a34a; font-weight: 900; font-size: 1.2rem; margin-bottom: 10px; }
+        .card-anuncio .local { color: #667085; font-size: 0.85rem; margin-bottom: 15px; }
+        .card-anuncio .btn-wa {
+            margin-top: auto; display: block; text-align: center;
+            background: #25D366; color: white; padding: 12px;
+            border-radius: 8px; text-decoration: none; font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO DA LOJA -->
+    <header class="loja-header" id="lojaHeader">
+        <!-- O conteúdo vai ser preenchido pelo JavaScript -->
+        <p style="color:white;">A carregar loja...</p>
+    </header>
+
+    <!-- LISTA DE PRODUTOS -->
+    <div class="container-anuncios">
+        <h2 class="titulo-seccao">📦 Anúncios deste Vendedor</h2>
+        <div id="gridAnuncios" class="grid-anuncios">
+            <!-- Os cartões aparecem aqui -->
+        </div>
+    </div>
+
+    <script src="vendedor.js?v=1"></script>
+</body>
+</html>
