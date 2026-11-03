@@ -17,81 +17,12 @@
         .btn-partilhar-wa { display: none; background: #25D366; color: white; text-align: center; padding: 15px; border-radius: 8px; font-weight: 800; text-decoration: none; margin-top: 15px; box-shadow: 0 4px 12px rgba(37,211,102,0.3); }
 
         /* ===== ESTILOS DA PRÉ-VISUALIZAÇÃO DAS FOTOS ===== */
-        #previewFotos {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-            margin-bottom: 15px;
-        }
-
-        .foto-item {
-            position: relative;
-            width: 90px;
-            height: 90px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 2px solid #e2e8f0;
-            background: #fff;
-        }
-
-        .foto-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Corta a imagem para caber no quadrado sem esticar */
-            display: block;
-        }
-
-        /* O botão de apagar (X) */
-        .foto-item .remover {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: #E31937;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            z-index: 2;
-        }
-
-        /* O selo PRINCIPAL */
-        .foto-item .principal {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.75);
-            color: #fff;
-            font-size: 9px;
-            text-align: center;
-            padding: 3px 0;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            z-index: 2;
-        }
-
-        /* O contador 1/4 */
-        .foto-item .numero {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            font-size: 10px;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: bold;
-            z-index: 2;
-        }
+        #previewFotos { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; margin-bottom: 15px; }
+        .foto-item { position: relative; width: 90px; height: 90px; border-radius: 8px; overflow: hidden; border: 2px solid #e2e8f0; background: #fff; }
+        .foto-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .foto-item .remover { position: absolute; top: 4px; right: 4px; background: #E31937; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 2; }
+        .foto-item .principal { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.75); color: #fff; font-size: 9px; text-align: center; padding: 3px 0; font-weight: 800; letter-spacing: 0.5px; z-index: 2; }
+        .foto-item .numero { position: absolute; top: 4px; left: 4px; background: rgba(0, 0, 0, 0.6); color: #fff; font-size: 10px; padding: 2px 4px; border-radius: 4px; font-weight: bold; z-index: 2; }
     </style>
 </head>
 <body class="auth-page">
@@ -111,10 +42,10 @@
                 <label for="descricao">Descrição detalhada</label>
                 <textarea id="descricao" placeholder="Ex: Telemóvel em ótimo estado... / Faço instalações elétricas..." required maxlength="300" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc; font-family:inherit; font-size:0.95rem; resize:vertical; height:80px; margin-bottom:15px;"></textarea>
 
-                <!-- ESTE BLOCO É CONTROLADO PELO JS (Desaparece se for Serviço) -->
-                <div id="divEstado">
+                <!-- ESTE BLOCO COMEÇA ESCONDIDO -->
+                <div id="divEstado" style="display: none;">
                     <label for="estado">Estado do Produto</label>
-                    <select id="estado" class="estado-select" required>
+                    <select id="estado" class="estado-select">
                         <option value="Novo">Novo</option>
                         <option value="Usado">Usado</option>
                     </select>
@@ -160,12 +91,10 @@
                     </div>
                     <input type="file" id="inputFotos" accept="image/*" multiple hidden>
                     
-                    <!-- Onde as miniaturas vão aparecer -->
                     <div id="previewFotos"></div>
 
                     <button type="button" id="btnAdicionarFoto" class="btn-add-foto">Adicionar foto</button>
                     
-                    <!-- AVISO ESCONDIDO POR DEFEITO -->
                     <div class="fotos-aviso" id="fotosAviso" style="display: none;">
                         <span class="emoji">👑</span>
                         <span>Limite atingido! <a href="premium.html">Torna-te Premium</a> para publicar até <strong>20 fotos</strong>.</span>
@@ -175,7 +104,6 @@
                 <button type="submit" style="margin-top: 20px;">🚀 Publicar Anúncio</button>
                 <p id="message"></p>
                 
-                <!-- Botão de partilha (escondido até publicar) -->
                 <a href="#" id="btnPartilharWa" class="btn-partilhar-wa" target="_blank">📲 Partilhar no WhatsApp / Status</a>
             </form>
         </div>
@@ -189,7 +117,7 @@
     </div>
 
     <script src="sessao.js" charset="UTF-8"></script>
-    <script src="publicar.js?v=13" charset="UTF-8"></script>
+    <script src="publicar.js?v=15" charset="UTF-8"></script>
     <script src="modo-premium.js"></script>
 </body>
-        </html>
+</html>
