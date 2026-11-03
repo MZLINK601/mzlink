@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar Anúncio (Inteligente: Esconde Estado p/ Serviços)
+   MZLINK · Publicar Anúncio (Lógica de Estado Corrigida)
    ============================================================ */
 
 (async function () {
@@ -36,17 +36,19 @@
   var divEstado = document.getElementById("divEstado");
   var selectEstado = document.getElementById("estado");
 
-  // ===== MÁGICA: MOSTRAR/ESCONDER ESTADO =====
+  // ===== MÁGICA CORRIGIDA: MOSTRAR/ESCONDER ESTADO =====
   selectCategoria.addEventListener("change", function() {
       var cat = this.value;
       if (cat === "servicos" || cat === "profissionais" || cat === "instituicoes" || cat === "empresas" || cat === "") {
           divEstado.style.display = "none";
           selectEstado.required = false;
-          selectEstado.value = "Serviço";
       } else {
           divEstado.style.display = "block";
           selectEstado.required = true;
-          if (selectEstado.value === "Serviço") selectEstado.value = "Novo";
+          // Se a caixa estiver vazia, força o "Novo"
+          if (selectEstado.value !== "Novo" && selectEstado.value !== "Usado") {
+              selectEstado.value = "Novo";
+          }
       }
   });
 
@@ -221,11 +223,16 @@
     var nome = document.getElementById("nome").value.trim();
     var tipo = document.getElementById("tipo").value.trim();
     var descricao = document.getElementById("descricao").value.trim();
-    var estado = selectEstado.value; 
     var local = document.getElementById("local").value.trim();
     var categoria = selectCategoria.value;
     var telefone = document.getElementById("whatsapp").value.replace(/\s/g, "");
     
+    // A MÁGICA DO ESTADO AQUI: Se for serviço, grava "Serviço". Se for produto, grava o que está no select.
+    var estado = "Serviço";
+    if (categoria === "produtos" || categoria === "vendedores") {
+        estado = selectEstado.value || "Novo";
+    }
+
     var precoFinal = null;
     if (!precoCombinar.checked) {
         precoFinal = inputPreco.value ? Number(inputPreco.value) : null;
@@ -311,7 +318,7 @@
       
       selectCategoria.value = "";
       divEstado.style.display = "none";
-      selectEstado.value = "Serviço";
+      if (selectEstado) selectEstado.value = "Novo"; 
 
     } catch (err) {
       console.error(err);
