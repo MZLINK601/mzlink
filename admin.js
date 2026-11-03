@@ -21,12 +21,8 @@
       return;
     }
 
-    // Ir buscar o user
     var r = await fetch(MZ.url + "/auth/v1/user", {
-      headers: {
-        apikey: MZ.key,
-        Authorization: "Bearer " + sessao.access_token
-      }
+      headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
     });
 
     if (!r.ok) {
@@ -39,15 +35,12 @@
     if (ADMINS.indexOf(user.email) === -1) {
       var aviso = $("#avisoAcesso");
       aviso.style.display = "block";
-      aviso.innerHTML =
-        "⛔ Acesso restrito.<br><br>" +
-        "Esta conta (<strong>" + esc(user.email) + "</strong>) não é admin.";
+      aviso.innerHTML = "⛔ Acesso restrito.<br><br>Esta conta (<strong>" + esc(user.email) + "</strong>) não é admin.";
       return;
     }
 
     $("#painelAdmin").style.display = "block";
     
-    // Carrega os utilizadores e os pedidos pendentes
     await carregarTudo();
     await carregarPendentes(); 
   }
@@ -57,10 +50,7 @@
     var sessao = await MZ.sessaoValida();
 
     var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id, user_id, nome, whatsapp, criado_em, plano, premium_ate&order=criado_em.desc", {
-      headers: {
-        apikey: MZ.key,
-        Authorization: "Bearer " + sessao.access_token
-      }
+      headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
     });
 
     if (!r.ok) {
@@ -74,7 +64,6 @@
     $("#statUsers").textContent = todosUsers.length;
     $("#statAnuncios").textContent = todosUsers.length;
 
-    // Contar premium
     var totalPremium = 0;
     for (var k = 0; k < todosUsers.length; k++) {
       if (todosUsers[k].plano === "premium") totalPremium++;
@@ -123,7 +112,6 @@
 
     tbody.innerHTML = html;
 
-    // Ligar botões
     var botoes = tbody.querySelectorAll("[data-id]");
     for (var j = 0; j < botoes.length; j++) {
       botoes[j].addEventListener("click", function () {
@@ -136,18 +124,13 @@
 
   async function alterarPlano(id, acao) {
     var novoPlano = acao === "promover" ? "premium" : "basico";
-    var pergunta = acao === "promover"
-      ? "Promover este utilizador a Premium por 30 dias?"
-      : "Rebaixar este utilizador para Básico?";
+    var pergunta = acao === "promover" ? "Promover este utilizador a Premium por 30 dias?" : "Rebaixar este utilizador para Básico?";
 
     if (!confirm(pergunta)) return;
 
     try {
       var sessao = await MZ.sessaoValida();
-      if (!sessao) {
-        alert("Sessão expirada. Faz login de novo.");
-        return;
-      }
+      if (!sessao) { alert("Sessão expirada. Faz login de novo."); return; }
 
       var dataExpiracao = null;
       if (novoPlano === "premium") {
@@ -156,27 +139,14 @@
         dataExpiracao = dataFutura.toISOString();
       }
 
-      var r = await fetch(
-        MZ.url + "/rest/v1/profissionais?id=eq." + encodeURIComponent(id),
-        {
+      var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + encodeURIComponent(id), {
           method: "PATCH",
-          headers: {
-            apikey: MZ.key,
-            Authorization: "Bearer " + sessao.access_token,
-            "Content-Type": "application/json",
-            Prefer: "return=minimal"
-          },
-          body: JSON.stringify({
-            plano: novoPlano,
-            premium_ate: dataExpiracao
-          })
+          headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json", Prefer: "return=minimal" },
+          body: JSON.stringify({ plano: novoPlano, premium_ate: dataExpiracao })
         }
       );
 
-      if (!r.ok) {
-        alert("❌ Erro ao atualizar. Tenta de novo.");
-        return;
-      }
+      if (!r.ok) { alert("❌ Erro ao atualizar. Tenta de novo."); return; }
 
       alert(acao === "promover" ? "✅ Utilizador promovido a Premium por 30 dias!" : "✅ Utilizador rebaixado a Básico!");
       await carregarTudo();
@@ -193,15 +163,28 @@
     var div = document.getElementById("tabelaPendentes");
     if (!div) return;
 
-    var sessao = await MZ.sessaoValida();
-    if (!sessao) return;
-
     try {
+      var sessao = await MZ.sessaoValida();
+      if (!sessao) {
+        div.innerHTML = "<p style='padding:20px; color:red;'>Erro: Sessão expirada. Faz login de novo.</p>";
+        return;
+      }
+
       var r = await fetch(MZ.url + "/rest/v1/pedidos_premium?status=eq.pendente&select=*", {
         headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
       });
       
+      if (!r.ok) {
+        div.innerHTML = "<p style='padding:20px; color:red;'>Erro ao ligar à base de dados (Código: " + r.status + "). Verifica se criaste a tabela e as regras de segurança.</p>";
+        return;
+      }
+
       var pedidos = await r.json();
+
+      if (!Array.isArray(pedidos)) {
+         div.innerHTML = "<p style='padding:20px; color:red;'>Erro: Resposta da base de dados inválida.</p>";
+         return;
+      }
 
       if (pedidos.length === 0) {
         div.innerHTML = "<p style='padding:20px; color:#16a34a; font-weight:bold;'>✅ Nenhum pedido pendente. Tudo em dia!</p>";
@@ -227,7 +210,6 @@
       html += `</table>`;
       div.innerHTML = html;
 
-      // Ligar os botões de aprovar
       var btns = div.querySelectorAll(".btn-aprovar-pedido");
       for (var i = 0; i < btns.length; i++) {
         btns[i].addEventListener("click", function() {
@@ -238,7 +220,8 @@
       }
 
     } catch (e) {
-      div.innerHTML = "<p style='color:red; padding: 20px;'>Erro ao carregar pedidos.</p>";
+      console.error(e);
+      div.innerHTML = "<p style='padding:20px; color:red;'>Erro de ligação ao servidor.</p>";
     }
   }
 
@@ -249,30 +232,22 @@
     if (!sessao) return;
 
     try {
-      // 1. Marcar o pedido como aprovado
       await fetch(MZ.url + "/rest/v1/pedidos_premium?id=eq." + idPedido, {
         method: "PATCH",
         headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
         body: JSON.stringify({ status: "aprovado" })
       });
 
-      // 2. Calcular a data de expiração (Hoje + 30 dias)
       var dataFutura = new Date();
       dataFutura.setDate(dataFutura.getDate() + 30);
 
-      // 3. Atualizar o utilizador para Premium
       await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + userId, {
         method: "PATCH",
         headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            plano: "premium",
-            premium_ate: dataFutura.toISOString()
-        })
+        body: JSON.stringify({ plano: "premium", premium_ate: dataFutura.toISOString() })
       });
 
       alert("✅ Cliente promovido a Premium com sucesso!");
-      
-      // Atualiza as duas tabelas no ecrã
       await carregarTudo(); 
       await carregarPendentes(); 
 
@@ -282,14 +257,12 @@
     }
   }
 
-  /* ---------- Escape (evita XSS) ---------- */
   function esc(t) {
     var d = document.createElement("div");
     d.textContent = String(t == null ? "" : t);
     return d.innerHTML;
   }
 
-  /* ---------- Sair ---------- */
   var btnSair = $("#btnSair");
   if (btnSair) {
     btnSair.addEventListener("click", function (e) {
