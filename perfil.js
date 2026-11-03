@@ -72,6 +72,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <form id="formOnboarding">
                     <div class="campo">
                         <div class="campo-info">
+                            <label>Tipo de Conta</label>
+                            <select id="novoTipoConta" required style="width:100%; border:none; border-bottom:1px solid #ccc; font-size:1rem; font-weight:700; padding:5px 0; outline:none; background:transparent;">
+                                <option value="particular">🙋‍♂️ Vendedor Particular</option>
+                                <option value="empresa">🏢 Empresa / Loja Oficial</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="campo">
+                        <div class="campo-info">
                             <label>Nome da Loja / Negócio</label>
                             <input type="text" id="novoNome" required value="${nomeAuth}" placeholder="Ex: João Telemóveis" style="width:100%; border:none; border-bottom:1px solid #ccc; font-size:1rem; font-weight:700; padding:5px 0; outline:none;">
                         </div>
@@ -127,6 +136,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const btn = document.getElementById("btnCriarLoja");
             const msg = document.getElementById("msgOnboarding");
             
+            const tipoConta = document.getElementById("novoTipoConta").value;
             const nome = document.getElementById("novoNome").value.trim();
             const whats = document.getElementById("novoWhats").value.replace(/\s/g, "");
             const local = document.getElementById("novoLocal").value;
@@ -168,7 +178,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 }
 
-                // O PREÇO AGORA VAI COMO NULL (vazio), NÃO COMO TEXTO!
                 const dadosLoja = {
                     user_id: user.id,
                     nome: nome,
@@ -177,6 +186,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     plano: "basico",
                     categoria: "loja",
                     tipo: "Perfil da Loja",
+                    tipo_conta: tipoConta, // <--- GUARDA SE É EMPRESA OU PARTICULAR
                     preco: null, 
                     fotos: []
                 };
@@ -190,7 +200,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (res.ok) {
                     msg.style.color = "green";
                     msg.textContent = "Loja criada com sucesso! A carregar...";
-                    setTimeout(() => window.location.href = "perfil.html?v=5000", 1000);
+                    setTimeout(() => window.location.href = "perfil.html?v=6000", 1000);
                 } else {
                     const erro = await res.json();
                     msg.textContent = "Erro: " + (erro.message || "Tenta novamente.");
@@ -210,6 +220,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const telefone = String(perfilDB.whatsapp).replace(/^258/, "");
         const inicial = nome.charAt(0).toUpperCase();
         const ehPremium = perfilDB.plano === "premium";
+        const ehEmpresa = perfilDB.tipo_conta === "empresa";
         const urlAvatar = userMeta.avatar_url;
 
         conteudo.innerHTML = `
@@ -223,7 +234,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="badge-moz">🇲🇿 Orgulho Nacional</div>
                 <h1>${nome}</h1>
                 <p class="email">${user.email}</p>
-                <span class="plano-badge ${ehPremium ? 'premium' : 'basico'}">${ehPremium ? '⭐ PREMIUM' : '🆓 Básico'}</span>
+                <div style="display:flex; gap:8px; justify-content:center; margin-top:10px;">
+                    <span class="plano-badge ${ehPremium ? 'premium' : 'basico'}">${ehPremium ? '⭐ PREMIUM' : '🆓 Básico'}</span>
+                    ${ehEmpresa ? '<span class="plano-badge" style="background:#E0F2FE; color:#0369A1;">🏢 EMPRESA</span>' : ''}
+                </div>
             </div>
             <div class="card">
                 <h2>📝 Dados da Loja</h2>
@@ -269,7 +283,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 });
 
                 userMeta = novoMeta;
-                window.location.href = "perfil.html?v=5001";
+                window.location.href = "perfil.html?v=6001";
             } catch (err) { alert("Erro de ligação."); }
         });
     }
@@ -317,7 +331,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 sessao.name = dados.nome;
                 localStorage.setItem(CHAVE, JSON.stringify(sessao));
             }
-            window.location.href = "perfil.html?v=5002";
+            window.location.href = "perfil.html?v=6002";
         } catch (e) { alert("Erro ao guardar. Tenta de novo."); }
     }
 });
