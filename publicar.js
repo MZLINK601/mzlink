@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar Anúncio (Com Compressão e Partilha)
+   MZLINK · Publicar Anúncio (Inteligente: Esconde Estado p/ Serviços)
    ============================================================ */
 
 (async function () {
@@ -31,6 +31,26 @@
   var limiteTexto = document.getElementById("limiteTexto");
   var precoCombinar = document.getElementById("precoCombinar");
   var inputPreco = document.getElementById("preco");
+  
+  // Elementos do Estado
+  var selectCategoria = document.getElementById("categoria");
+  var divEstado = document.getElementById("divEstado");
+  var selectEstado = document.getElementById("estado");
+
+  // ===== A MÁGICA ACONTECE AQUI =====
+  // Esconde ou mostra o campo "Estado" dependendo da categoria escolhida
+  selectCategoria.addEventListener("change", function() {
+      var cat = this.value;
+      if (cat === "servicos" || cat === "profissionais" || cat === "instituicoes" || cat === "empresas") {
+          divEstado.style.display = "none"; // Esconde
+          selectEstado.required = false;    // Deixa de ser obrigatório
+          selectEstado.value = "Serviço";   // Define o valor padrão invisível
+      } else {
+          divEstado.style.display = "block"; // Mostra
+          selectEstado.required = true;      // Volta a ser obrigatório
+          selectEstado.value = "Novo";       // Volta ao padrão
+      }
+  });
 
   // Lógica do Preço a Combinar
   precoCombinar.addEventListener("change", function() {
@@ -55,7 +75,7 @@
     return h;
   }
 
-  // ===== COMPRESSÃO DE IMAGEM NO TELEMÓVEL =====
+  // ===== COMPRESSÃO DE IMAGEM =====
   async function comprimirImagem(file) {
       return new Promise((resolve) => {
           const reader = new FileReader();
@@ -65,7 +85,7 @@
               img.src = event.target.result;
               img.onload = () => {
                   const canvas = document.createElement("canvas");
-                  const MAX_WIDTH = 1000; // Largura máxima
+                  const MAX_WIDTH = 1000; 
                   let scale = MAX_WIDTH / img.width;
                   if (scale > 1) scale = 1;
                   
@@ -78,7 +98,7 @@
                   canvas.toBlob((blob) => {
                       const newFile = new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() });
                       resolve(newFile);
-                  }, 'image/jpeg', 0.7); // 70% de qualidade (perfeito para web)
+                  }, 'image/jpeg', 0.7); 
               };
           };
       });
@@ -105,7 +125,6 @@
     limiteFotos = planoUser === "premium" ? 20 : 4;
     limiteAnuncios = planoUser === "premium" ? Infinity : 3;
     
-    // Atualiza visual do limite
     if (limiteTexto) limiteTexto.textContent = limiteFotos + " fotos";
     if (planoUser === "premium") {
         fotosInfo.innerHTML = "⭐ Plano <strong>Premium</strong>: até 20 fotos.";
@@ -120,11 +139,11 @@
     if (ficheiros.length >= limiteFotos) {
       btnAddFoto.disabled = true;
       btnAddFoto.textContent = "Limite atingido";
-      fotosAviso.style.display = "block"; // Mostra o aviso
+      fotosAviso.style.display = "block"; 
     } else {
       btnAddFoto.disabled = false;
       btnAddFoto.textContent = "Adicionar foto (" + (limiteFotos - ficheiros.length) + " restantes)";
-      fotosAviso.style.display = "none"; // Esconde o aviso
+      fotosAviso.style.display = "none"; 
     }
     
     if (ficheiros.length > 0) {
@@ -179,7 +198,7 @@
   /* ---------- Listar os meus anúncios ---------- */
   async function listarMeus() {
     lista.textContent = "";
-    var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id,nome,tipo,categoria,preco,fotos&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja&order=criado_em.desc", { headers: cabecalhos({}) });
+    var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id,nome,tipo,categoria,preco,fotos,estado&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja&order=criado_em.desc", { headers: cabecalhos({}) });
 
     if (!r.ok) { lista.textContent = "Erro ao carregar."; return; }
 
@@ -191,11 +210,12 @@
       linha.className = "meu-item";
       var nFotos = (item.fotos && item.fotos.length) || 0;
       var precoTxt = item.preco ? "💰 " + item.preco + " MT" : "A combinar";
+      var estadoTxt = item.estado && item.estado !== "Serviço" ? " | " + item.estado : "";
       
       linha.innerHTML = `
         <div>
             <strong>${item.tipo}</strong><br>
-            <small style="color:#667085;">${precoTxt} | 📸 ${nFotos}</small>
+            <small style="color:#667085;">${precoTxt}${estadoTxt} | 📸 ${nFotos}</small>
         </div>
         <button type="button" onclick="apagarAnuncio('${item.id}')" style="background:#fee2e2; color:#E31937; border:none; padding:5px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">Apagar</button>
       `;
@@ -216,9 +236,9 @@
     var nome = document.getElementById("nome").value.trim();
     var tipo = document.getElementById("tipo").value.trim();
     var descricao = document.getElementById("descricao").value.trim();
-    var estado = document.getElementById("estado").value;
+    var estado = selectEstado.value; // Vai ser "Novo", "Usado" ou "Serviço" (invisível)
     var local = document.getElementById("local").value.trim();
-    var categoria = document.getElementById("categoria").value;
+    var categoria = selectCategoria.value;
     var telefone = document.getElementById("whatsapp").value.replace(/\s/g, "");
     
     var precoFinal = null;
@@ -303,6 +323,11 @@
       renderPreview();
       atualizarContador();
       listarMeus();
+      
+      // Reset ao estado
+      selectCategoria.value = "";
+      divEstado.style.display = "block";
+      selectEstado.value = "Novo";
 
     } catch (err) {
       console.error(err);
