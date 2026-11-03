@@ -54,12 +54,20 @@
 </head>
 <body>
 
-  <header class="header">
-    <a href="index.html" class="logo">MZ<span>LINK</span></a>
+  <!-- HEADER DINÂMICO (IGUAL AO DO INDEX) -->
+  <header>
+    <div class="header-topo">
+        <a href="index.html" class="logo-header">
+            <img src="logo-mzlink.png" alt="MZLINK" class="logo-img">
+        </a>
+        <span class="saudacao">
+            Olá, <span id="nomeUserTopo">...</span>
+            <span data-badge-premium></span>
+        </span>
+    </div>
     <nav>
-      <a href="index.html">Início</a>
-      <a href="publicar.html">Publicar</a>
-      <a href="login.html">Entrar</a>
+        <button onclick="location.href='premium.html'" class="btn-premium">⭐ Premium</button>
+        <button onclick="location.href='login.html'">Entrar</button>
     </nav>
   </header>
 
@@ -162,8 +170,11 @@
 
   <footer class="rodape"><p>© 2026 MZLINK — Encontre, Compare, Resolva. 🇲🇿</p></footer>
 
-  <script src="premium.js?v=5"></script>
+  <!-- SCRIPTS -->
   <script src="sessao.js" charset="UTF-8"></script>
+  <script src="header.js"></script> <!-- SCRIPT QUE ATUALIZA O TOPO -->
+  <script src="modo-premium.js"></script>
+  <script src="premium.js?v=6"></script>
   
   <script>
     const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
@@ -199,22 +210,36 @@
       let sessao = null;
       try { sessao = JSON.parse(localStorage.getItem(CHAVE)); } catch(e) {}
 
-      if (!sessao) {
-        msg.textContent = "Precisas de estar logado para pedir o Premium. Faz login primeiro.";
+      if (!sessao || !sessao.access_token) {
+        msg.style.color = "red";
+        msg.textContent = "Tens de fazer login no site para pedir o Premium!";
+        setTimeout(() => window.location.href = "login.html", 2000);
         return;
       }
+
       if (!comprovativo) {
+        msg.style.color = "red";
         msg.textContent = "Insere o número do comprovativo do M-Pesa/e-Mola.";
         return;
       }
 
       this.textContent = "A registar pedido...";
       this.disabled = true;
-      msg.style.color = "#0f1115";
+      msg.style.color = "#667085";
       msg.textContent = "";
 
       try {
         const resUser = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token } });
+        
+        if (!resUser.ok) {
+            msg.style.color = "red";
+            msg.textContent = "Sessão expirada. Faz login novamente.";
+            setTimeout(() => window.location.href = "login.html", 2000);
+            this.disabled = false;
+            this.textContent = "📲 Enviar Comprovativo e Pedir Premium";
+            return;
+        }
+
         const userData = await resUser.json();
         const emailUtilizador = userData.email;
 
@@ -261,7 +286,7 @@
 
         } else {
           msg.style.color = "red";
-          msg.textContent = "Erro ao registar o pedido. Tenta novamente.";
+          msg.textContent = "Erro ao registar. Tenta novamente.";
           this.textContent = "📲 Enviar Comprovativo e Pedir Premium";
           this.disabled = false;
         }
@@ -275,4 +300,4 @@
     });
   </script>
 </body>
-</html>
+    </html>
