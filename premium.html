@@ -174,7 +174,7 @@
   <script src="sessao.js" charset="UTF-8"></script>
   <script src="header.js"></script>
   <script src="modo-premium.js"></script>
-  <script src="premium.js?v=7"></script>
+  <script src="premium.js?v=8"></script>
   
   <script>
     const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
@@ -229,6 +229,7 @@
       msg.textContent = "";
 
       try {
+        // Vai buscar os dados do utilizador (A CORREÇÃO ESTÁ AQUI)
         const resUser = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token } });
         
         if (!resUser.ok) {
@@ -242,8 +243,9 @@
 
         const userData = await resUser.json();
         const emailUtilizador = userData.email;
-
-        const resPerfil = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + sessao.user.id + "&limit=1", {
+        
+        // USAMOS O ID DO userData AQUI
+        const resPerfil = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + userData.id + "&limit=1", {
           headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
         });
         const dados = await resPerfil.json();
@@ -251,11 +253,12 @@
 
         const referencia = "MZ-" + Math.random().toString(36).substring(2, 10).toUpperCase();
 
+        // USAMOS O ID DO userData AQUI TAMBÉM
         const resPedido = await fetch(SUPABASE_URL + "/rest/v1/pedidos_premium", {
           method: "POST",
           headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
           body: JSON.stringify({
-            user_id: sessao.user.id,
+            user_id: userData.id, 
             nome_loja: nomeLoja,
             numero_comprovativo: comprovativo,
             status: "pendente"
@@ -285,7 +288,6 @@
           }, 1500);
 
         } else {
-          // A MÁGICA DO DEBUG AQUI
           const erroData = await resPedido.json();
           msg.style.color = "red";
           msg.textContent = "Erro: " + (erroData.message || erroData.details || "Problema na base de dados.");
