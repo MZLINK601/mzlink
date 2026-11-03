@@ -54,7 +54,7 @@
 </head>
 <body>
 
-  <!-- HEADER DINÂMICO (IGUAL AO DO INDEX) -->
+  <!-- HEADER DINÂMICO -->
   <header>
     <div class="header-topo">
         <a href="index.html" class="logo-header">
@@ -172,9 +172,9 @@
 
   <!-- SCRIPTS -->
   <script src="sessao.js" charset="UTF-8"></script>
-  <script src="header.js"></script> <!-- SCRIPT QUE ATUALIZA O TOPO -->
+  <script src="header.js"></script>
   <script src="modo-premium.js"></script>
-  <script src="premium.js?v=6"></script>
+  <script src="premium.js?v=7"></script>
   
   <script>
     const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
@@ -285,19 +285,21 @@
           }, 1500);
 
         } else {
+          // A MÁGICA DO DEBUG AQUI
+          const erroData = await resPedido.json();
           msg.style.color = "red";
-          msg.textContent = "Erro ao registar. Tenta novamente.";
+          msg.textContent = "Erro: " + (erroData.message || erroData.details || "Problema na base de dados.");
           this.textContent = "📲 Enviar Comprovativo e Pedir Premium";
           this.disabled = false;
         }
       } catch (err) {
         console.error(err);
         msg.style.color = "red";
-        msg.textContent = "Erro de ligação.";
+        msg.textContent = "Erro de ligação real: " + err.message;
         this.textContent = "📲 Enviar Comprovativo e Pedir Premium";
         this.disabled = false;
       }
     });
   </script>
 </body>
-    </html>
+</html>
