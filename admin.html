@@ -7,6 +7,39 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css">
+  <style>
+    /* Estilos extra para a secção de pendentes */
+    .seccao-pendentes {
+      margin-top: 40px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      padding: 20px;
+      overflow-x: auto;
+    }
+    .seccao-pendentes h2 {
+      color: #0f1115;
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-aprovar {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-aprovar:hover {
+      background: #15803d;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
 
@@ -67,11 +100,20 @@
         </table>
       </div>
 
+      <!-- ===== NOVA SECÇÃO: PEDIDOS PENDENTES ===== -->
+      <div class="seccao-pendentes">
+        <h2>👑 Pedidos Premium Pendentes</h2>
+        <div id="tabelaPendentes">
+          <p style="color: #667085;">A carregar pedidos...</p>
+        </div>
+      </div>
+      <!-- ===== FIM DA NOVA SECÇÃO ===== -->
+
     </section>
 
   </main>
 
   <script src="sessao.js"></script>
-  <script src="admin.js"></script>
+  <script src="admin.js?v=2"></script>
 </body>
 </html>
