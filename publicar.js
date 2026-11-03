@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar Anúncio (Lógica de Estado Corrigida)
+   MZLINK · Publicar Anúncio (Corrigido: Contagem apenas de anúncios)
    ============================================================ */
 
 (async function () {
@@ -36,7 +36,7 @@
   var divEstado = document.getElementById("divEstado");
   var selectEstado = document.getElementById("estado");
 
-  // ===== MÁGICA CORRIGIDA: MOSTRAR/ESCONDER ESTADO =====
+  // ===== MÁGICA: MOSTRAR/ESCONDER ESTADO =====
   selectCategoria.addEventListener("change", function() {
       var cat = this.value;
       if (cat === "servicos" || cat === "profissionais" || cat === "instituicoes" || cat === "empresas" || cat === "") {
@@ -45,14 +45,12 @@
       } else {
           divEstado.style.display = "block";
           selectEstado.required = true;
-          // Se a caixa estiver vazia, força o "Novo"
           if (selectEstado.value !== "Novo" && selectEstado.value !== "Usado") {
               selectEstado.value = "Novo";
           }
       }
   });
 
-  // Lógica do Preço a Combinar
   precoCombinar.addEventListener("change", function() {
       if(this.checked) {
           inputPreco.value = "";
@@ -75,7 +73,6 @@
     return h;
   }
 
-  // COMPRESSÃO DE IMAGEM
   async function comprimirImagem(file) {
       return new Promise((resolve) => {
           const reader = new FileReader();
@@ -110,7 +107,8 @@
     document.getElementById("nome").value = meta.nome || "";
     document.getElementById("whatsapp").value = String(meta.whatsapp || "").replace(/^258/, "");
 
-    var r2 = await fetch(MZ.url + "/rest/v1/profissionais?select=id,plano&user_id=eq." + encodeURIComponent(usuario.id), { headers: cabecalhos({}) });
+    // CORREÇÃO: categoria=neq.loja para não contar o perfil como anúncio
+    var r2 = await fetch(MZ.url + "/rest/v1/profissionais?select=id,plano&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja", { headers: cabecalhos({}) });
 
     if (r2.ok) {
       var dados = await r2.json();
@@ -227,7 +225,6 @@
     var categoria = selectCategoria.value;
     var telefone = document.getElementById("whatsapp").value.replace(/\s/g, "");
     
-    // A MÁGICA DO ESTADO AQUI: Se for serviço, grava "Serviço". Se for produto, grava o que está no select.
     var estado = "Serviço";
     if (categoria === "produtos" || categoria === "vendedores") {
         estado = selectEstado.value || "Novo";
