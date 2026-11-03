@@ -32,23 +32,21 @@
   var precoCombinar = document.getElementById("precoCombinar");
   var inputPreco = document.getElementById("preco");
   
-  // Elementos do Estado
   var selectCategoria = document.getElementById("categoria");
   var divEstado = document.getElementById("divEstado");
   var selectEstado = document.getElementById("estado");
 
-  // ===== A MÁGICA ACONTECE AQUI =====
-  // Esconde ou mostra o campo "Estado" dependendo da categoria escolhida
+  // ===== MÁGICA: MOSTRAR/ESCONDER ESTADO =====
   selectCategoria.addEventListener("change", function() {
       var cat = this.value;
-      if (cat === "servicos" || cat === "profissionais" || cat === "instituicoes" || cat === "empresas") {
-          divEstado.style.display = "none"; // Esconde
-          selectEstado.required = false;    // Deixa de ser obrigatório
-          selectEstado.value = "Serviço";   // Define o valor padrão invisível
+      if (cat === "servicos" || cat === "profissionais" || cat === "instituicoes" || cat === "empresas" || cat === "") {
+          divEstado.style.display = "none";
+          selectEstado.required = false;
+          selectEstado.value = "Serviço";
       } else {
-          divEstado.style.display = "block"; // Mostra
-          selectEstado.required = true;      // Volta a ser obrigatório
-          selectEstado.value = "Novo";       // Volta ao padrão
+          divEstado.style.display = "block";
+          selectEstado.required = true;
+          if (selectEstado.value === "Serviço") selectEstado.value = "Novo";
       }
   });
 
@@ -75,7 +73,7 @@
     return h;
   }
 
-  // ===== COMPRESSÃO DE IMAGEM =====
+  // COMPRESSÃO DE IMAGEM
   async function comprimirImagem(file) {
       return new Promise((resolve) => {
           const reader = new FileReader();
@@ -88,13 +86,10 @@
                   const MAX_WIDTH = 1000; 
                   let scale = MAX_WIDTH / img.width;
                   if (scale > 1) scale = 1;
-                  
                   canvas.width = img.width * scale;
                   canvas.height = img.height * scale;
-                  
                   const ctx = canvas.getContext("2d");
                   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                  
                   canvas.toBlob((blob) => {
                       const newFile = new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() });
                       resolve(newFile);
@@ -104,7 +99,6 @@
       });
   }
 
-  /* ---------- Carregar user + plano ---------- */
   async function carregarUsuario() {
     var r = await fetch(MZ.url + "/auth/v1/user", { headers: cabecalhos({}) });
     if (!r.ok) throw new Error("sessao");
@@ -132,10 +126,8 @@
     atualizarContador();
   }
 
-  /* ---------- Preview das Fotos ---------- */
   function atualizarContador() {
     contador.textContent = ficheiros.length + "/" + limiteFotos;
-    
     if (ficheiros.length >= limiteFotos) {
       btnAddFoto.disabled = true;
       btnAddFoto.textContent = "Limite atingido";
@@ -145,12 +137,7 @@
       btnAddFoto.textContent = "Adicionar foto (" + (limiteFotos - ficheiros.length) + " restantes)";
       fotosAviso.style.display = "none"; 
     }
-    
-    if (ficheiros.length > 0) {
-        fotosVazio.style.display = "none";
-    } else {
-        fotosVazio.style.display = "block";
-    }
+    fotosVazio.style.display = ficheiros.length > 0 ? "none" : "block";
   }
 
   function renderPreview() {
@@ -195,7 +182,6 @@
     atualizarContador();
   });
 
-  /* ---------- Listar os meus anúncios ---------- */
   async function listarMeus() {
     lista.textContent = "";
     var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id,nome,tipo,categoria,preco,fotos,estado&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja&order=criado_em.desc", { headers: cabecalhos({}) });
@@ -229,14 +215,13 @@
       listarMeus();
   };
 
-  /* ---------- Submeter ---------- */
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
     
     var nome = document.getElementById("nome").value.trim();
     var tipo = document.getElementById("tipo").value.trim();
     var descricao = document.getElementById("descricao").value.trim();
-    var estado = selectEstado.value; // Vai ser "Novo", "Usado" ou "Serviço" (invisível)
+    var estado = selectEstado.value; 
     var local = document.getElementById("local").value.trim();
     var categoria = selectCategoria.value;
     var telefone = document.getElementById("whatsapp").value.replace(/\s/g, "");
@@ -324,10 +309,9 @@
       atualizarContador();
       listarMeus();
       
-      // Reset ao estado
       selectCategoria.value = "";
-      divEstado.style.display = "block";
-      selectEstado.value = "Novo";
+      divEstado.style.display = "none";
+      selectEstado.value = "Serviço";
 
     } catch (err) {
       console.error(err);
