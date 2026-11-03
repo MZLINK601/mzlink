@@ -46,14 +46,16 @@
     }
 
     $("#painelAdmin").style.display = "block";
+    
+    // Carrega os utilizadores e os pedidos pendentes
     await carregarTudo();
+    await carregarPendentes(); 
   }
 
   /* ---------- Carregar utilizadores ---------- */
   async function carregarTudo() {
     var sessao = await MZ.sessaoValida();
 
-    // Adicionado premium_ate para podermos ver a data se precisarmos
     var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id, user_id, nome, whatsapp, criado_em, plano, premium_ate&order=criado_em.desc", {
       headers: {
         apikey: MZ.key,
@@ -62,8 +64,7 @@
     });
 
     if (!r.ok) {
-      $("#tbodyUsers").innerHTML =
-        '<tr><td colspan="4" class="sem-resultados">Erro ao carregar.</td></tr>';
+      $("#tbodyUsers").innerHTML = '<tr><td colspan="4" class="sem-resultados">Erro ao carregar.</td></tr>';
       return;
     }
 
@@ -88,8 +89,7 @@
     var tbody = $("#tbodyUsers");
 
     if (!lista.length) {
-      tbody.innerHTML =
-        '<tr><td colspan="4" class="sem-resultados">Nenhum utilizador.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="sem-resultados">Nenhum utilizador.</td></tr>';
       return;
     }
 
@@ -99,7 +99,6 @@
       var u = lista[i];
       var ehPremium = u.plano === "premium";
 
-      // Mostrar a data de expiração na tabela (opcional, ajuda-te a gerir)
       var textoPremium = "⭐ Premium";
       if (ehPremium && u.premium_ate) {
         var dataExpiracao = new Date(u.premium_ate);
@@ -150,11 +149,10 @@
         return;
       }
 
-      // Lógica da data: Se for Premium, expira daqui a 30 dias. Se for básico, fica null.
       var dataExpiracao = null;
       if (novoPlano === "premium") {
         var dataFutura = new Date();
-        dataFutura.setDate(dataFutura.getDate() + 30); // Adiciona 30 dias
+        dataFutura.setDate(dataFutura.getDate() + 30);
         dataExpiracao = dataFutura.toISOString();
       }
 
@@ -170,7 +168,7 @@
           },
           body: JSON.stringify({
             plano: novoPlano,
-            premium_ate: dataExpiracao // <-- AQUI ESTÁ A MÁGICA DOS 30 DIAS
+            premium_ate: dataExpiracao
           })
         }
       );
@@ -180,14 +178,107 @@
         return;
       }
 
-      alert(acao === "promover"
-        ? "✅ Utilizador promovido a Premium por 30 dias!"
-        : "✅ Utilizador rebaixado a Básico!"
-      );
+      alert(acao === "promover" ? "✅ Utilizador promovido a Premium por 30 dias!" : "✅ Utilizador rebaixado a Básico!");
       await carregarTudo();
 
     } catch (e) {
       alert("❌ Erro de ligação.");
+    }
+  }
+
+  /* ==========================================
+     NOVA SECÇÃO: PEDIDOS PREMIUM PENDENTES
+     ========================================== */
+  async function carregarPendentes() {
+    var div = document.getElementById("tabelaPendentes");
+    if (!div) return;
+
+    var sessao = await MZ.sessaoValida();
+    if (!sessao) return;
+
+    try {
+      var r = await fetch(MZ.url + "/rest/v1/pedidos_premium?status=eq.pendente&select=*", {
+        headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
+      });
+      
+      var pedidos = await r.json();
+
+      if (pedidos.length === 0) {
+        div.innerHTML = "<p style='padding:20px; color:#16a34a; font-weight:bold;'>✅ Nenhum pedido pendente. Tudo em dia!</p>";
+        return;
+      }
+
+      var html = `<table style="width:100%; border-collapse: collapse; text-align: left;">
+          <tr style="background: #f8f9fb; border-bottom: 2px solid #eee;">
+              <th style="padding: 15px;">Loja</th>
+              <th style="padding: 15px;">Comprovativo</th>
+              <th style="padding: 15px;">Ação</th>
+          </tr>`;
+
+      pedidos.forEach(function(p) {
+          html += `<tr style="border-bottom: 1px solid #eee;">
+              <td style="padding: 15px; font-weight: bold;">${esc(p.nome_loja) || 'Sem nome'}</td>
+              <td style="padding: 15px; color: #d4af37; font-weight: bold; font-size: 1.1rem;">${esc(p.numero_comprovativo)}</td>
+              <td style="padding: 15px;">
+                  <button class="btn-acao btn-aprovar-pedido" data-id="${esc(p.id)}" data-user="${esc(p.user_id)}" style="background: #16a34a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;">✅ Aprovar</button>
+              </td>
+          </tr>`;
+      });
+      html += `</table>`;
+      div.innerHTML = html;
+
+      // Ligar os botões de aprovar
+      var btns = div.querySelectorAll(".btn-aprovar-pedido");
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].addEventListener("click", function() {
+            var idPedido = this.getAttribute("data-id");
+            var userId = this.getAttribute("data-user");
+            aprovarPremium(idPedido, userId);
+        });
+      }
+
+    } catch (e) {
+      div.innerHTML = "<p style='color:red; padding: 20px;'>Erro ao carregar pedidos.</p>";
+    }
+  }
+
+  async function aprovarPremium(idPedido, userId) {
+    if (!confirm("Confirmas que recebeste o pagamento e queres ativar o Premium por 30 dias?")) return;
+
+    var sessao = await MZ.sessaoValida();
+    if (!sessao) return;
+
+    try {
+      // 1. Marcar o pedido como aprovado
+      await fetch(MZ.url + "/rest/v1/pedidos_premium?id=eq." + idPedido, {
+        method: "PATCH",
+        headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "aprovado" })
+      });
+
+      // 2. Calcular a data de expiração (Hoje + 30 dias)
+      var dataFutura = new Date();
+      dataFutura.setDate(dataFutura.getDate() + 30);
+
+      // 3. Atualizar o utilizador para Premium
+      await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + userId, {
+        method: "PATCH",
+        headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            plano: "premium",
+            premium_ate: dataFutura.toISOString()
+        })
+      });
+
+      alert("✅ Cliente promovido a Premium com sucesso!");
+      
+      // Atualiza as duas tabelas no ecrã
+      await carregarTudo(); 
+      await carregarPendentes(); 
+
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao aprovar o pedido.");
     }
   }
 
