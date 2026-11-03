@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MZLINK - Encontre, Compare, Resolva</title>
     
-    <!-- ===== CARTÃO DE PARTILHA (WHATSAPP / FACEBOOK) ===== -->
+    <!-- ===== CARTÃO DE PARTILHA (TEMPORARIAMENTE GITHUB) ===== -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mzlink601.github.io/mzlink/">
     <meta property="og:title" content="MZLINK - Encontre, Compare, Resolva">
@@ -13,12 +13,12 @@
     <meta property="og:image" content="https://mzlink601.github.io/mzlink/ponte.jpg">
     <meta name="description" content="MZLINK - O marketplace número 1 de Moçambique. Encontre, Compare e Resolva.">
 
-    <!-- Fontes Profissionais -->
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
 
-    <!-- Estilos do MZLINK -->
+    <!-- Estilos -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="cartoes.css">
     <link rel="stylesheet" href="premium-cards.css">
@@ -88,6 +88,7 @@
         }
         .selo-icone { font-size: 1.1rem; }
         .selo-texto { font-size: 0.65rem; font-weight: 800; color: #1e293b; line-height: 1.1; text-align: left; text-transform: uppercase; }
+        
         .filtros-container { display: flex; gap: 10px; margin: 20px auto; max-width: 90%; flex-wrap: wrap; }
         .filtro-select {
             flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 8px;
@@ -98,6 +99,7 @@
             background-repeat: no-repeat; background-position: right 14px top 50%; background-size: 10px auto;
         }
         .filtro-select:hover, .filtro-select:focus { border-color: #1E40AF; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15); }
+        
         .categorias { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 0 20px; }
         .categorias button {
             background: #ffffff; border: 2px solid #e2e8f0; color: #0f1115;
@@ -115,12 +117,7 @@
         #btnTopo:hover { background-color: #d4af37; color: #0f1115; transform: translateY(-5px); }
 
         /* ===== ESTILOS DO CARTÃO VIP NA PÁGINA INICIAL ===== */
-        .cartao-vip-seccao-home {
-            display: none; /* Escondido por defeito, JS mostra se for premium */
-            justify-content: center;
-            margin: 30px auto 10px;
-            padding: 0 15px;
-        }
+        .cartao-vip-seccao-home { display: none; justify-content: center; margin: 30px auto 10px; padding: 0 15px; }
         .card-vip {
             width: 100%; max-width: 380px; height: 230px;
             background: radial-gradient(circle at 10% 20%, #2a2a2a 0%, #0a0a0a 90%);
@@ -181,13 +178,11 @@
         </div>
         <nav>
             <button onclick="location.href='premium.html'" class="btn-premium">⭐ Premium</button>
-            <!-- BOTÃO DE REGISTAR REMOVIDO AQUI -->
             <button onclick="location.href='login.html'">Entrar</button>
         </nav>
     </header>
 
     <main>
-        <!-- ===== CARTÃO VIP NA PÁGINA INICIAL (Para utilizadores Premium) ===== -->
         <section class="cartao-vip-seccao-home" id="cartaoHome">
             <div class="card-vip">
                 <div class="costura-vip"></div>
@@ -215,7 +210,6 @@
             </div>
         </section>
 
-        <!-- HERO (A PONTE) -->
         <section class="hero-moz">
             <div class="badge-moz">🇲🇿 100% Moçambicano</div>
             <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
@@ -231,7 +225,7 @@
             </div>
         </section>
 
-        <!-- FILTROS -->
+        <!-- FILTROS COM O NOVO CAMPO DE ESTADO -->
         <div class="filtros-container">
             <select id="filtroCategoria" class="filtro-select">
                 <option value="">Todas as Categorias</option>
@@ -242,6 +236,7 @@
                 <option value="instituicoes">Instituições</option>
                 <option value="empresas">Empresas</option>
             </select>
+
             <select id="filtroProvincia" class="filtro-select">
                 <option value="">Todas as Províncias</option>
                 <option value="Maputo">Maputo</option>
@@ -255,6 +250,15 @@
                 <option value="Niassa">Niassa</option>
                 <option value="Cabo Delgado">Cabo Delgado</option>
             </select>
+
+            <!-- NOVO FILTRO DE ESTADO AQUI -->
+            <select id="filtroEstado" class="filtro-select">
+                <option value="">Qualquer Estado</option>
+                <option value="Novo">Novo</option>
+                <option value="Usado">Usado</option>
+                <option value="Serviço">Serviço</option>
+            </select>
+
             <select id="filtroOrdenacao" class="filtro-select">
                 <option value="recentes">Mais Recentes</option>
                 <option value="menor_preco">Preço: Menor</option>
@@ -262,7 +266,6 @@
             </select>
         </div>
 
-        <!-- ONDE OS ANÚNCIOS APARECEM -->
         <div id="results"></div>
 
         <h2>Categorias</h2>
@@ -324,11 +327,4 @@
       .rodape-marca p { font-size: 0.82rem; color: #8b8f99; margin: 0; }
       .rodape-links { display: flex; flex-direction: column; gap: 10px; }
       .rodape-links a { color: #c9ccd3; text-decoration: none; font-size: 0.88rem; font-weight: 600; transition: color 0.2s; }
-      .rodape-links a:hover { color: #d4af37; }
-      .rodape-info p { margin: 0 0 8px; font-size: 0.85rem; }
-      .rodape-info strong { color: #d4af37; font-weight: 800; }
-      .rodape-copy { max-width: 900px; margin: 0 auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 0.75rem; color: #8b8f99; letter-spacing: 0.3px; }
-      @media (max-width: 640px) { .rodape-conteudo { grid-template-columns: 1fr; text-align: center; } .rodape-links { align-items: center; } }
-    </style>
-</body>
-</html>
+      .rodape
