@@ -75,10 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!sessao || !sessao.access_token) return;
 
       const r = await fetch(SUPABASE_URL + "/auth/v1/user", {
-        headers: {
-          apikey: SUPABASE_KEY,
-          Authorization: "Bearer " + sessao.access_token
-        }
+        headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
       });
       if (r.ok) userAtual = await r.json();
     } catch (e) { /* silencioso */ }
@@ -86,7 +83,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function carregarDados() {
     try {
-      // Ignora a categoria "loja" para os perfis não aparecerem como anúncios
       const resposta = await fetch(
         SUPABASE_URL + "/rest/v1/profissionais?select=*&categoria=neq.loja&order=criado_em.desc",
         { headers: { apikey: SUPABASE_KEY } }
@@ -118,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const msg = encodeURIComponent("Olá " + item.nome + ", vi o seu anúncio no MZLINK e gostaria de falar consigo.");
       const numero = String(item.whatsapp).replace(/\D/g, "");
       const ehPremium = item.plano === "premium";
-      const ehEmpresa = item.tipo_conta === "empresa"; // Verifica se é empresa
+      const ehEmpresa = item.tipo_conta === "empresa";
       const media = Number(item.media_estrelas) || 0;
       const total = Number(item.total_avaliacoes) || 0;
 
@@ -126,9 +122,9 @@ document.addEventListener("DOMContentLoaded", function () {
         "Olha este anúncio no MZLINK: " + item.nome + " (" + item.tipo + " em " + item.local + "). Fala com ele aqui: https://mzlink601.github.io/mzlink/"
       );
 
-      // SELOS
       const badgePremium = ehPremium ? '<span class="badge-premium-card">👑 PREMIUM</span>' : '';
       const badgeEmpresa = ehEmpresa ? '<span style="background: #E0F2FE; color: #0369A1; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 800; vertical-align: middle; margin-left: 4px;">🏢 EMPRESA</span>' : '';
+      const badgeEstado = item.estado ? `<span style="background: #f3f4f6; color: #4b5563; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 4px;">${item.estado}</span>` : '';
 
       let avaliacaoHTML = "";
       if (total > 0) {
@@ -151,7 +147,6 @@ document.addEventListener("DOMContentLoaded", function () {
         fotoHTML = '<div class="foto-principal-card sem-foto"><span>📸</span><small>Sem fotos</small></div>';
       }
 
-      // Monta o cartão
       html +=
         '<div class="result-card ' + (ehPremium ? 'card-premium' : '') + '">' +
           fotoHTML +
@@ -162,10 +157,9 @@ document.addEventListener("DOMContentLoaded", function () {
               '</a>' +
               '<div class="info">' +
                 '<a href="vendedor.html?id=' + item.user_id + '" style="text-decoration:none; color:inherit;">' +
-                  // AQUI ESTÃO OS DOIS SELOS (Premium e Empresa)
                   '<h3>' + limpar(item.nome) + ' ' + badgePremium + ' ' + badgeEmpresa + '</h3>' +
                 '</a>' +
-                '<span class="tag">' + limpar(item.tipo) + '</span>' +
+                '<span class="tag">' + limpar(item.tipo) + '</span>' + badgeEstado +
                 '<p>📍 ' + limpar(item.local) + '</p>' +
                 (item.preco ? '<p style="color: #16a34a; font-weight: 900; font-size: 1.1rem; margin-top: 4px;">💰 ' + item.preco + ' MT</p>' : '<p style="color: #667085; font-size: 0.85rem; margin-top: 4px; font-style: italic;">Preço a combinar</p>') +
               '</div>' +
@@ -205,6 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const termo = searchInput ? normalizar(searchInput.value.trim()) : "";
     const catSelecionada = document.getElementById("filtroCategoria") ? document.getElementById("filtroCategoria").value : "";
     const provSelecionada = document.getElementById("filtroProvincia") ? document.getElementById("filtroProvincia").value : "";
+    const estadoSelecionado = document.getElementById("filtroEstado") ? document.getElementById("filtroEstado").value : "";
     
     let listaFiltrada = dados;
 
@@ -214,6 +209,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (provSelecionada) {
       listaFiltrada = listaFiltrada.filter(item => normalizar(item.local).includes(normalizar(provSelecionada)));
+    }
+
+    if (estadoSelecionado) {
+      listaFiltrada = listaFiltrada.filter(item => item.estado === estadoSelecionado);
     }
 
     if (termo) {
@@ -226,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let titulo = "Anúncios Recentes";
-    if (termo || catSelecionada || provSelecionada) {
+    if (termo || catSelecionada || provSelecionada || estadoSelecionado) {
       titulo = "Resultados da busca";
     }
 
@@ -254,10 +253,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const filtroCategoria = document.getElementById("filtroCategoria");
   const filtroProvincia = document.getElementById("filtroProvincia");
+  const filtroEstado = document.getElementById("filtroEstado");
   const filtroOrdenacao = document.getElementById("filtroOrdenacao");
 
   if (filtroCategoria) filtroCategoria.addEventListener("change", filtrarEExibir);
   if (filtroProvincia) filtroProvincia.addEventListener("change", filtrarEExibir);
+  if (filtroEstado) filtroEstado.addEventListener("change", filtrarEExibir);
   if (filtroOrdenacao) filtroOrdenacao.addEventListener("change", filtrarEExibir);
 
   (async function init() {
