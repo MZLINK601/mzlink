@@ -23,6 +23,9 @@
         .foto-item .remover { position: absolute; top: 4px; right: 4px; background: #E31937; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 2; }
         .foto-item .principal { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.75); color: #fff; font-size: 9px; text-align: center; padding: 3px 0; font-weight: 800; letter-spacing: 0.5px; z-index: 2; }
         .foto-item .numero { position: absolute; top: 4px; left: 4px; background: rgba(0, 0, 0, 0.6); color: #fff; font-size: 10px; padding: 2px 4px; border-radius: 4px; font-weight: bold; z-index: 2; }
+        
+        /* Botão de cancelar edição */
+        #btnCancelarEdicao { display: none; background: #fee2e2; color: #E31937; border: 1px solid #fecaca; margin-top: 10px; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit;}
     </style>
 </head>
 <body class="auth-page">
@@ -30,7 +33,7 @@
     <div class="publicar-wrap">
         <div class="auth-card">
             <a href="index.html" class="auth-logo">MZLINK</a>
-            <h2>Publicar anúncio</h2>
+            <h2 id="tituloFormulario">Publicar anúncio</h2>
 
             <form id="publicarForm">
                 <label for="nome">Nome da Loja / Vendedor</label>
@@ -101,7 +104,8 @@
                     </div>
                 </div>
 
-                <button type="submit" style="margin-top: 20px;">🚀 Publicar Anúncio</button>
+                <button type="submit" id="btnSubmit" style="margin-top: 20px;">🚀 Publicar Anúncio</button>
+                <button type="button" id="btnCancelarEdicao">Cancelar Edição</button>
                 <p id="message"></p>
                 
                 <a href="#" id="btnPartilharWa" class="btn-partilhar-wa" target="_blank">📲 Partilhar no WhatsApp / Status</a>
@@ -117,7 +121,7 @@
     </div>
 
     <script src="sessao.js" charset="UTF-8"></script>
-    <script src="publicar.js?v=18" charset="UTF-8"></script>
+    <script src="publicar.js?v=19" charset="UTF-8"></script>
     <script src="modo-premium.js"></script>
 </body>
-</html>
+        </html>
