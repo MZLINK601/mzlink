@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar e Editar Anúncio
+   MZLINK · Publicar e Editar Anúncio (Blindado)
    ============================================================ */
 
 (async function () {
@@ -20,7 +20,7 @@
   var planoUser = "basico";
   var limiteFotos = 4;
   var totalMeusAnuncios = 0;
-  var ficheiros = []; // Guarda { file: File, url: string }
+  var ficheiros = []; 
   var idAnuncioEmEdicao = null; 
 
   var inputFotos = document.getElementById("inputFotos");
@@ -38,7 +38,6 @@
   var divEstado = document.getElementById("divEstado");
   var selectEstado = document.getElementById("estado");
 
-  // ===== MÁGICA: MOSTRAR/ESCONDER ESTADO =====
   selectCategoria.addEventListener("change", function() {
       var cat = this.value;
       if (cat === "servicos" || cat === "profissionais" || cat === "instituicoes" || cat === "empresas" || cat === "") {
@@ -109,7 +108,6 @@
     document.getElementById("nome").value = meta.nome || "";
     document.getElementById("whatsapp").value = String(meta.whatsapp || "").replace(/^258/, "");
 
-    // Conta apenas os anúncios (ignora a loja)
     var r2 = await fetch(MZ.url + "/rest/v1/profissionais?select=id,plano,categoria&user_id=eq." + encodeURIComponent(usuario.id), { headers: cabecalhos({}) });
 
     if (r2.ok) {
@@ -191,7 +189,6 @@
     atualizarContador();
   });
 
-  // ===== LISTAR OS MEUS ANÚNCIOS E BOTÃO EDITAR =====
   var cacheMeusAnuncios = [];
 
   async function listarMeus() {
@@ -218,8 +215,8 @@
             <small style="color:#667085;">${precoTxt}${estadoTxt} | 📸 ${nFotos}</small>
         </div>
         <div style="display:flex; gap:5px;">
-            <button type="button" onclick="window.prepararEdicao('${item.id}')" style="background:#eff6ff; color:#1E40AF; border:1px solid #bfdbfe; padding:5px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">✏️ Editar</button>
-            <button type="button" onclick="window.apagarAnuncio('${item.id}')" style="background:#fee2e2; color:#E31937; border:none; padding:5px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">Apagar</button>
+            <button type="button" onclick="window.prepararEdicao('${item.id}')" style="background:#eff6ff; color:#1E40AF; border:1px solid #bfdbfe; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">✏️ Editar</button>
+            <button type="button" onclick="window.apagarAnuncio('${item.id}')" style="background:#fee2e2; color:#E31937; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Apagar</button>
         </div>
       `;
       lista.appendChild(linha);
@@ -232,53 +229,57 @@
       listarMeus();
   };
 
-  // ===== PREPARAR EDIÇÃO =====
   window.prepararEdicao = function(id) {
-      var item = cacheMeusAnuncios.find(a => a.id === id);
-      if (!item) return;
+      try {
+          var item = cacheMeusAnuncios.find(function(a) { return a.id === id; });
+          if (!item) {
+              alert("Erro: Não foi possível encontrar os dados deste anúncio. Tenta atualizar a página.");
+              return;
+          }
 
-      idAnuncioEmEdicao = id;
-      
-      document.getElementById("tipo").value = item.tipo || "";
-      document.getElementById("descricao").value = item.descricao || "";
-      document.getElementById("local").value = item.local || "";
-      document.getElementById("categoria").value = item.categoria || "";
-      document.getElementById("whatsapp").value = String(item.whatsapp).replace(/^258/, "");
-      
-      // Preço
-      if (item.preco) {
-          inputPreco.value = item.preco;
-          precoCombinar.checked = false;
-          inputPreco.disabled = false;
-      } else {
-          inputPreco.value = "";
-          precoCombinar.checked = true;
-          inputPreco.disabled = true;
+          idAnuncioEmEdicao = id;
+          
+          document.getElementById("tipo").value = item.tipo || "";
+          document.getElementById("descricao").value = item.descricao || "";
+          document.getElementById("local").value = item.local || "";
+          document.getElementById("categoria").value = item.categoria || "";
+          document.getElementById("whatsapp").value = String(item.whatsapp || "").replace(/^258/, "");
+          
+          if (item.preco) {
+              inputPreco.value = item.preco;
+              precoCombinar.checked = false;
+              inputPreco.disabled = false;
+          } else {
+              inputPreco.value = "";
+              precoCombinar.checked = true;
+              inputPreco.disabled = true;
+          }
+
+          selectCategoria.dispatchEvent(new Event('change'));
+          if (item.estado && item.estado !== "Serviço") {
+              selectEstado.value = item.estado;
+          }
+
+          ficheiros = [];
+          if (item.fotos && item.fotos.length > 0) {
+              item.fotos.forEach(function(url) {
+                  ficheiros.push({ file: null, url: url });
+              });
+          }
+          renderPreview();
+          atualizarContador();
+
+          tituloFormulario.textContent = "✏️ Editar Anúncio";
+          botao.textContent = "💾 Guardar Alterações";
+          btnCancelarEdicao.style.display = "block";
+          btnPartilharWa.style.display = "none";
+          
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          alert("Anúncio carregado! Podes editar os campos acima.");
+          
+      } catch (erro) {
+          alert("Erro ao tentar editar: " + erro.message);
       }
-
-      // Estado
-      selectCategoria.dispatchEvent(new Event('change'));
-      if (item.estado && item.estado !== "Serviço") {
-          selectEstado.value = item.estado;
-      }
-
-      // Fotos (carrega as URLs antigas para a preview)
-      ficheiros = [];
-      if (item.fotos && item.fotos.length > 0) {
-          item.fotos.forEach(url => {
-              ficheiros.push({ file: null, url: url }); // file null = foto que já está no servidor
-          });
-      }
-      renderPreview();
-      atualizarContador();
-
-      // Muda o visual do formulário
-      tituloFormulario.textContent = "✏️ Editar Anúncio";
-      botao.textContent = "💾 Guardar Alterações";
-      btnCancelarEdicao.style.display = "block";
-      btnPartilharWa.style.display = "none";
-      
-      window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   btnCancelarEdicao.addEventListener("click", function() {
@@ -300,7 +301,6 @@
       aviso("", false);
   }
 
-  /* ---------- Submeter (Criar ou Editar) ---------- */
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
     
@@ -344,7 +344,6 @@
       var anuncioId = idAnuncioEmEdicao;
 
       if (idAnuncioEmEdicao) {
-          // É EDIÇÃO (PATCH)
           var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + idAnuncioEmEdicao, {
             method: "PATCH",
             headers: cabecalhos({ "Content-Type": "application/json" }),
@@ -352,7 +351,6 @@
           });
           if (!r.ok) throw new Error("Erro ao editar");
       } else {
-          // É NOVO (POST)
           dadosAnuncio.user_id = usuario.id;
           dadosAnuncio.plano = planoUser;
           dadosAnuncio.fotos = [];
@@ -367,7 +365,6 @@
           anuncioId = criado[0].id;
       }
 
-      // UPLOAD DE FOTOS (Mantém as antigas e sobe as novas)
       var urlsFinais = [];
       var houveNovasFotos = false;
 
@@ -393,7 +390,7 @@
                 urlsFinais.push(MZ.url + "/storage/v1/object/public/anuncios-fotos/" + caminho);
               }
           } else {
-              urlsFinais.push(ficheiros[i].url); // Já estava no servidor
+              urlsFinais.push(ficheiros[i].url); 
           }
       }
 
