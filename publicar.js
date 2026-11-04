@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar Anúncio (Corrigido: Plano correto e contagem)
+   MZLINK · Publicar e Editar Anúncio
    ============================================================ */
 
 (async function () {
@@ -11,15 +11,17 @@
   var form = document.getElementById("publicarForm");
   var message = document.getElementById("message");
   var lista = document.getElementById("meusAnuncios");
-  var botao = form.querySelector("button[type='submit']");
+  var botao = document.getElementById("btnSubmit");
+  var btnCancelarEdicao = document.getElementById("btnCancelarEdicao");
+  var tituloFormulario = document.getElementById("tituloFormulario");
   var btnPartilharWa = document.getElementById("btnPartilharWa");
   
   var usuario = null;
   var planoUser = "basico";
   var limiteFotos = 4;
-  var limiteAnuncios = 3;
   var totalMeusAnuncios = 0;
-  var ficheiros = [];
+  var ficheiros = []; // Guarda { file: File, url: string }
+  var idAnuncioEmEdicao = null; 
 
   var inputFotos = document.getElementById("inputFotos");
   var btnAddFoto = document.getElementById("btnAdicionarFoto");
@@ -107,26 +109,21 @@
     document.getElementById("nome").value = meta.nome || "";
     document.getElementById("whatsapp").value = String(meta.whatsapp || "").replace(/^258/, "");
 
-    // A CORREÇÃO ESTÁ AQUI: Buscar todos os dados do user e separar a loja dos anúncios
+    // Conta apenas os anúncios (ignora a loja)
     var r2 = await fetch(MZ.url + "/rest/v1/profissionais?select=id,plano,categoria&user_id=eq." + encodeURIComponent(usuario.id), { headers: cabecalhos({}) });
 
     if (r2.ok) {
       var dados = await r2.json();
-      
-      // 1. Encontra a "loja" para saber o plano real
       var perfilLoja = dados.find(function(item) { return item.categoria === 'loja'; });
       planoUser = (perfilLoja && perfilLoja.plano) ? perfilLoja.plano : "basico";
-
-      // 2. Conta apenas os anúncios reais (ignora a loja)
+      
       var anunciosReais = dados.filter(function(item) { return item.categoria !== 'loja'; });
       totalMeusAnuncios = anunciosReais.length;
     }
 
     limiteFotos = planoUser === "premium" ? 20 : 4;
-    limiteAnuncios = planoUser === "premium" ? Infinity : 3;
     
     if (limiteTexto) limiteTexto.textContent = limiteFotos + " fotos";
-    
     if (planoUser === "premium") {
         fotosInfo.innerHTML = "⭐ Plano <strong>Premium</strong>: até 20 fotos.";
     } else {
@@ -166,7 +163,9 @@
   }
 
   window.removerFotoPublicar = function(i) {
-      URL.revokeObjectURL(ficheiros[i].url);
+      if (ficheiros[i].url.startsWith('blob:')) {
+          URL.revokeObjectURL(ficheiros[i].url);
+      }
       ficheiros.splice(i, 1);
       renderPreview();
       atualizarContador();
@@ -192,13 +191,18 @@
     atualizarContador();
   });
 
+  // ===== LISTAR OS MEUS ANÚNCIOS E BOTÃO EDITAR =====
+  var cacheMeusAnuncios = [];
+
   async function listarMeus() {
     lista.textContent = "";
-    var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id,nome,tipo,categoria,preco,fotos,estado&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja&order=criado_em.desc", { headers: cabecalhos({}) });
+    var r = await fetch(MZ.url + "/rest/v1/profissionais?select=*&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja&order=criado_em.desc", { headers: cabecalhos({}) });
 
     if (!r.ok) { lista.textContent = "Erro ao carregar."; return; }
 
     var itens = await r.json();
+    cacheMeusAnuncios = itens;
+
     if (itens.length === 0) { lista.innerHTML = "<p>Ainda não tens anúncios.</p>"; return; }
 
     itens.forEach(function (item) {
@@ -213,18 +217,90 @@
             <strong>${item.tipo}</strong><br>
             <small style="color:#667085;">${precoTxt}${estadoTxt} | 📸 ${nFotos}</small>
         </div>
-        <button type="button" onclick="apagarAnuncio('${item.id}')" style="background:#fee2e2; color:#E31937; border:none; padding:5px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">Apagar</button>
+        <div style="display:flex; gap:5px;">
+            <button type="button" onclick="window.prepararEdicao('${item.id}')" style="background:#eff6ff; color:#1E40AF; border:1px solid #bfdbfe; padding:5px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">✏️ Editar</button>
+            <button type="button" onclick="window.apagarAnuncio('${item.id}')" style="background:#fee2e2; color:#E31937; border:none; padding:5px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">Apagar</button>
+        </div>
       `;
       lista.appendChild(linha);
     });
   }
 
   window.apagarAnuncio = async function(id) {
-      if (!confirm("Apagar este anúncio?")) return;
+      if (!confirm("Apagar este anúncio permanentemente?")) return;
       await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + id, { method: "DELETE", headers: cabecalhos({}) });
       listarMeus();
   };
 
+  // ===== PREPARAR EDIÇÃO =====
+  window.prepararEdicao = function(id) {
+      var item = cacheMeusAnuncios.find(a => a.id === id);
+      if (!item) return;
+
+      idAnuncioEmEdicao = id;
+      
+      document.getElementById("tipo").value = item.tipo || "";
+      document.getElementById("descricao").value = item.descricao || "";
+      document.getElementById("local").value = item.local || "";
+      document.getElementById("categoria").value = item.categoria || "";
+      document.getElementById("whatsapp").value = String(item.whatsapp).replace(/^258/, "");
+      
+      // Preço
+      if (item.preco) {
+          inputPreco.value = item.preco;
+          precoCombinar.checked = false;
+          inputPreco.disabled = false;
+      } else {
+          inputPreco.value = "";
+          precoCombinar.checked = true;
+          inputPreco.disabled = true;
+      }
+
+      // Estado
+      selectCategoria.dispatchEvent(new Event('change'));
+      if (item.estado && item.estado !== "Serviço") {
+          selectEstado.value = item.estado;
+      }
+
+      // Fotos (carrega as URLs antigas para a preview)
+      ficheiros = [];
+      if (item.fotos && item.fotos.length > 0) {
+          item.fotos.forEach(url => {
+              ficheiros.push({ file: null, url: url }); // file null = foto que já está no servidor
+          });
+      }
+      renderPreview();
+      atualizarContador();
+
+      // Muda o visual do formulário
+      tituloFormulario.textContent = "✏️ Editar Anúncio";
+      botao.textContent = "💾 Guardar Alterações";
+      btnCancelarEdicao.style.display = "block";
+      btnPartilharWa.style.display = "none";
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  btnCancelarEdicao.addEventListener("click", function() {
+      resetarFormulario();
+  });
+
+  function resetarFormulario() {
+      form.reset();
+      idAnuncioEmEdicao = null;
+      ficheiros = [];
+      renderPreview();
+      atualizarContador();
+      inputPreco.disabled = false;
+      tituloFormulario.textContent = "Publicar anúncio";
+      botao.textContent = "🚀 Publicar Anúncio";
+      btnCancelarEdicao.style.display = "none";
+      btnPartilharWa.style.display = "none";
+      selectCategoria.dispatchEvent(new Event('change'));
+      aviso("", false);
+  }
+
+  /* ---------- Submeter (Criar ou Editar) ---------- */
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
     
@@ -251,14 +327,10 @@
     }
 
     botao.disabled = true;
-    aviso("A publicar anúncio...", false);
-    btnPartilharWa.style.display = "none"; 
-
+    aviso(idAnuncioEmEdicao ? "A guardar alterações..." : "A publicar anúncio...", false);
+    
     try {
-      var r = await fetch(MZ.url + "/rest/v1/profissionais", {
-        method: "POST",
-        headers: cabecalhos({ "Content-Type": "application/json", Prefer: "return=representation" }),
-        body: JSON.stringify({
+      var dadosAnuncio = {
           nome: nome,
           tipo: tipo,
           descricao: descricao,
@@ -267,69 +339,87 @@
           categoria: categoria,
           preco: precoFinal,
           whatsapp: "258" + telefone,
-          user_id: usuario.id,
-          plano: planoUser,
-          fotos: []
-        })
-      });
+      };
 
-      if (!r.ok) throw new Error("Erro na base de dados");
-      var criado = await r.json();
-      var anuncioId = criado[0].id;
+      var anuncioId = idAnuncioEmEdicao;
 
-      var urls = [];
-      if (ficheiros.length) {
-        aviso("A otimizar e enviar fotos...", false);
-        for (var i = 0; i < ficheiros.length; i++) {
-          var fOriginal = ficheiros[i].file;
-          var fComprimido = await comprimirImagem(fOriginal); 
-          var caminho = usuario.id + "/" + anuncioId + "/" + i + ".jpg";
-
-          var rUpload = await fetch(MZ.url + "/storage/v1/object/anuncios-fotos/" + caminho, {
-            method: "POST",
-            headers: {
-              apikey: MZ.key,
-              Authorization: "Bearer " + s.access_token,
-              "Content-Type": "image/jpeg",
-              "x-upsert": "true"
-            },
-            body: fComprimido
+      if (idAnuncioEmEdicao) {
+          // É EDIÇÃO (PATCH)
+          var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + idAnuncioEmEdicao, {
+            method: "PATCH",
+            headers: cabecalhos({ "Content-Type": "application/json" }),
+            body: JSON.stringify(dadosAnuncio)
           });
+          if (!r.ok) throw new Error("Erro ao editar");
+      } else {
+          // É NOVO (POST)
+          dadosAnuncio.user_id = usuario.id;
+          dadosAnuncio.plano = planoUser;
+          dadosAnuncio.fotos = [];
 
-          if (rUpload.ok) {
-            urls.push(MZ.url + "/storage/v1/object/public/anuncios-fotos/" + caminho);
-          }
-        }
-
-        await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + anuncioId, {
-          method: "PATCH",
-          headers: cabecalhos({ "Content-Type": "application/json" }),
-          body: JSON.stringify({ fotos: urls })
-        });
+          var r = await fetch(MZ.url + "/rest/v1/profissionais", {
+            method: "POST",
+            headers: cabecalhos({ "Content-Type": "application/json", Prefer: "return=representation" }),
+            body: JSON.stringify(dadosAnuncio)
+          });
+          if (!r.ok) throw new Error("Erro na base de dados");
+          var criado = await r.json();
+          anuncioId = criado[0].id;
       }
 
-      aviso("✅ Anúncio publicado com sucesso!", false);
+      // UPLOAD DE FOTOS (Mantém as antigas e sobe as novas)
+      var urlsFinais = [];
+      var houveNovasFotos = false;
+
+      for (var i = 0; i < ficheiros.length; i++) {
+          if (ficheiros[i].file) {
+              houveNovasFotos = true;
+              aviso("A enviar fotos...", false);
+              var fComprimido = await comprimirImagem(ficheiros[i].file); 
+              var caminho = usuario.id + "/" + anuncioId + "/" + Date.now() + "_" + i + ".jpg";
+
+              var rUpload = await fetch(MZ.url + "/storage/v1/object/anuncios-fotos/" + caminho, {
+                method: "POST",
+                headers: {
+                  apikey: MZ.key,
+                  Authorization: "Bearer " + s.access_token,
+                  "Content-Type": "image/jpeg",
+                  "x-upsert": "true"
+                },
+                body: fComprimido
+              });
+
+              if (rUpload.ok) {
+                urlsFinais.push(MZ.url + "/storage/v1/object/public/anuncios-fotos/" + caminho);
+              }
+          } else {
+              urlsFinais.push(ficheiros[i].url); // Já estava no servidor
+          }
+      }
+
+      if (houveNovasFotos) {
+          await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + anuncioId, {
+            method: "PATCH",
+            headers: cabecalhos({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ fotos: urlsFinais })
+          });
+      }
+
+      aviso("✅ " + (idAnuncioEmEdicao ? "Anúncio atualizado!" : "Anúncio publicado!"), false);
       
-      var urlAnuncio = "https://mzlink601.github.io/mzlink/vendedor.html?id=" + usuario.id;
-      var msgZap = encodeURIComponent("Olha o que encontrei no MZLINK! " + tipo + " a " + (precoFinal ? precoFinal + " MT" : "combinar") + ". Fala direto comigo: " + urlAnuncio);
-      btnPartilharWa.href = "https://wa.me/?text=" + msgZap;
-      btnPartilharWa.style.display = "block";
+      if (!idAnuncioEmEdicao) {
+          var urlAnuncio = "https://mzlink601.github.io/mzlink/vendedor.html?id=" + usuario.id;
+          var msgZap = encodeURIComponent("Olha o que encontrei no MZLINK! " + tipo + " a " + (precoFinal ? precoFinal + " MT" : "combinar") + ". Fala direto comigo: " + urlAnuncio);
+          btnPartilharWa.href = "https://wa.me/?text=" + msgZap;
+          btnPartilharWa.style.display = "block";
+      }
       
-      document.getElementById("tipo").value = "";
-      document.getElementById("descricao").value = "";
-      document.getElementById("preco").value = "";
-      ficheiros = [];
-      renderPreview();
-      atualizarContador();
+      resetarFormulario();
       listarMeus();
-      
-      selectCategoria.value = "";
-      divEstado.style.display = "none";
-      if (selectEstado) selectEstado.value = "Novo"; 
 
     } catch (err) {
       console.error(err);
-      aviso("Erro ao publicar. Tenta novamente.", true);
+      aviso("Erro ao guardar. Tenta novamente.", true);
     }
 
     botao.disabled = false;
