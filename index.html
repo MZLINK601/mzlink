@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MZLINK - Encontre, Compare, Resolva</title>
     
-    <!-- ===== CARTÃO DE PARTILHA (TEMPORARIAMENTE GITHUB) ===== -->
+    <!-- ===== CARTÃO DE PARTILHA (WHATSAPP / FACEBOOK) ===== -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mzlink601.github.io/mzlink/">
+    <meta property="og:url" content="https://mzlink.co.mz/">
     <meta property="og:title" content="MZLINK - Encontre, Compare, Resolva">
     <meta property="og:description" content="🇲🇿 A plataforma 100% Moçambicana. Encontre produtos, serviços e profissionais perto de ti. Fala direto no WhatsApp!">
-    <meta property="og:image" content="https://mzlink601.github.io/mzlink/ponte.jpg">
+    <meta property="og:image" content="https://mzlink.co.mz/ponte.jpg">
     <meta name="description" content="MZLINK - O marketplace número 1 de Moçambique. Encontre, Compare e Resolva.">
 
     <!-- Fontes -->
@@ -225,7 +225,6 @@
             </div>
         </section>
 
-        <!-- FILTROS COM O NOVO CAMPO DE ESTADO -->
         <div class="filtros-container">
             <select id="filtroCategoria" class="filtro-select">
                 <option value="">Todas as Categorias</option>
@@ -251,7 +250,6 @@
                 <option value="Cabo Delgado">Cabo Delgado</option>
             </select>
 
-            <!-- NOVO FILTRO DE ESTADO AQUI -->
             <select id="filtroEstado" class="filtro-select">
                 <option value="">Qualquer Estado</option>
                 <option value="Novo">Novo</option>
@@ -287,15 +285,15 @@
 
     <button id="btnTopo" title="Voltar ao topo">⬆️</button>
 
-    <!-- SCRIPTS DO PROJETO -->
-    <script src="script.js"></script>
-    <script src="sessao.js" charset="UTF-8"></script>
-    <script src="badge-premium.js"></script>
-    <script src="avaliações.js"></script>
-    <script src="modo-premium.js"></script>
-    <script src="galeria.js"></script>
-    <script src="header.js"></script>
-    <script src="verificar-premium.js"></script>
+    <!-- SCRIPTS DO PROJETO COM DEFER (Para carregar mais rápido) -->
+    <script src="script.js"></script> <!-- Este não leva defer para carregar os anúncios logo -->
+    <script src="sessao.js" defer></script>
+    <script src="badge-premium.js" defer></script>
+    <script src="avaliações.js" defer></script>
+    <script src="modo-premium.js" defer></script>
+    <script src="galeria.js" defer></script>
+    <script src="header.js" defer></script>
+    <script src="verificar-premium.js" defer></script>
     
     <!-- FOOTER -->
     <footer class="rodape-mzlink">
@@ -327,4 +325,4 @@
       .rodape-marca p { font-size: 0.82rem; color: #8b8f99; margin: 0; }
       .rodape-links { display: flex; flex-direction: column; gap: 10px; }
       .rodape-links a { color: #c9ccd3; text-decoration: none; font-size: 0.88rem; font-weight: 600; transition: color 0.2s; }
-      .rodape
+      .rodape-links 
