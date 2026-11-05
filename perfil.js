@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         user = await rUser.json();
         userMeta = user.user_metadata || {};
 
-        const rPerfil = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + encodeURIComponent(user.id) + "&limit=1", { headers: headers });
+        // A CORREÇÃO ESTÁ AQUI: &categoria=eq.loja
+        const rPerfil = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + encodeURIComponent(user.id) + "&categoria=eq.loja&limit=1", { headers: headers });
         
         if (rPerfil.ok) {
             const lista = await rPerfil.json();
@@ -211,7 +212,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         const ehPremium = perfilDB.plano === "premium";
         const urlAvatar = userMeta.avatar_url;
 
-        // Variáveis de estatística
         const cliques = perfilDB.cliques_whatsapp || 0;
         const visualizacoes = perfilDB.visualizacoes || 0;
 
@@ -236,7 +236,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="campo"><div class="campo-info"><label>Localização</label><div class="valor">📍 ${perfilDB.local}</div></div></div>
             </div>
 
-            <!-- BLOCO DE ESTATÍSTICAS PREMIUM -->
             ${ehPremium ? `
             <div class="card" style="border-left-color: #d4af37; background: #fffbeb;">
                 <h2 style="color: #b45309;">📊 Estatísticas Premium</h2>
@@ -254,7 +253,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 </div>
             </div>
             ` : ''}
-            <!-- FIM DO BLOCO DE ESTATÍSTICAS -->
 
             <div class="card">
                 <h2>📢 Os meus anúncios</h2>
@@ -322,7 +320,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function guardar(dados) {
         try {
-            await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + user.id, {
+            await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + user.id + "&categoria=eq.loja", {
                 method: "PATCH",
                 headers: { ...headers, "Content-Type": "application/json" },
                 body: JSON.stringify(dados)
