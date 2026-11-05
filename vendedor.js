@@ -14,6 +14,17 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
     }
 
+    // ===== A MÁGICA DAS VISUALIZAÇÕES ACONTECE AQUI =====
+    // Dispara a função no Supabase para somar +1 visualização
+    try {
+        fetch(SUPABASE_URL + "/rest/v1/rpc/registar_visualizacao", {
+            method: "POST",
+            headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
+            body: JSON.stringify({ user_uuid: vendedorId })
+        });
+    } catch (e) { /* silencioso */ }
+    // ===================================================
+
     try {
         // 2. Vai buscar todos os anúncios deste vendedor
         const res = await fetch(SUPABASE_URL + `/rest/v1/profissionais?user_id=eq.${vendedorId}&order=criado_em.desc`, {
@@ -34,10 +45,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         const isPremium = perfilLoja.plano === "premium";
         const isEmpresa = perfilLoja.tipo_conta === "empresa";
         const inicial = perfilLoja.nome.charAt(0).toUpperCase();
-
-        // Tenta buscar a foto de perfil no user_metadata (se tiveres acesso público), senão usa a inicial
-        // Como não podemos ler o auth.users publicamente, se a foto estiver no perfil da loja, usamos. 
-        // (Nota: O avatar_url está no auth, então aqui só mostramos a inicial para ser seguro)
         
         let badgesHTML = `
             <span class="badge ${isPremium ? 'badge-premium' : 'badge-basico'}">${isPremium ? '⭐ PREMIUM' : '🆓 Básico'}</span>
@@ -51,7 +58,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             avaliacaoHTML = `Ainda sem avaliações`;
         }
 
-        // Link do whatsapp da loja
         const numLoja = String(perfilLoja.whatsapp).replace(/\D/g, "");
         const msgLoja = encodeURIComponent("Olá " + perfilLoja.nome + ", vi a sua loja no MZLINK e gostaria de falar consigo.");
 
@@ -73,7 +79,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         `;
 
         // 5. Monta a grelha de anúncios
-        gridAnuncios.innerHTML = ""; // limpa
+        gridAnuncios.innerHTML = ""; 
 
         if (listaAnuncios.length === 0) {
             gridAnuncios.innerHTML = "<p style='text-align:center; color:#667085; grid-column: 1/-1;'>Este vendedor ainda não publicou produtos.</p>";
@@ -82,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         listaAnuncios.forEach(item => {
             const fotos = item.fotos || [];
             const imgHTML = fotos.length > 0 
-                ? `<img src="${fotos[0]}" alt="${item.tipo}">` 
+                ? `<img src="${fotos[0]}" alt="${item.tipo}" loading="lazy">` 
                 : `<div style="height:200px; background:#eef1f5; display:flex; align-items:center; justify-content:center; color:#a0a0a0;">Sem foto</div>`;
             
             const precoHTML = item.preco ? `💰 ${item.preco} MT` : `Preço a combinar`;
