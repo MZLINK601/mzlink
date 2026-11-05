@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let dados = [];
   let userAtual = null;
 
-  // ===== FUNÇÃO DE ESTATÍSTICA (CLIQUE NO WHATSAPP) =====
+  // ===== FUNÇÃO DE ESTATÍSTICA =====
   window.registarCliqueContato = async function(idAnuncio) {
     try {
       await fetch(SUPABASE_URL + "/rest/v1/rpc/registar_clique", {
@@ -126,7 +126,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     lista.forEach(function (item) {
       const msg = encodeURIComponent("Olá " + item.nome + ", vi o seu anúncio no MZLINK e gostaria de falar consigo.");
-      const numero = String(item.whatsapp || "").replace(/\D/g, "");
+      
+      // CORREÇÃO DO NÚMERO: Garante que tem o 258 no início
+      let numero = String(item.whatsapp || "").replace(/\D/g, "");
+      if (numero && !numero.startsWith("258")) {
+          numero = "258" + numero;
+      }
+      
       const ehPremium = item.plano === "premium";
       const ehEmpresa = item.tipo_conta === "empresa";
       const media = Number(item.media_estrelas) || 0;
@@ -161,6 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fotoHTML = '<div class="foto-principal-card sem-foto"><span>📸</span><small>Sem fotos</small></div>';
       }
 
+      // REMOVIDO O ONCLICK DIRETO E ADICIONADA UMA CLASSE E DATA-ID
       html +=
         '<div class="result-card ' + (ehPremium ? 'card-premium' : '') + '">' +
           fotoHTML +
@@ -181,8 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
             avaliacaoHTML +
             btnAvaliar +
             '<div style="display: flex; gap: 8px; margin-top: 10px;">' +
-              // BOTÃO CONTACTAR COM O ONCLICK DE ESTATÍSTICA
-              '<a class="btn-contactar" style="flex: 2; margin-top: 0;" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener" onclick="registarCliqueContato(\'' + item.id + '\')">Contactar</a>' +
+              '<a class="btn-contactar btn-contactar-wa" data-id="' + item.id + '" style="flex: 2; margin-top: 0;" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener">Contactar</a>' +
               '<a class="btn-partilhar" style="flex: 1;" href="https://wa.me/?text=' + msgPartilha + '" target="_blank" rel="noopener">📤 Partilhar</a>' +
             '</div>' +
           '</div>' +
@@ -207,6 +213,16 @@ document.addEventListener("DOMContentLoaded", function () {
           if (window.MZGaleria) window.MZGaleria.abrir(fotosData, nome);
         } catch (err) { console.warn("Erro ao abrir galeria:", err); }
       };
+    });
+
+    // AQUI ESTÁ O SEGREDO: O clique é registado, mas o link abre na mesma!
+    results.querySelectorAll(".btn-contactar-wa").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const id = this.getAttribute("data-id");
+        if (id) {
+            window.registarCliqueContato(id);
+        }
+      });
     });
   }
 
