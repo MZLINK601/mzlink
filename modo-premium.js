@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Modo Premium 👑
+   MZLINK · Modo Premium 👑 (Com Data Corrigida)
    ============================================================ */
 
 (function () {
@@ -90,9 +90,10 @@
       if (!rUser.ok) return;
       var user = await rUser.json();
 
+      // CORREÇÃO: Vai buscar a linha da LOJA e não a do anúncio
       var rPlano = await fetch(
         MZ.url + '/rest/v1/profissionais?select=nome,plano,premium_ate&user_id=eq.' +
-        encodeURIComponent(user.id) + '&limit=1',
+        encodeURIComponent(user.id) + '&categoria=eq.loja&limit=1',
         {
           headers: {
             apikey: MZ.key,
