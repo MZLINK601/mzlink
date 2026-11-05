@@ -72,15 +72,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <form id="formOnboarding">
                     <div class="campo">
                         <div class="campo-info">
-                            <label>Tipo de Conta</label>
-                            <select id="novoTipoConta" required style="width:100%; border:none; border-bottom:1px solid #ccc; font-size:1rem; font-weight:700; padding:5px 0; outline:none; background:transparent;">
-                                <option value="particular">🙋‍♂️ Vendedor Particular</option>
-                                <option value="empresa">🏢 Empresa / Loja Oficial</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="campo">
-                        <div class="campo-info">
                             <label>Nome da Loja / Negócio</label>
                             <input type="text" id="novoNome" required value="${nomeAuth}" placeholder="Ex: João Telemóveis" style="width:100%; border:none; border-bottom:1px solid #ccc; font-size:1rem; font-weight:700; padding:5px 0; outline:none;">
                         </div>
@@ -136,7 +127,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             const btn = document.getElementById("btnCriarLoja");
             const msg = document.getElementById("msgOnboarding");
             
-            const tipoConta = document.getElementById("novoTipoConta").value;
             const nome = document.getElementById("novoNome").value.trim();
             const whats = document.getElementById("novoWhats").value.replace(/\s/g, "");
             const local = document.getElementById("novoLocal").value;
@@ -186,7 +176,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     plano: "basico",
                     categoria: "loja",
                     tipo: "Perfil da Loja",
-                    tipo_conta: tipoConta, // <--- GUARDA SE É EMPRESA OU PARTICULAR
                     preco: null, 
                     fotos: []
                 };
@@ -220,8 +209,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         const telefone = String(perfilDB.whatsapp).replace(/^258/, "");
         const inicial = nome.charAt(0).toUpperCase();
         const ehPremium = perfilDB.plano === "premium";
-        const ehEmpresa = perfilDB.tipo_conta === "empresa";
         const urlAvatar = userMeta.avatar_url;
+
+        // Variáveis de estatística
+        const cliques = perfilDB.cliques_whatsapp || 0;
+        const visualizacoes = perfilDB.visualizacoes || 0;
 
         conteudo.innerHTML = `
             <div class="hero">
@@ -234,17 +226,36 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="badge-moz">🇲🇿 Orgulho Nacional</div>
                 <h1>${nome}</h1>
                 <p class="email">${user.email}</p>
-                <div style="display:flex; gap:8px; justify-content:center; margin-top:10px;">
-                    <span class="plano-badge ${ehPremium ? 'premium' : 'basico'}">${ehPremium ? '⭐ PREMIUM' : '🆓 Básico'}</span>
-                    ${ehEmpresa ? '<span class="plano-badge" style="background:#E0F2FE; color:#0369A1;">🏢 EMPRESA</span>' : ''}
-                </div>
+                <span class="plano-badge ${ehPremium ? 'premium' : 'basico'}">${ehPremium ? '⭐ PREMIUM' : '🆓 Básico'}</span>
             </div>
+            
             <div class="card">
                 <h2>📝 Dados da Loja</h2>
                 <div class="campo"><div class="campo-info"><label>Nome do Negócio</label><div class="valor">${nome}</div></div><button class="btn-editar" onclick="window.MZPerfil.editarNome()">✏️ Editar</button></div>
                 <div class="campo"><div class="campo-info"><label>WhatsApp</label><div class="valor">${telefone ? '258' + telefone : '—'}</div></div><button class="btn-editar" onclick="window.MZPerfil.editarTelefone()">✏️ Editar</button></div>
                 <div class="campo"><div class="campo-info"><label>Localização</label><div class="valor">📍 ${perfilDB.local}</div></div></div>
             </div>
+
+            <!-- BLOCO DE ESTATÍSTICAS PREMIUM -->
+            ${ehPremium ? `
+            <div class="card" style="border-left-color: #d4af37; background: #fffbeb;">
+                <h2 style="color: #b45309;">📊 Estatísticas Premium</h2>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <div style="flex: 1; background: #fff; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <span style="font-size: 1.5rem;">🔥</span><br>
+                        <strong style="font-size: 1.2rem; color: #0f1115;">${cliques}</strong><br>
+                        <small style="color: #667085; font-size:0.7rem;">Contactos WhatsApp</small>
+                    </div>
+                    <div style="flex: 1; background: #fff; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <span style="font-size: 1.5rem;">👀</span><br>
+                        <strong style="font-size: 1.2rem; color: #0f1115;">${visualizacoes}</strong><br>
+                        <small style="color: #667085; font-size:0.7rem;">Visualizações</small>
+                    </div>
+                </div>
+            </div>
+            ` : ''}
+            <!-- FIM DO BLOCO DE ESTATÍSTICAS -->
+
             <div class="card">
                 <h2>📢 Os meus anúncios</h2>
                 <a href="publicar.html" class="btn-acao principal">📢 Publicar novo anúncio</a>
