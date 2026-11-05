@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar e Editar Anúncio (Blindado)
+   MZLINK · Publicar e Editar Anúncio (Corrigido e Blindado)
    ============================================================ */
 
 (async function () {
@@ -189,8 +189,7 @@
     atualizarContador();
   });
 
-  var cacheMeusAnuncios = [];
-
+  // LISTAR ANÚNCIOS
   async function listarMeus() {
     lista.textContent = "";
     var r = await fetch(MZ.url + "/rest/v1/profissionais?select=*&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja&order=criado_em.desc", { headers: cabecalhos({}) });
@@ -198,7 +197,6 @@
     if (!r.ok) { lista.textContent = "Erro ao carregar."; return; }
 
     var itens = await r.json();
-    cacheMeusAnuncios = itens;
 
     if (itens.length === 0) { lista.innerHTML = "<p>Ainda não tens anúncios.</p>"; return; }
 
@@ -229,13 +227,21 @@
       listarMeus();
   };
 
-  window.prepararEdicao = function(id) {
+  // ===== A CORREÇÃO ESTÁ AQUI: VAI DIRETO À BASE DE DADOS =====
+  window.prepararEdicao = async function(id) {
       try {
-          var item = cacheMeusAnuncios.find(function(a) { return a.id === id; });
-          if (!item) {
-              alert("Erro: Não foi possível encontrar os dados deste anúncio. Tenta atualizar a página.");
+          // 1. Vai ao Supabase buscar os dados frescos deste ID específico
+          var res = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + id + "&select=*", { headers: cabecalhos({}) });
+          if (!res.ok) throw new Error("Falha de rede ao contactar a base de dados.");
+          
+          var dados = await res.json();
+          if (dados.length === 0) {
+              alert("Erro: Este anúncio já não existe ou foi apagado.");
+              listarMeus();
               return;
           }
+          
+          var item = dados[0]; // Pega nos dados do anúncio encontrado
 
           idAnuncioEmEdicao = id;
           
@@ -275,10 +281,10 @@
           btnPartilharWa.style.display = "none";
           
           window.scrollTo({ top: 0, behavior: 'smooth' });
-          alert("Anúncio carregado! Podes editar os campos acima.");
           
       } catch (erro) {
-          alert("Erro ao tentar editar: " + erro.message);
+          console.error(erro);
+          alert("Erro ao tentar carregar os dados do anúncio: " + erro.message);
       }
   };
 
@@ -405,7 +411,7 @@
       aviso("✅ " + (idAnuncioEmEdicao ? "Anúncio atualizado!" : "Anúncio publicado!"), false);
       
       if (!idAnuncioEmEdicao) {
-          var urlAnuncio = "https://mzlink601.github.io/mzlink/vendedor.html?id=" + usuario.id;
+          var urlAnuncio = "https://mzlink.co.mz/vendedor.html?id=" + usuario.id;
           var msgZap = encodeURIComponent("Olha o que encontrei no MZLINK! " + tipo + " a " + (precoFinal ? precoFinal + " MT" : "combinar") + ". Fala direto comigo: " + urlAnuncio);
           btnPartilharWa.href = "https://wa.me/?text=" + msgZap;
           btnPartilharWa.style.display = "block";
