@@ -10,6 +10,17 @@ document.addEventListener("DOMContentLoaded", function () {
   let dados = [];
   let userAtual = null;
 
+  // ===== FUNÇÃO DE ESTATÍSTICA (CLIQUE NO WHATSAPP) =====
+  window.registarCliqueContato = async function(idAnuncio) {
+    try {
+      await fetch(SUPABASE_URL + "/rest/v1/rpc/registar_clique", {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ anuncio_id: idAnuncio })
+      });
+    } catch (e) { /* silencioso */ }
+  };
+
   function normalizar(texto) {
     return String(texto).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
@@ -86,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function carregarDados() {
     try {
-      // OTIMIZAÇÃO: Limite de 20 anúncios e apenas os campos necessários (sem select=*)
       const resposta = await fetch(
         SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,tipo,local,preco,fotos,plano,tipo_conta,user_id,estado,media_estrelas,total_avaliacoes&categoria=neq.loja&order=criado_em.desc&limit=20",
         { headers: { apikey: SUPABASE_KEY } }
@@ -146,7 +156,6 @@ document.addEventListener("DOMContentLoaded", function () {
       let fotoHTML = "";
       if (fotos.length > 0) {
         const fotosJSON = encodeURIComponent(JSON.stringify(fotos));
-        // OTIMIZAÇÃO: Adicionado loading="lazy" na tag <img>
         fotoHTML = '<div class="foto-principal-card" data-fotos="' + fotosJSON + '" data-nome="' + limpar(item.nome) + '"><img src="' + fotos[0] + '" alt="' + limpar(item.nome) + '" loading="lazy">' + (fotos.length > 1 ? '<span class="contador-fotos">📸 ' + fotos.length + '</span>' : '') + '<span class="icone-zoom">🔍 Ver fotos</span></div>';
       } else {
         fotoHTML = '<div class="foto-principal-card sem-foto"><span>📸</span><small>Sem fotos</small></div>';
@@ -172,7 +181,8 @@ document.addEventListener("DOMContentLoaded", function () {
             avaliacaoHTML +
             btnAvaliar +
             '<div style="display: flex; gap: 8px; margin-top: 10px;">' +
-              '<a class="btn-contactar" style="flex: 2; margin-top: 0;" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener">Contactar</a>' +
+              // BOTÃO CONTACTAR COM O ONCLICK DE ESTATÍSTICA
+              '<a class="btn-contactar" style="flex: 2; margin-top: 0;" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener" onclick="registarCliqueContato(\'' + item.id + '\')">Contactar</a>' +
               '<a class="btn-partilhar" style="flex: 1;" href="https://wa.me/?text=' + msgPartilha + '" target="_blank" rel="noopener">📤 Partilhar</a>' +
             '</div>' +
           '</div>' +
