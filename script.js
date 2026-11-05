@@ -75,7 +75,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!sessao || !sessao.access_token) return;
 
       const r = await fetch(SUPABASE_URL + "/auth/v1/user", {
-        headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: "Bearer " + sessao.access_token
+        }
       });
       if (r.ok) userAtual = await r.json();
     } catch (e) { /* silencioso */ }
@@ -83,8 +86,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function carregarDados() {
     try {
+      // OTIMIZAÇÃO: Limite de 20 anúncios e apenas os campos necessários (sem select=*)
       const resposta = await fetch(
-        SUPABASE_URL + "/rest/v1/profissionais?select=*&categoria=neq.loja&order=criado_em.desc",
+        SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,tipo,local,preco,fotos,plano,tipo_conta,user_id,estado,media_estrelas,total_avaliacoes&categoria=neq.loja&order=criado_em.desc&limit=20",
         { headers: { apikey: SUPABASE_KEY } }
       );
 
@@ -112,14 +116,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     lista.forEach(function (item) {
       const msg = encodeURIComponent("Olá " + item.nome + ", vi o seu anúncio no MZLINK e gostaria de falar consigo.");
-      const numero = String(item.whatsapp).replace(/\D/g, "");
+      const numero = String(item.whatsapp || "").replace(/\D/g, "");
       const ehPremium = item.plano === "premium";
       const ehEmpresa = item.tipo_conta === "empresa";
       const media = Number(item.media_estrelas) || 0;
       const total = Number(item.total_avaliacoes) || 0;
 
       const msgPartilha = encodeURIComponent(
-        "Olha este anúncio no MZLINK: " + item.nome + " (" + item.tipo + " em " + item.local + "). Fala com ele aqui: https://mzlink601.github.io/mzlink/"
+        "Olha este anúncio no MZLINK: " + item.nome + " (" + item.tipo + " em " + item.local + "). Fala com ele aqui: https://mzlink.co.mz/"
       );
 
       const badgePremium = ehPremium ? '<span class="badge-premium-card">👑 PREMIUM</span>' : '';
@@ -142,6 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let fotoHTML = "";
       if (fotos.length > 0) {
         const fotosJSON = encodeURIComponent(JSON.stringify(fotos));
+        // OTIMIZAÇÃO: Adicionado loading="lazy" na tag <img>
         fotoHTML = '<div class="foto-principal-card" data-fotos="' + fotosJSON + '" data-nome="' + limpar(item.nome) + '"><img src="' + fotos[0] + '" alt="' + limpar(item.nome) + '" loading="lazy">' + (fotos.length > 1 ? '<span class="contador-fotos">📸 ' + fotos.length + '</span>' : '') + '<span class="icone-zoom">🔍 Ver fotos</span></div>';
       } else {
         fotoHTML = '<div class="foto-principal-card sem-foto"><span>📸</span><small>Sem fotos</small></div>';
