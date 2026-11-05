@@ -97,8 +97,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function carregarDados() {
     try {
+      // A CORREÇÃO ESTÁ AQUI: Adicionei ,whatsapp no final da lista de select
       const resposta = await fetch(
-        SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,tipo,local,preco,fotos,plano,tipo_conta,user_id,estado,media_estrelas,total_avaliacoes&categoria=neq.loja&order=criado_em.desc&limit=20",
+        SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,tipo,local,preco,fotos,plano,tipo_conta,user_id,estado,media_estrelas,total_avaliacoes,whatsapp&categoria=neq.loja&order=criado_em.desc&limit=20",
         { headers: { apikey: SUPABASE_KEY } }
       );
 
@@ -127,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
     lista.forEach(function (item) {
       const msg = encodeURIComponent("Olá " + item.nome + ", vi o seu anúncio no MZLINK e gostaria de falar consigo.");
       
-      // CORREÇÃO DO NÚMERO: Garante que tem o 258 no início
       let numero = String(item.whatsapp || "").replace(/\D/g, "");
       if (numero && !numero.startsWith("258")) {
           numero = "258" + numero;
@@ -167,7 +167,6 @@ document.addEventListener("DOMContentLoaded", function () {
         fotoHTML = '<div class="foto-principal-card sem-foto"><span>📸</span><small>Sem fotos</small></div>';
       }
 
-      // REMOVIDO O ONCLICK DIRETO E ADICIONADA UMA CLASSE E DATA-ID
       html +=
         '<div class="result-card ' + (ehPremium ? 'card-premium' : '') + '">' +
           fotoHTML +
@@ -215,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
     });
 
-    // AQUI ESTÁ O SEGREDO: O clique é registado, mas o link abre na mesma!
+    // Registo do clique no WhatsApp sem atrapalhar o link
     results.querySelectorAll(".btn-contactar-wa").forEach(function (btn) {
       btn.addEventListener("click", function () {
         const id = this.getAttribute("data-id");
