@@ -177,7 +177,7 @@
             </span>
         </div>
         <nav>
-            <button onclick="location.href='premium.html'" class="btn-premium">⭐ Premium</button>
+            <!-- O header.js vai injetar os botões corretos aqui -->
             <button onclick="location.href='login.html'">Entrar</button>
         </nav>
     </header>
@@ -286,13 +286,13 @@
     <button id="btnTopo" title="Voltar ao topo">⬆️</button>
 
     <!-- SCRIPTS DO PROJETO COM DEFER (Para carregar mais rápido) -->
-    <script src="script.js"></script> <!-- Este não leva defer para carregar os anúncios logo -->
+    <script src="script.js"></script> 
     <script src="sessao.js" defer></script>
     <script src="badge-premium.js" defer></script>
     <script src="avaliações.js" defer></script>
-    <script src="modo-premium.js?v=3" defer></script>
+    <script src="modo-premium.js" defer></script>
     <script src="galeria.js" defer></script>
-    <script src="header.js" defer></script>
+    <script src="header.js?v=3" defer></script>
     <script src="verificar-premium.js" defer></script>
     
     <!-- FOOTER -->
@@ -325,4 +325,5 @@
       .rodape-marca p { font-size: 0.82rem; color: #8b8f99; margin: 0; }
       .rodape-links { display: flex; flex-direction: column; gap: 10px; }
       .rodape-links a { color: #c9ccd3; text-decoration: none; font-size: 0.88rem; font-weight: 600; transition: color 0.2s; }
-      .rodape-links 
+      .rodape-links a:hover { color: #d4af37; }
+      .rodape-info p { margin: 0 0 8px; font-size: 0.85r 
