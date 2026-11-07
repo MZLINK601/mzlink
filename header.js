@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Header Dinâmico & Estilizado
+   MZLINK · Header Dinâmico (Focado em Conversão)
    ============================================================ */
 
 (function () {
@@ -14,12 +14,12 @@
     header {
       background: #ffffff;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-      border-bottom: 2px solid #d4af37; /* Linha Dourada VIP */
+      border-bottom: 2px solid #d4af37;
       padding: 12px 15px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      position: sticky; /* Fica colado no topo ao fazer scroll */
+      position: sticky;
       top: 0;
       z-index: 100;
     }
@@ -137,6 +137,7 @@
         nomeEl.textContent = nome;
       }
 
+      // Aqui o utilizador já tem conta, então mostramos tudo (incluindo o Premium)
       nav.innerHTML =
         '<button onclick="location.href=\'premium.html\'" class="btn-premium">⭐ Premium</button>' +
         '<button onclick="location.href=\'publicar.html\'" class="btn-nav">📢 Publicar</button>' +
@@ -150,10 +151,9 @@
     else {
       if (nomeEl) nomeEl.textContent = "...";
 
-      // AQUI ESTÁ A MUDANÇA: O botão agora diz "Criar Conta" e continua a ir para o login.html
+      // O botão Premium NÃO aparece aqui. Só aparece o Criar Conta!
       nav.innerHTML =
-        '<button onclick="location.href=\'premium.html\'" class="btn-premium">⭐ Premium</button>' +
-        '<button onclick="location.href=\'login.html\'" class="btn-nav">Criar Conta</button>';
+        '<button onclick="location.href=\'login.html\'" class="btn-nav" style="background: #1E40AF; font-weight: 900; padding: 10px 20px;">🚀 Criar Conta Grátis</button>';
     }
   }
 
