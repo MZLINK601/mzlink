@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let dados = [];
   let userAtual = null;
 
-  // ===== FUNÇÃO DE ESTATÍSTICA =====
   window.registarCliqueContato = async function(idAnuncio) {
     try {
       await fetch(SUPABASE_URL + "/rest/v1/rpc/registar_clique", {
@@ -86,10 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!sessao || !sessao.access_token) return;
 
       const r = await fetch(SUPABASE_URL + "/auth/v1/user", {
-        headers: {
-          apikey: SUPABASE_KEY,
-          Authorization: "Bearer " + sessao.access_token
-        }
+        headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
       });
       if (r.ok) userAtual = await r.json();
     } catch (e) { /* silencioso */ }
@@ -97,9 +93,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function carregarDados() {
     try {
-      // A CORREÇÃO ESTÁ AQUI: Adicionei ,whatsapp no final da lista de select
+      // FILTRO &vendido=eq.false ADICIONADO AQUI
       const resposta = await fetch(
-        SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,tipo,local,preco,fotos,plano,tipo_conta,user_id,estado,media_estrelas,total_avaliacoes,whatsapp&categoria=neq.loja&order=criado_em.desc&limit=20",
+        SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,tipo,local,preco,fotos,plano,tipo_conta,user_id,estado,media_estrelas,total_avaliacoes,whatsapp,avatar_url&categoria=neq.loja&vendido=eq.false&order=criado_em.desc&limit=20",
         { headers: { apikey: SUPABASE_KEY } }
       );
 
@@ -173,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
           '<div class="card-conteudo">' +
             '<div class="linha-topo">' +
               '<a href="vendedor.html?id=' + item.user_id + '" class="avatar-link">' +
-                '<div class="avatar">' + limpar(item.nome.charAt(0)) + '</div>' +
+                '<div class="avatar" style="' + (item.avatar_url ? 'background-image: url(' + item.avatar_url + '); background-size: cover; background-position: center; color: transparent;' : '') + '">' + limpar(item.nome.charAt(0)) + '</div>' +
               '</a>' +
               '<div class="info">' +
                 '<a href="vendedor.html?id=' + item.user_id + '" style="text-decoration:none; color:inherit;">' +
@@ -214,7 +210,6 @@ document.addEventListener("DOMContentLoaded", function () {
       };
     });
 
-    // Registo do clique no WhatsApp sem atrapalhar o link
     results.querySelectorAll(".btn-contactar-wa").forEach(function (btn) {
       btn.addEventListener("click", function () {
         const id = this.getAttribute("data-id");
