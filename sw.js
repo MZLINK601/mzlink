@@ -1,17 +1,12 @@
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open('mzlink-store').then((cache) => cache.addAll([
-      '/',
-      '/index.html',
-      '/style.css',
-      '/logo-mzlink.png',
-      '/ponte.jpg'
-    ])),
-  );
+  self.skipWaiting();
 });
 
+self.addEventListener('activate', (e) => {
+  e.waitUntil(clients.claim());
+});
+
+// Apenas deixa a internet fluir normalmente (sem forçar o offline)
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => response || fetch(e.request)),
-  );
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
 });
