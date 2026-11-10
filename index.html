@@ -309,6 +309,15 @@
     <script src="galeria.js" defer></script>
     <script src="header.js?v=3" defer></script>
     <script src="verificar-premium.js" defer></script>
+        <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('SW OK!'))
+        .catch(err => console.log('Erro SW:', err));
+    });
+  }
+        </script>
     
     <footer class="rodape-mzlink">
         <div class="rodape-conteudo">
