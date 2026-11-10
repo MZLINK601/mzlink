@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar e Editar Anúncio (Corrigido e Blindado)
+   MZLINK · Publicar e Editar Anúncio (Com Botão Vendido)
    ============================================================ */
 
 (async function () {
@@ -189,7 +189,6 @@
     atualizarContador();
   });
 
-  // LISTAR ANÚNCIOS
   async function listarMeus() {
     lista.textContent = "";
     var r = await fetch(MZ.url + "/rest/v1/profissionais?select=*&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja&order=criado_em.desc", { headers: cabecalhos({}) });
@@ -207,14 +206,21 @@
       var precoTxt = item.preco ? "💰 " + item.preco + " MT" : "A combinar";
       var estadoTxt = item.estado && item.estado !== "Serviço" ? " | " + item.estado : "";
       
+      // Lógica do botão Vendido
+      var isVendido = item.vendido === true;
+      var btnVendido = isVendido 
+        ? '<button type="button" onclick="window.alternarVendido(\'' + item.id + '\', true)" style="background:#fef3c7; color:#d97706; border:1px solid #fcd34d; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.75rem;">🔄 Disponível</button>'
+        : '<button type="button" onclick="window.alternarVendido(\'' + item.id + '\', false)" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.75rem;">✅ Vendido</button>';
+
       linha.innerHTML = `
-        <div>
-            <strong>${item.tipo}</strong><br>
+        <div style="${isVendido ? 'opacity: 0.6;' : ''}">
+            <strong>${item.tipo} ${isVendido ? '<span style="color:#d97706; font-size:0.7rem;">(VENDIDO)</span>' : ''}</strong><br>
             <small style="color:#667085;">${precoTxt}${estadoTxt} | 📸 ${nFotos}</small>
         </div>
-        <div style="display:flex; gap:5px;">
-            <button type="button" onclick="window.prepararEdicao('${item.id}')" style="background:#eff6ff; color:#1E40AF; border:1px solid #bfdbfe; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">✏️ Editar</button>
-            <button type="button" onclick="window.apagarAnuncio('${item.id}')" style="background:#fee2e2; color:#E31937; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Apagar</button>
+        <div style="display:flex; gap:5px; flex-wrap: wrap; justify-content: flex-end;">
+            ${btnVendido}
+            <button type="button" onclick="window.prepararEdicao('${item.id}')" style="background:#eff6ff; color:#1E40AF; border:1px solid #bfdbfe; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.75rem;">✏️ Editar</button>
+            <button type="button" onclick="window.apagarAnuncio('${item.id}')" style="background:#fee2e2; color:#E31937; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.75rem;">Apagar</button>
         </div>
       `;
       lista.appendChild(linha);
@@ -227,21 +233,36 @@
       listarMeus();
   };
 
-  // ===== A CORREÇÃO ESTÁ AQUI: VAI DIRETO À BASE DE DADOS =====
+  // FUNÇÃO MÁGICA DO VENDIDO
+  window.alternarVendido = async function(id, isVendido) {
+      var msg = isVendido ? "Marcar este anúncio como Disponível novamente?" : "Marcar como Vendido? Ele desaparecerá da página inicial, mas continuará no teu perfil.";
+      if (!confirm(msg)) return;
+
+      try {
+          await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + id, {
+              method: "PATCH",
+              headers: cabecalhos({ "Content-Type": "application/json" }),
+              body: JSON.stringify({ vendido: !isVendido })
+          });
+          listarMeus();
+      } catch (e) {
+          alert("Erro ao atualizar. Tenta novamente.");
+      }
+  };
+
   window.prepararEdicao = async function(id) {
       try {
-          // 1. Vai ao Supabase buscar os dados frescos deste ID específico
           var res = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + id + "&select=*", { headers: cabecalhos({}) });
-          if (!res.ok) throw new Error("Falha de rede ao contactar a base de dados.");
+          if (!res.ok) throw new Error("Falha de rede.");
           
           var dados = await res.json();
           if (dados.length === 0) {
-              alert("Erro: Este anúncio já não existe ou foi apagado.");
+              alert("Erro: Este anúncio já não existe.");
               listarMeus();
               return;
           }
           
-          var item = dados[0]; // Pega nos dados do anúncio encontrado
+          var item = dados[0];
 
           idAnuncioEmEdicao = id;
           
@@ -284,7 +305,7 @@
           
       } catch (erro) {
           console.error(erro);
-          alert("Erro ao tentar carregar os dados do anúncio: " + erro.message);
+          alert("Erro ao tentar carregar: " + erro.message);
       }
   };
 
@@ -360,6 +381,7 @@
           dadosAnuncio.user_id = usuario.id;
           dadosAnuncio.plano = planoUser;
           dadosAnuncio.fotos = [];
+          dadosAnuncio.vendido = false; // Garante que nasce como não vendido
 
           var r = await fetch(MZ.url + "/rest/v1/profissionais", {
             method: "POST",
