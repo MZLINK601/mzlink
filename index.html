@@ -92,7 +92,8 @@
         }
         .selo-icone { font-size: 1.1rem; }
         .selo-texto { font-size: 0.65rem; font-weight: 800; color: #1e293b; line-height: 1.1; text-align: left; text-transform: uppercase; }
-        
+
+                /* ===== FILTROS E CATEGORIAS ===== */
         .filtros-container { display: flex; gap: 10px; margin: 20px auto; max-width: 90%; flex-wrap: wrap; }
         .filtro-select {
             flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 8px;
@@ -120,7 +121,7 @@
         }
         #btnTopo:hover { background-color: #d4af37; color: #0f1115; transform: translateY(-5px); }
 
-        /* ===== ESTILOS DO CARTÃO VIP ===== */
+        /* ===== CARTÃO VIP ===== */
         .cartao-vip-seccao-home { display: none; justify-content: center; margin: 30px auto 10px; padding: 0 15px; }
         .card-vip {
             width: 100%; max-width: 380px; height: 230px;
@@ -155,37 +156,17 @@
         .data-expiracao span { font-family: 'Inter', sans-serif; font-size: 0.55rem; font-weight: 700; color: #a0a0a0; letter-spacing: 1px; }
         .data-expiracao strong { font-family: 'Courier New', Courier, monospace; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: 1px; }
 
-        /* ===== ESTILOS DO RODAPÉ ===== */
-        .rodape-mzlink { 
-            background: linear-gradient(180deg, #0f1115, #1a1d24) !important; 
-            color: #c9ccd3 !important; 
-            margin-top: 60px !important; 
-            padding: 32px 20px 20px !important; 
-            border-top: 3px solid #d4af37 !important; 
-            text-align: center; 
-        }
-        .rodape-conteudo { 
-            max-width: 900px; margin: 0 auto; display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-            gap: 24px; margin-bottom: 24px; text-align: left;
-        }
-        .rodape-marca strong { 
-            display: block; font-size: 1.3rem; font-weight: 900; 
-            background: linear-gradient(135deg, #d4af37, #f5d76e); 
-            -webkit-background-clip: text; background-clip: text; color: transparent; 
-            letter-spacing: -0.5px; margin-bottom: 6px; 
-        }
+        /* ===== RODAPÉ ===== */
+        .rodape-mzlink { background: linear-gradient(180deg, #0f1115, #1a1d24) !important; color: #c9ccd3 !important; margin-top: 60px !important; padding: 32px 20px 20px !important; border-top: 3px solid #d4af37 !important; text-align: center; }
+        .rodape-conteudo { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 24px; text-align: left; }
+        .rodape-marca strong { display: block; font-size: 1.3rem; font-weight: 900; background: linear-gradient(135deg, #d4af37, #f5d76e); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -0.5px; margin-bottom: 6px; }
         .rodape-marca p { font-size: 0.82rem; color: #8b8f99; margin: 0; }
         .rodape-links { display: flex; flex-direction: column; gap: 10px; }
         .rodape-links a { color: #c9ccd3 !important; text-decoration: none !important; font-size: 0.88rem; font-weight: 600; transition: color 0.2s; }
         .rodape-links a:hover { color: #d4af37 !important; }
         .rodape-info p { margin: 0 0 8px; font-size: 0.85rem; }
         .rodape-info strong { color: #d4af37; font-weight: 800; }
-        .rodape-copy { 
-            max-width: 900px; margin: 0 auto; padding-top: 20px; 
-            border-top: 1px solid rgba(255,255,255,0.08); 
-            text-align: center; font-size: 0.75rem; color: #8b8f99; letter-spacing: 0.3px; 
-        }
+        .rodape-copy { max-width: 900px; margin: 0 auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 0.75rem; color: #8b8f99; letter-spacing: 0.3px; }
 
         @media (max-width: 600px) {
             .hero-moz h1 { font-size: 1.9rem; }
@@ -197,13 +178,13 @@
             .selos-confianca { gap: 5px !important; margin-top: 15px !important; }
             .selo-item { padding: 6px 10px !important; }
             .selo-texto { font-size: 0.6rem !important; }
-            
             .rodape-conteudo { grid-template-columns: 1fr; text-align: center; }
             .rodape-links { align-items: center; }
         }
     </style>
 </head>
-<body>
+
+    <body>
     <header>
         <div class="header-topo">
             <a href="index.html" class="logo-header">
@@ -223,9 +204,7 @@
         <section class="cartao-vip-seccao-home" id="cartaoHome">
             <div class="card-vip">
                 <div class="costura-vip"></div>
-                <div class="card-topo">
-                    <span class="card-logo">MZLINK</span>
-                </div>
+                <div class="card-topo"><span class="card-logo">MZLINK</span></div>
                 <div class="card-meio">
                     <p class="texto-bem-vindo">bem-vindo</p>
                     <p class="texto-modo">MODO PREMIUM</p>
@@ -255,7 +234,6 @@
                 <input type="text" id="searchInput" placeholder="O que você procura?">
                 <button id="searchButton">Pesquisar</button>
             </div>
-            
             <div class="selos-confianca">
                 <div class="selo-item"><span class="selo-icone">🤝</span><span class="selo-texto">Vendedores<br>Locais</span></div>
                 <div class="selo-item"><span class="selo-icone">⚡</span><span class="selo-texto">Contacto<br>Imediato</span></div>
@@ -323,7 +301,6 @@
 
     <button id="btnTopo" title="Voltar ao topo">⬆️</button>
 
-    <!-- SCRIPTS DO PROJETO -->
     <script src="script.js"></script> 
     <script src="sessao.js" defer></script>
     <script src="badge-premium.js" defer></script>
@@ -333,7 +310,6 @@
     <script src="header.js?v=3" defer></script>
     <script src="verificar-premium.js" defer></script>
     
-    <!-- RODAPÉ -->
     <footer class="rodape-mzlink">
         <div class="rodape-conteudo">
             <div class="rodape-marca">
@@ -351,10 +327,8 @@
             </div>
         </div>
 
-        <!-- BOTÃO DE PARTILHA VIP -->
         <div style="text-align: center; margin: 30px auto 20px; max-width: 400px; padding: 0 20px;">
             <p style="color: #c9ccd3; margin-bottom: 15px; font-weight: 600; font-size: 0.9rem;">Gostaste do MZLINK? Partilha com a tua malta!</p>
-            
             <a href="https://wa.me/?text=E%20a%C3%AD%20mano%2C%20tudo%20fixe%3F%20%F0%9F%91%8B%20Deixa-me%20apresentar-te%20o%20MZLINK%2C%20a%20nova%20plataforma%20100%25%20mo%C3%A7ambicana%20para%20comprar%20e%20vender.%0A%0AAqui%20encontras%20produtos%2C%20servi%C3%A7os%20e%20profissionais%20de%20confian%C3%A7a.%20E%20o%20melhor%3A%20falas%20DIRETO%20no%20WhatsApp%20com%20o%20vendedor%2C%20sem%20intermedi%C3%A1rios%20e%20sem%20taxas!%20%F0%9F%9A%80%0A%0ASe%20vendes%20algo%2C%20cria%20a%20tua%20conta%20gr%C3%A1tis%20e%20faz%20boladas!%20Se%20procuras%20algo%2C%20d%C3%A1%20uma%20olhada.%0A%0A%F0%9F%91%89%20https%3A%2F%2Fmzlink.co.mz%0A%0A%F0%9F%87%B2%F0%9F%87%BF%20Apoia%20o%20que%20%C3%A9%20nosso!" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #25D366 !important; color: white !important; padding: 15px 30px; border-radius: 12px; font-weight: 800; text-decoration: none !important; font-size: 1rem; box-shadow: 0 4px 15px rgba(37,211,102,0.4); width: 100%;">
                 📲 Partilhar o MZLINK no WhatsApp
             </a>
@@ -365,7 +339,7 @@
         </div>
     </footer>
 
-    <!-- ATIVAR MODO APP (PWA) -->
+    <!-- ATIVAR MODO APP -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -373,5 +347,36 @@
         });
       }
     </script>
+
+    <!-- BOTÃO FLUTUANTE DE INSTALAR APP -->
+    <button id="btnInstalarApp" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.9rem; padding: 12px 20px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6); cursor: pointer; align-items: center; gap: 8px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
+        <span style="font-size: 1.2rem;">📲</span> Instalar App MZLINK
+    </button>
+
+    <script>
+      let deferredPrompt;
+      const btnInstalar = document.getElementById('btnInstalarApp');
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        btnInstalar.style.display = 'flex'; 
+      });
+
+      btnInstalar.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+            btnInstalar.style.display = 'none'; 
+          }
+          deferredPrompt = null;
+        }
+      });
+      
+      btnInstalar.addEventListener('touchstart', () => { btnInstalar.style.transform = 'scale(0.95)'; });
+      btnInstalar.addEventListener('touchend', () => { btnInstalar.style.transform = 'scale(1)'; });
+    </script>
+
 </body>
 </html>
