@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MZLINK - Encontre, Compare, Resolva</title>
     
-    <!-- ===== CARTÃO DE PARTILHA ===== -->
+    <!-- ===== CONFIGURAÇÕES DA APP (PWA) ===== -->
+    <meta name="theme-color" content="#0f1115">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- ===== CARTÃO DE PARTILHA (WHATSAPP / FACEBOOK) ===== -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mzlink.co.mz/">
     <meta property="og:title" content="MZLINK - Encontre, Compare, Resolva">
@@ -199,7 +203,6 @@
         }
     </style>
 </head>
-
 <body>
     <header>
         <div class="header-topo">
@@ -320,6 +323,7 @@
 
     <button id="btnTopo" title="Voltar ao topo">⬆️</button>
 
+    <!-- SCRIPTS DO PROJETO -->
     <script src="script.js"></script> 
     <script src="sessao.js" defer></script>
     <script src="badge-premium.js" defer></script>
@@ -360,5 +364,14 @@
             © 2026 MZLINK · Feito em Moçambique 🇲🇿
         </div>
     </footer>
+
+    <!-- ATIVAR MODO APP (PWA) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js');
+        });
+      }
+    </script>
 </body>
 </html>
