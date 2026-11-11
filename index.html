@@ -354,40 +354,88 @@
       }
     </script>
 
-    <!-- 2. O Botão de Instalação (Já nasce visível!) -->
-    <button id="btnInstalarApp" style="display: flex; position: fixed; bottom: 80px; right: 20px; z-index: 9999; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.9rem; padding: 12px 20px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6); cursor: pointer; align-items: center; gap: 8px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
-        <span style="font-size: 1.2rem;">📲</span> Instalar App MZLINK
-    </button>
+    <!-- 2. O Botão de Instalação (No TOPO!) -->
+    <div id="wrapperInstalar" style="display: flex; position: fixed; top: 75px; right: 10px; z-index: 9999; align-items: center; gap: 5px;">
+        <button id="btnInstalarApp" style="background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.85rem; padding: 10px 15px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.6); cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
+            <span style="font-size: 1rem;">📲</span> Instalar App
+        </button>
+        <!-- Botão de fechar o botão de instalar -->
+        <button id="fecharBtnInstalar" style="background: #0f1115; color: #d4af37; border: 1px solid #d4af37; border-radius: 50%; width: 25px; height: 25px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center;">✕</button>
+    </div>
 
-    <!-- 3. Lógica do Botão -->
+    <!-- 3. MODAL PERSONALIZADO -->
+    <div id="modalInstalar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
+        <div style="background: #1a1d24; border: 2px solid #d4af37; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
+            
+            <button id="fecharModal" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #c9ccd3; font-size: 1.5rem; cursor: pointer;">&times;</button>
+
+            <h2 style="color: #d4af37; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Instalar MZLINK</h2>
+            <p style="color: #c9ccd3; font-size: 0.9rem; margin-bottom: 20px;">Leve o MZLINK sempre consigo. Instale a nossa App no seu telemóvel!</p>
+
+            <div style="background: #fff; padding: 15px; border-radius: 12px; display: inline-block; margin-bottom: 20px;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://mzlink.co.mz" alt="QR Code MZLINK" style="display: block; width: 150px; height: 150px;">
+            </div>
+            <p style="color: #8b8f99; font-size: 0.75rem; margin-top: -10px; margin-bottom: 20px;">Aponte a câmara do seu telemóvel</p>
+
+            <button id="btnInstalarNativo" style="display: flex; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 12px; border: none; cursor: pointer; width: 100%; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <span style="font-size: 1.2rem;">📲</span> Instalar Agora
+            </button>
+
+            <p style="color: #c9ccd3; font-size: 0.8rem; text-align: left; background: #0f1115; padding: 10px; border-radius: 8px; line-height: 1.5;">
+                <strong>Não funciona?</strong><br>
+                1. Toque nos <strong>3 pontinhos</strong> do Chrome.<br>
+                2. Escolha <strong>"Instalar aplicação"</strong>.
+            </p>
+        </div>
+    </div>
+
+    <!-- 4. Script de Controlo -->
     <script>
-      let deferredPrompt;
-      const btnInstalar = document.getElementById('btnInstalarApp');
+        let deferredPrompt;
+        const wrapperInstalar = document.getElementById('wrapperInstalar');
+        const btnInstalar = document.getElementById('btnInstalarApp');
+        const fecharBtnInstalar = document.getElementById('fecharBtnInstalar');
+        const modalInstalar = document.getElementById('modalInstalar');
+        const btnInstalarNativo = document.getElementById('btnInstalarNativo');
+        const fecharModal = document.getElementById('fecharModal');
 
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-      });
-
-      if (btnInstalar) {
-        btnInstalar.addEventListener('click', async () => {
-          if (deferredPrompt) {
-            // O Chrome permite, abre a janela!
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-              btnInstalar.style.display = 'none'; 
-            }
-            deferredPrompt = null;
-          } else {
-            // O Chrome bloqueou, avisa o utilizador
-            alert("Para instalar a MZLINK:\n\n1. Toca nos 3 pontinhos do Chrome (canto superior direito)\n2. Escolhe 'Instalar aplicação' ou 'Adicionar ao ecrã inicial'.");
-          }
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
         });
-        
+
+        // Abre o modal
+        btnInstalar.addEventListener('click', () => {
+            modalInstalar.style.display = 'flex';
+        });
+
+        // Fecha o modal
+        fecharModal.addEventListener('click', () => {
+            modalInstalar.style.display = 'none';
+        });
+
+        // Fecha o botão de instalar do topo
+        fecharBtnInstalar.addEventListener('click', () => {
+            wrapperInstalar.style.display = 'none';
+        });
+
+        // Ação de instalar dentro do modal
+        btnInstalarNativo.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    modalInstalar.style.display = 'none';
+                    wrapperInstalar.style.display = 'none';
+                }
+                deferredPrompt = null;
+            } else {
+                alert("O Chrome está a bloquear a instalação automática. Por favor, siga as instruções abaixo do botão.");
+            }
+        });
+
         btnInstalar.addEventListener('touchstart', () => { btnInstalar.style.transform = 'scale(0.95)'; });
         btnInstalar.addEventListener('touchend', () => { btnInstalar.style.transform = 'scale(1)'; });
-      }
     </script>
 
 </body>
