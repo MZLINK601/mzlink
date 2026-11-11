@@ -1,9 +1,9 @@
 {
+  "id": "/",
   "name": "MZLINK - Encontre, Compare, Resolva",
   "short_name": "MZLINK",
   "description": "A plataforma 100% Moçambicana para comprar e vender.",
-  "id": "/",
-  "start_url": "/index.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
