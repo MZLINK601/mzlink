@@ -93,7 +93,7 @@
         .selo-icone { font-size: 1.1rem; }
         .selo-texto { font-size: 0.65rem; font-weight: 800; color: #1e293b; line-height: 1.1; text-align: left; text-transform: uppercase; }
 
-                /* ===== FILTROS E CATEGORIAS ===== */
+        /* ===== FILTROS E CATEGORIAS ===== */
         .filtros-container { display: flex; gap: 10px; margin: 20px auto; max-width: 90%; flex-wrap: wrap; }
         .filtro-select {
             flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 8px;
@@ -309,17 +309,8 @@
     <script src="galeria.js" defer></script>
     <script src="header.js?v=3" defer></script>
     <script src="verificar-premium.js" defer></script>
-        <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('SW OK!'))
-        .catch(err => console.log('Erro SW:', err));
-    });
-  }
-        </script>
-    
-    <footer class="rodape-mzlink">
+
+            <footer class="rodape-mzlink">
         <div class="rodape-conteudo">
             <div class="rodape-marca">
                 <strong>MZLINK</strong>
@@ -348,20 +339,27 @@
         </div>
     </footer>
 
-    <!-- ATIVAR MODO APP -->
+    <!-- ========================================== -->
+    <!-- LÓGICA DE INSTALAÇÃO DA APP (PWA) -->
+    <!-- ========================================== -->
+
+    <!-- 1. Registo do Service Worker -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('sw.js');
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW OK!'))
+            .catch(err => console.log('Erro SW:', err));
         });
       }
     </script>
 
-    <!-- BOTÃO FLUTUANTE DE INSTALAR APP -->
-    <button id="btnInstalarApp" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.9rem; padding: 12px 20px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6); cursor: pointer; align-items: center; gap: 8px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
+    <!-- 2. O Botão de Instalação (Já nasce visível!) -->
+    <button id="btnInstalarApp" style="display: flex; position: fixed; bottom: 80px; right: 20px; z-index: 9999; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.9rem; padding: 12px 20px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6); cursor: pointer; align-items: center; gap: 8px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
         <span style="font-size: 1.2rem;">📲</span> Instalar App MZLINK
     </button>
 
+    <!-- 3. Lógica do Botão -->
     <script>
       let deferredPrompt;
       const btnInstalar = document.getElementById('btnInstalarApp');
@@ -369,22 +367,27 @@
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        btnInstalar.style.display = 'flex'; 
       });
 
-      btnInstalar.addEventListener('click', async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') {
-            btnInstalar.style.display = 'none'; 
+      if (btnInstalar) {
+        btnInstalar.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            // O Chrome permite, abre a janela!
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+              btnInstalar.style.display = 'none'; 
+            }
+            deferredPrompt = null;
+          } else {
+            // O Chrome bloqueou, avisa o utilizador
+            alert("Para instalar a MZLINK:\n\n1. Toca nos 3 pontinhos do Chrome (canto superior direito)\n2. Escolhe 'Instalar aplicação' ou 'Adicionar ao ecrã inicial'.");
           }
-          deferredPrompt = null;
-        }
-      });
-      
-      btnInstalar.addEventListener('touchstart', () => { btnInstalar.style.transform = 'scale(0.95)'; });
-      btnInstalar.addEventListener('touchend', () => { btnInstalar.style.transform = 'scale(1)'; });
+        });
+        
+        btnInstalar.addEventListener('touchstart', () => { btnInstalar.style.transform = 'scale(0.95)'; });
+        btnInstalar.addEventListener('touchend', () => { btnInstalar.style.transform = 'scale(1)'; });
+      }
     </script>
 
 </body>
