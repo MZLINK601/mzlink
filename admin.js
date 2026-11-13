@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  /* ⚠️⚠️⚠️  COLOCA AQUI O TEU EMAIL DE ADMIN  ⚠️⚠️⚠️ */
+  /* ⚠️⚠️⚠️  O TEU EMAIL DE ADMIN  ⚠️⚠️⚠️ */
   var ADMINS = [
     "amoselidiomavie258@gmail.com"
   ];
@@ -42,19 +42,20 @@
     
     await carregarTudo();
     await carregarPendentes(); 
-    await carregarAnuncios(); // Carrega a nova secção de anúncios
+    await carregarAnuncios(); 
   }
 
-  /* ---------- Carregar utilizadores ---------- */
+  /* ---------- Carregar Utilizadores e Estatísticas ---------- */
   async function carregarTudo() {
     var sessao = await MZ.sessaoValida();
 
+    // Nota: A tabela no Supabase chama-se 'profissionais' no teu código original
     var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id, user_id, nome, whatsapp, criado_em, plano, premium_ate&order=criado_em.desc", {
       headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
     });
 
     if (!r.ok) {
-      $("#tbodyUsers").innerHTML = '<tr><td colspan="4" class="sem-resultados">Erro ao carregar.</td></tr>';
+      $("#tbodyUsers").innerHTML = '<tr><td colspan="4" class="sem-resultados">Erro ao carregar utilizadores.</td></tr>';
       return;
     }
 
@@ -70,16 +71,15 @@
     var elPremium = $("#statPremium");
     if (elPremium) elPremium.textContent = totalPremium;
 
-    // BUSCAR O NÚMERO DE ANÚNCIOS E VISITAS (Nova atualização!)
+    // Atualiza os contadores de Anúncios e Visitas
     await atualizarEstatisticasExtras(sessao);
 
     renderTabela(todosUsers);
   }
 
-  /* ---------- NOVO: Estatísticas de Anúncios e Visitas ---------- */
   async function atualizarEstatisticasExtras(sessao) {
     try {
-        // Contar Anúncios
+        // Contar Anúncios (Verifica se a tabela é mesmo 'anuncios')
         var rAnuncios = await fetch(MZ.url + "/rest/v1/anuncios?select=id", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
@@ -89,13 +89,13 @@
             if (elAnuncios) elAnuncios.textContent = anuncios.length;
         }
 
-        // Contar Visitas (Se a tabela existir)
+        // Contar Visitas (Verifica se a tabela é mesmo 'visitas')
         var rVisitas = await fetch(MZ.url + "/rest/v1/visitas?select=id", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
         if (rVisitas.ok) {
             var visitas = await rVisitas.json();
-            var elVisitas = document.getElementById("statVisitas");
+            var elVisitas = $("#statVisitas");
             if (elVisitas) elVisitas.textContent = visitas.length;
         }
     } catch (e) {
@@ -187,7 +187,7 @@
   }
 
   /* ==========================================
-     NOVO: MODERAÇÃO DE ANÚNCIOS
+     MODERAÇÃO DE ANÚNCIOS
      ========================================== */
   async function carregarAnuncios() {
     var div = document.getElementById("listaAnuncios");
@@ -195,15 +195,27 @@
 
     try {
         var sessao = await MZ.sessaoValida();
+        
+        // ⚠️ ATENÇÃO: Confirma se a tabela se chama 'anuncios' e as colunas 'titulo' e 'preco'
         var r = await fetch(MZ.url + "/rest/v1/anuncios?select=id, titulo, preco, criado_em&order=criado_em.desc&limit=20", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
 
-        if (!r.ok) return;
+        if (!r.ok) {
+            // Se der erro, mostra no ecrã o motivo exato
+            var erro = await r.text();
+            div.innerHTML = `<p style="padding:15px; color:red; background:#fee2e2; border-radius:8px;">
+                <strong>Erro ao carregar anúncios.</strong><br>
+                Verifica se a tabela se chama 'anuncios' e se as colunas 'titulo' e 'preco' existem no Supabase.<br>
+                <small style="font-size:10px;">Detalhe: ${erro}</small>
+            </p>`;
+            return;
+        }
+
         var anuncios = await r.json();
 
         if (anuncios.length === 0) {
-            div.innerHTML = "<p>Nenhum anúncio publicado.</p>";
+            div.innerHTML = "<p style='padding:15px; color:#16a34a; font-weight:bold;'>✅ Nenhum anúncio publicado ainda.</p>";
             return;
         }
 
@@ -219,7 +231,7 @@
                 <td style="padding: 15px; font-weight: bold;">${esc(a.titulo)}</td>
                 <td style="padding: 15px; color: #16a34a; font-weight: bold;">${esc(a.preco)} MT</td>
                 <td style="padding: 15px;">
-                    <button onclick="apagarAnuncio('${a.id}')" style="background: #dc2626; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;">🗑 Apagar</button>
+                    <button onclick="window.apagarAnuncio('${a.id}')" style="background: #dc2626; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;">🗑 Apagar</button>
                 </td>
             </tr>`;
         });
@@ -227,11 +239,11 @@
         div.innerHTML = html;
 
     } catch (e) {
-        console.log("Erro nos anúncios", e);
+        div.innerHTML = `<p style="padding:15px; color:red;">Erro de ligação ao servidor.</p>`;
     }
   }
 
-  // Função global para apagar anúncio
+  // Função global para o botão de apagar funcionar
   window.apagarAnuncio = async function(id) {
     if (!confirm("Tem a certeza que quer apagar este anúncio permanentemente?")) return;
     var sessao = await MZ.sessaoValida();
@@ -240,9 +252,11 @@
         headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
     });
     if (r.ok) {
-        alert("Anúncio apagado!");
+        alert("🗑 Anúncio apagado com sucesso!");
         carregarAnuncios();
-        carregarTudo(); // Atualiza a contagem
+        carregarTudo(); // Atualiza o contador de anúncios
+    } else {
+        alert("Erro ao apagar anúncio.");
     }
   };
 
