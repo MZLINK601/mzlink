@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css">
   <style>
-    /* Estilos extra para a secção de pendentes */
+    /* Estilos extra para as secções novas */
     .seccao-pendentes {
       margin-top: 40px;
       background: #fff;
@@ -73,6 +73,11 @@
           <strong id="statAnuncios">—</strong>
           <span>Anúncios</span>
         </div>
+        <!-- NOVO CARTÃO DE VISITAS -->
+        <div class="stat-card">
+          <strong id="statVisitas" style="color: #1E40AF;">—</strong>
+          <span>Visitas</span>
+        </div>
       </div>
 
       <div class="admin-barra">
@@ -100,20 +105,28 @@
         </table>
       </div>
 
-      <!-- ===== NOVA SECÇÃO: PEDIDOS PENDENTES ===== -->
+      <!-- ===== SECÇÃO: PEDIDOS PENDENTES ===== -->
       <div class="seccao-pendentes">
         <h2>👑 Pedidos Premium Pendentes</h2>
         <div id="tabelaPendentes">
           <p style="color: #667085;">A carregar pedidos...</p>
         </div>
       </div>
-      <!-- ===== FIM DA NOVA SECÇÃO ===== -->
+
+      <!-- ===== NOVA SECÇÃO: MODERAÇÃO DE ANÚNCIOS ===== -->
+      <div class="seccao-pendentes">
+        <h2>📦 Gerir Anúncios (Últimos 20)</h2>
+        <div id="listaAnuncios">
+          <p style="color: #667085;">A carregar anúncios...</p>
+        </div>
+      </div>
 
     </section>
 
   </main>
 
   <script src="sessao.js"></script>
-  <script src="admin.js?v=3"></script>
+  <!-- Mudei para v=4 para forçar o Chrome a ler o script novo -->
+  <script src="admin.js?v=4"></script> 
 </body>
 </html>
