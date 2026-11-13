@@ -49,7 +49,7 @@
   async function carregarTudo() {
     var sessao = await MZ.sessaoValida();
 
-    // Nota: A tabela no Supabase chama-se 'profissionais' no teu código original
+    // Vai buscar a tabela principal
     var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id, user_id, nome, whatsapp, criado_em, plano, premium_ate&order=criado_em.desc", {
       headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
     });
@@ -79,8 +79,8 @@
 
   async function atualizarEstatisticasExtras(sessao) {
     try {
-        // Contar Anúncios (Verifica se a tabela é mesmo 'anuncios')
-        var rAnuncios = await fetch(MZ.url + "/rest/v1/anuncios?select=id", {
+        // Contar Anúncios (Lendo da tabela 'profissionais' para bater certo com o site)
+        var rAnuncios = await fetch(MZ.url + "/rest/v1/profissionais?select=id", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
         if (rAnuncios.ok) {
@@ -89,7 +89,7 @@
             if (elAnuncios) elAnuncios.textContent = anuncios.length;
         }
 
-        // Contar Visitas (Verifica se a tabela é mesmo 'visitas')
+        // Contar Visitas
         var rVisitas = await fetch(MZ.url + "/rest/v1/visitas?select=id", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
@@ -187,7 +187,7 @@
   }
 
   /* ==========================================
-     MODERAÇÃO DE ANÚNCIOS
+     MODERAÇÃO DE ANÚNCIOS (A ler da tabela correta)
      ========================================== */
   async function carregarAnuncios() {
     var div = document.getElementById("listaAnuncios");
@@ -196,17 +196,15 @@
     try {
         var sessao = await MZ.sessaoValida();
         
-        // ⚠️ ATENÇÃO: Confirma se a tabela se chama 'anuncios' e as colunas 'titulo' e 'preco'
-        var r = await fetch(MZ.url + "/rest/v1/anuncios?select=id, titulo, preco, criado_em&order=criado_em.desc&limit=20", {
+        // Vamos ler da tabela 'profissionais' onde o teu site guarda os anúncios reais
+        var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id, nome, preco, criado_em&order=criado_em.desc&limit=20", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
 
         if (!r.ok) {
-            // Se der erro, mostra no ecrã o motivo exato
             var erro = await r.text();
             div.innerHTML = `<p style="padding:15px; color:red; background:#fee2e2; border-radius:8px;">
                 <strong>Erro ao carregar anúncios.</strong><br>
-                Verifica se a tabela se chama 'anuncios' e se as colunas 'titulo' e 'preco' existem no Supabase.<br>
                 <small style="font-size:10px;">Detalhe: ${erro}</small>
             </p>`;
             return;
@@ -227,9 +225,10 @@
             </tr>`;
 
         anuncios.forEach(function(a) {
+            // O teu site usa 'nome' em vez de 'titulo'. Vamos adaptar!
             html += `<tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 15px; font-weight: bold;">${esc(a.titulo)}</td>
-                <td style="padding: 15px; color: #16a34a; font-weight: bold;">${esc(a.preco)} MT</td>
+                <td style="padding: 15px; font-weight: bold;">${esc(a.nome)}</td>
+                <td style="padding: 15px; color: #16a34a; font-weight: bold;">${esc(a.preco || 'A combinar')} MT</td>
                 <td style="padding: 15px;">
                     <button onclick="window.apagarAnuncio('${a.id}')" style="background: #dc2626; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;">🗑 Apagar</button>
                 </td>
@@ -243,11 +242,11 @@
     }
   }
 
-  // Função global para o botão de apagar funcionar
+  // Função global para o botão de apagar funcionar (na tabela profissionais)
   window.apagarAnuncio = async function(id) {
     if (!confirm("Tem a certeza que quer apagar este anúncio permanentemente?")) return;
     var sessao = await MZ.sessaoValida();
-    var r = await fetch(MZ.url + "/rest/v1/anuncios?id=eq." + id, {
+    var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + id, {
         method: "DELETE",
         headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
     });
