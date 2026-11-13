@@ -7,7 +7,6 @@
   ];
 
   var $ = function (s) { return document.querySelector(s); };
-
   var todosUsers = [];
 
   /* ---------- Iniciar ---------- */
@@ -43,6 +42,7 @@
     
     await carregarTudo();
     await carregarPendentes(); 
+    await carregarAnuncios(); // Carrega a nova secção de anúncios
   }
 
   /* ---------- Carregar utilizadores ---------- */
@@ -62,7 +62,6 @@
     todosUsers = lista || [];
 
     $("#statUsers").textContent = todosUsers.length;
-    $("#statAnuncios").textContent = todosUsers.length;
 
     var totalPremium = 0;
     for (var k = 0; k < todosUsers.length; k++) {
@@ -71,9 +70,40 @@
     var elPremium = $("#statPremium");
     if (elPremium) elPremium.textContent = totalPremium;
 
+    // BUSCAR O NÚMERO DE ANÚNCIOS E VISITAS (Nova atualização!)
+    await atualizarEstatisticasExtras(sessao);
+
     renderTabela(todosUsers);
   }
 
+  /* ---------- NOVO: Estatísticas de Anúncios e Visitas ---------- */
+  async function atualizarEstatisticasExtras(sessao) {
+    try {
+        // Contar Anúncios
+        var rAnuncios = await fetch(MZ.url + "/rest/v1/anuncios?select=id", {
+            headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
+        });
+        if (rAnuncios.ok) {
+            var anuncios = await rAnuncios.json();
+            var elAnuncios = $("#statAnuncios");
+            if (elAnuncios) elAnuncios.textContent = anuncios.length;
+        }
+
+        // Contar Visitas (Se a tabela existir)
+        var rVisitas = await fetch(MZ.url + "/rest/v1/visitas?select=id", {
+            headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
+        });
+        if (rVisitas.ok) {
+            var visitas = await rVisitas.json();
+            var elVisitas = document.getElementById("statVisitas");
+            if (elVisitas) elVisitas.textContent = visitas.length;
+        }
+    } catch (e) {
+        console.log("Erro ao buscar extras", e);
+    }
+  }
+
+  /* ---------- Render Tabela Utilizadores ---------- */
   function renderTabela(lista) {
     var tbody = $("#tbodyUsers");
 
@@ -157,7 +187,67 @@
   }
 
   /* ==========================================
-     NOVA SECÇÃO: PEDIDOS PREMIUM PENDENTES
+     NOVO: MODERAÇÃO DE ANÚNCIOS
+     ========================================== */
+  async function carregarAnuncios() {
+    var div = document.getElementById("listaAnuncios");
+    if (!div) return;
+
+    try {
+        var sessao = await MZ.sessaoValida();
+        var r = await fetch(MZ.url + "/rest/v1/anuncios?select=id, titulo, preco, criado_em&order=criado_em.desc&limit=20", {
+            headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
+        });
+
+        if (!r.ok) return;
+        var anuncios = await r.json();
+
+        if (anuncios.length === 0) {
+            div.innerHTML = "<p>Nenhum anúncio publicado.</p>";
+            return;
+        }
+
+        var html = `<table style="width:100%; border-collapse: collapse; text-align: left;">
+            <tr style="background: #f8f9fb; border-bottom: 2px solid #eee;">
+                <th style="padding: 15px;">Título</th>
+                <th style="padding: 15px;">Preço</th>
+                <th style="padding: 15px;">Ação</th>
+            </tr>`;
+
+        anuncios.forEach(function(a) {
+            html += `<tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 15px; font-weight: bold;">${esc(a.titulo)}</td>
+                <td style="padding: 15px; color: #16a34a; font-weight: bold;">${esc(a.preco)} MT</td>
+                <td style="padding: 15px;">
+                    <button onclick="apagarAnuncio('${a.id}')" style="background: #dc2626; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;">🗑 Apagar</button>
+                </td>
+            </tr>`;
+        });
+        html += `</table>`;
+        div.innerHTML = html;
+
+    } catch (e) {
+        console.log("Erro nos anúncios", e);
+    }
+  }
+
+  // Função global para apagar anúncio
+  window.apagarAnuncio = async function(id) {
+    if (!confirm("Tem a certeza que quer apagar este anúncio permanentemente?")) return;
+    var sessao = await MZ.sessaoValida();
+    var r = await fetch(MZ.url + "/rest/v1/anuncios?id=eq." + id, {
+        method: "DELETE",
+        headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
+    });
+    if (r.ok) {
+        alert("Anúncio apagado!");
+        carregarAnuncios();
+        carregarTudo(); // Atualiza a contagem
+    }
+  };
+
+  /* ==========================================
+     PEDIDOS PREMIUM PENDENTES
      ========================================== */
   async function carregarPendentes() {
     var div = document.getElementById("tabelaPendentes");
@@ -165,27 +255,15 @@
 
     try {
       var sessao = await MZ.sessaoValida();
-      if (!sessao) {
-        div.innerHTML = "<p style='padding:20px; color:red;'>Erro: Sessão expirada. Faz login de novo.</p>";
-        return;
-      }
+      if (!sessao) return;
 
       var r = await fetch(MZ.url + "/rest/v1/pedidos_premium?status=eq.pendente&select=*", {
         headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
       });
       
-      if (!r.ok) {
-        div.innerHTML = "<p style='padding:20px; color:red;'>Erro ao ligar à base de dados (Código: " + r.status + "). Verifica se criaste a tabela e as regras de segurança.</p>";
-        return;
-      }
+      if (!r.ok) return;
 
       var pedidos = await r.json();
-
-      if (!Array.isArray(pedidos)) {
-         div.innerHTML = "<p style='padding:20px; color:red;'>Erro: Resposta da base de dados inválida.</p>";
-         return;
-      }
-
       if (pedidos.length === 0) {
         div.innerHTML = "<p style='padding:20px; color:#16a34a; font-weight:bold;'>✅ Nenhum pedido pendente. Tudo em dia!</p>";
         return;
@@ -203,7 +281,7 @@
               <td style="padding: 15px; font-weight: bold;">${esc(p.nome_loja) || 'Sem nome'}</td>
               <td style="padding: 15px; color: #d4af37; font-weight: bold; font-size: 1.1rem;">${esc(p.numero_comprovativo)}</td>
               <td style="padding: 15px;">
-                  <button class="btn-acao btn-aprovar-pedido" data-id="${esc(p.id)}" data-user="${esc(p.user_id)}" style="background: #16a34a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;">✅ Aprovar</button>
+                  <button class="btn-aprovar-pedido" data-id="${esc(p.id)}" data-user="${esc(p.user_id)}" style="background: #16a34a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;">✅ Aprovar</button>
               </td>
           </tr>`;
       });
@@ -213,24 +291,19 @@
       var btns = div.querySelectorAll(".btn-aprovar-pedido");
       for (var i = 0; i < btns.length; i++) {
         btns[i].addEventListener("click", function() {
-            var idPedido = this.getAttribute("data-id");
-            var userId = this.getAttribute("data-user");
-            aprovarPremium(idPedido, userId);
+            aprovarPremium(this.getAttribute("data-id"), this.getAttribute("data-user"));
         });
       }
 
     } catch (e) {
       console.error(e);
-      div.innerHTML = "<p style='padding:20px; color:red;'>Erro de ligação ao servidor.</p>";
     }
   }
 
   async function aprovarPremium(idPedido, userId) {
     if (!confirm("Confirmas que recebeste o pagamento e queres ativar o Premium por 30 dias?")) return;
-
     var sessao = await MZ.sessaoValida();
-    if (!sessao) return;
-
+    
     try {
       await fetch(MZ.url + "/rest/v1/pedidos_premium?id=eq." + idPedido, {
         method: "PATCH",
@@ -252,7 +325,6 @@
       await carregarPendentes(); 
 
     } catch (e) {
-      console.error(e);
       alert("Erro ao aprovar o pedido.");
     }
   }
