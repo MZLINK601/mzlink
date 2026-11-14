@@ -163,31 +163,6 @@
     </header>
 
     <main>
-        <section class="cartao-vip-seccao-home" id="cartaoHome">
-            <div class="card-vip">
-                <div class="costura-vip"></div>
-                <div class="card-topo"><span class="card-logo">MZLINK</span></div>
-                <div class="card-meio">
-                    <p class="texto-bem-vindo">bem-vindo</p>
-                    <p class="texto-modo">MODO PREMIUM</p>
-                </div>
-                <div class="card-base">
-                    <div class="chip-ouro">
-                        <div class="chip-linha-h"></div>
-                        <div class="chip-linha-v"></div>
-                        <div class="chip-centro"></div>
-                    </div>
-                    <div class="card-info-direita">
-                        <div class="data-expiracao">
-                            <span>VÁLIDO ATÉ</span>
-                            <strong id="dataExpiracaoHome">--/--/----</strong>
-                        </div>
-                        <span class="card-status">MEMBRO 🇲🇿</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section class="hero-moz">
             <div class="badge-moz">🇲🇿 100% Moçambicano</div>
             <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
@@ -232,7 +207,7 @@
         <section id="seccaoTopVendedores" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
             <h2 style="color: #0f1115; font-size: 1.4rem; font-weight: 900; margin-bottom: 20px;">🏆 Top Vendedores do Mês</h2>
             <div id="listaTopVendedores" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;">
-                <!-- Os cartões vão aparecer aqui -->
+                <!-- Os cartões vão aparecer aqui via JS -->
             </div>
         </section>
 
@@ -321,7 +296,7 @@
 
         <div style="text-align: center; margin: 30px auto 20px; max-width: 400px; padding: 0 20px;">
             <p style="color: #c9ccd3; margin-bottom: 15px; font-weight: 600; font-size: 0.9rem;">Gostaste do MZLINK? Partilha com a tua malta!</p>
-            <a href="https://wa.me/?text=..." target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #25D366 !important; color: white !important; padding: 15px 30px; border-radius: 12px; font-weight: 800; text-decoration: none !important; font-size: 1rem; box-shadow: 0 4px 15px rgba(37,211,102,0.4); width: 100%;">
+            <a href="https://wa.me/?text=E%20a%C3%AD%20mano%2C%20tudo%20fixe%3F%20%F0%9F%91%8B%20Deixa-me%20apresentar-te%20o%20MZLINK%2C%20a%20nova%20plataforma%20100%25%20mo%C3%A7ambicana%20para%20comprar%20e%20vender.%0A%0AAqui%20encontras%20produtos%2C%20servi%C3%A7os%20e%20profissionais%20de%20confian%C3%A7a.%20E%20o%20melhor%3A%20falas%20DIRETO%20no%20WhatsApp%20com%20o%20vendedor%2C%20sem%20intermedi%C3%A1rios%20e%20sem%20taxas!%20%F0%9F%9A%80%0A%0ASe%20vendes%20algo%2C%20cria%20a%20tua%20conta%20gr%C3%A1tis%20e%20faz%20boladas!%20Se%20procuras%20algo%2C%20d%C3%A1%20uma%20olhada.%0A%0A%F0%9F%91%89%20https%3A%2F%2Fmzlink.co.mz%0A%0A%F0%9F%87%B2%F0%9F%87%BF%20Apoia%20o%20que%20%C3%A9%20nosso!" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #25D366 !important; color: white !important; padding: 15px 30px; border-radius: 12px; font-weight: 800; text-decoration: none !important; font-size: 1rem; box-shadow: 0 4px 15px rgba(37,211,102,0.4); width: 100%;">
                 📲 Partilhar o MZLINK no WhatsApp
             </a>
         </div>
@@ -331,7 +306,11 @@
         </div>
     </footer>
 
-        <!-- SCRIPT DE INSTALAÇÃO PWA -->
+    <!-- ========================================== -->
+    <!-- LÓGICA DE INSTALAÇÃO DA APP (PWA) -->
+    <!-- ========================================== -->
+
+    <!-- 1. Registo do Service Worker -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -342,27 +321,32 @@
       }
     </script>
 
-    <!-- BOTÃO DE INSTALAR NO TOPO -->
-    <div id="wrapperInstalar" style="display: flex; position: fixed; top: 15px; right: 10px; z-index: 9999; align-items: center; gap: 5px;">
+        <!-- 2. O Botão de Instalação (No TOPO, posicionado para não tapar o Olá) -->
+    <div id="wrapperInstalar" style="display: flex; position: fixed; top: 65px; right: 10px; z-index: 9999; align-items: center; gap: 5px;">
         <button id="btnInstalarApp" style="background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.75rem; padding: 8px 12px; border-radius: 20px; border: 1px solid #fff; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.5); cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
             <span style="font-size: 0.9rem;">📲</span> Instalar
         </button>
         <button id="fecharBtnInstalar" style="background: #0f1115; color: #d4af37; border: 1px solid #d4af37; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center;">✕</button>
     </div>
 
-    <!-- MODAL DO QR CODE -->
+    <!-- 3. MODAL PERSONALIZADO (QR CODE) -->
     <div id="modalInstalar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
         <div style="background: #1a1d24; border: 2px solid #d4af37; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
+            
             <button id="fecharModal" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #c9ccd3; font-size: 1.5rem; cursor: pointer;">&times;</button>
+
             <h2 style="color: #d4af37; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Instalar MZLINK</h2>
             <p style="color: #c9ccd3; font-size: 0.9rem; margin-bottom: 20px;">Leve o MZLINK sempre consigo. Instale a nossa App no seu telemóvel!</p>
+
             <div style="background: #fff; padding: 15px; border-radius: 12px; display: inline-block; margin-bottom: 20px;">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://mzlink.co.mz" alt="QR Code MZLINK" style="display: block; width: 150px; height: 150px;">
             </div>
             <p style="color: #8b8f99; font-size: 0.75rem; margin-top: -10px; margin-bottom: 20px;">Aponte a câmara do seu telemóvel</p>
+
             <button id="btnInstalarNativo" style="display: flex; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 12px; border: none; cursor: pointer; width: 100%; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
                 <span style="font-size: 1.2rem;">📲</span> Instalar Agora
             </button>
+
             <p style="color: #c9ccd3; font-size: 0.8rem; text-align: left; background: #0f1115; padding: 10px; border-radius: 8px; line-height: 1.5;">
                 <strong>Não funciona?</strong><br>
                 1. Toque nos <strong>3 pontinhos</strong> do Chrome.<br>
@@ -371,7 +355,7 @@
         </div>
     </div>
 
-    <!-- LÓGICA DO BOTÃO DE INSTALAÇÃO -->
+    <!-- 4. Script de Controlo do Botão de Instalação -->
     <script>
         let deferredPrompt;
         const wrapperInstalar = document.getElementById('wrapperInstalar');
@@ -386,10 +370,22 @@
             deferredPrompt = e;
         });
 
-        btnInstalar.addEventListener('click', () => { modalInstalar.style.display = 'flex'; });
-        fecharModal.addEventListener('click', () => { modalInstalar.style.display = 'none'; });
-        fecharBtnInstalar.addEventListener('click', () => { wrapperInstalar.style.display = 'none'; });
+        // Abre o modal
+        btnInstalar.addEventListener('click', () => {
+            modalInstalar.style.display = 'flex';
+        });
 
+        // Fecha o modal
+        fecharModal.addEventListener('click', () => {
+            modalInstalar.style.display = 'none';
+        });
+
+        // Fecha o botão de instalar do topo
+        fecharBtnInstalar.addEventListener('click', () => {
+            wrapperInstalar.style.display = 'none';
+        });
+
+        // Ação de instalar dentro do modal
         btnInstalarNativo.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
