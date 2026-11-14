@@ -7,17 +7,15 @@
     
     <meta name="theme-color" content="#0f1115">
     <link rel="manifest" href="manifest.json">
-    
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mzlink.co.mz/">
     <meta property="og:title" content="MZLINK - Encontre, Compare, Resolva">
     <meta property="og:description" content="🇲🇿 A plataforma 100% Moçambicana. Encontre produtos, serviços e profissionais perto de ti. Fala direto no WhatsApp!">
     <meta property="og:image" content="https://mzlink.co.mz/ponte.jpg">
-    <meta name="description" content="MZLINK - O marketplace número 1 de Moçambique. Encontre, Compare e Resolva.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="cartoes.css">
@@ -27,20 +25,19 @@
     <link rel="stylesheet" href="fotos-cards.css">
     <link rel="stylesheet" href="galeria.css">
     <link rel="stylesheet" href="logo.css">
-
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
 
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
-        .hero-moz {
-            background: linear-gradient(rgba(15, 17, 21, 0.7), rgba(15, 17, 21, 0.9)), url('ponte.jpg') center/cover no-repeat !important;
-            padding: 50px 20px 40px !important; text-align: center; 
-            width: 92% !important; max-width: 1100px !important; margin: 20px auto !important; 
-            border-radius: 12px !important; border: 2px solid #d4af37 !important; 
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important; position: relative; overflow: hidden;
-        }
-        .hero-moz::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.3); pointer-events: none; }
+        
+        /* Estilos do Menu Lateral */
+        #menuLateral { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #fff; z-index: 10001; transition: left 0.3s ease; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
+        #overlayMenu { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; backdrop-filter: blur(2px); }
+        .menu-link { text-decoration: none; color: #0f1115; font-weight: 700; font-size: 1.05rem; padding: 12px 0; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; }
+        .menu-link:hover { color: #1E40AF; }
+        .menu-titulo { font-size: 0.75rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 5px; }
+
+        .hero-moz { background: linear-gradient(rgba(15, 17, 21, 0.7), rgba(15, 17, 21, 0.9)), url('ponte.jpg') center/cover no-repeat !important; padding: 50px 20px 40px !important; text-align: center; width: 92% !important; max-width: 1100px !important; margin: 20px auto !important; border-radius: 12px !important; border: 2px solid #d4af37 !important; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important; position: relative; overflow: hidden; }
         .badge-moz { display: inline-flex; align-items: center; gap: 6px; background: #E31937; color: #fff; font-weight: 800; font-size: 0.75rem; padding: 8px 16px; border-radius: 999px; margin-bottom: 20px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(227, 25, 55, 0.4); position: relative; z-index: 2; }
         .hero-moz h1 { font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1.1; margin: 0 0 12px 0; letter-spacing: -1px; text-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; z-index: 2; }
         .texto-ouro { background: linear-gradient(135deg, #f5d76e, #d4af37); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0px 2px 15px rgba(212, 175, 55, 0.6); }
@@ -48,95 +45,89 @@
         .search-box { display: flex !important; max-width: 500px !important; margin: 0 auto !important; border-radius: 8px !important; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255,255,255,0.2) !important; background: #fff !important; overflow: hidden !important; position: relative; z-index: 2; }
         .search-box input { flex: 1 !important; border: none !important; padding: 16px 20px !important; font-size: 0.95rem !important; outline: none !important; background: transparent !important; color: #0f1115 !important; }
         .search-box button { background: #1E40AF !important; color: white !important; border: none !important; padding: 0 20px !important; font-weight: 800 !important; font-size: 0.9rem !important; cursor: pointer !important; }
-        .selos-confianca { display: flex; justify-content: center; gap: 10px; margin-top: 25px; flex-wrap: wrap; position: relative; z-index: 2; }
-        .selo-item { display: flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: none; }
-        .selo-icone { font-size: 1.1rem; }
-        .selo-texto { font-size: 0.65rem; font-weight: 800; color: #1e293b; line-height: 1.1; text-align: left; text-transform: uppercase; }
+        
         .filtros-container { display: flex; gap: 10px; margin: 20px auto; max-width: 90%; flex-wrap: wrap; }
         .filtro-select { flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 0.85rem; font-weight: 700; color: #0f1115; background-color: #ffffff; font-family: inherit; outline: none; transition: all 0.2s; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E40AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 14px top 50%; background-size: 10px auto; }
-        .filtro-select:hover, .filtro-select:focus { border-color: #1E40AF; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15); }
-        .categorias { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 0 20px; }
-        .categorias button { background: #ffffff; border: 2px solid #e2e8f0; color: #0f1115; font-weight: 700; padding: 10px 20px; border-radius: 999px; transition: all 0.2s; }
-        .categorias button:hover { border-color: #1E40AF; color: #1E40AF; background: #eff6ff; }
-        #btnTopo { position: fixed; bottom: 20px; right: 20px; z-index: 99; background-color: #0f1115; color: #d4af37; border: 2px solid #d4af37; border-radius: 50%; width: 50px; height: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; align-items: center; justify-content: center; }
-        #btnTopo:hover { background-color: #d4af37; color: #0f1115; transform: translateY(-5px); }
-        .rodape-mzlink { background: linear-gradient(180deg, #0f1115, #1a1d24) !important; color: #c9ccd3 !important; margin-top: 60px !important; padding: 32px 20px 20px !important; border-top: 3px solid #d4af37 !important; text-align: center; }
-        .rodape-conteudo { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 24px; text-align: left; }
-        .rodape-marca strong { display: block; font-size: 1.3rem; font-weight: 900; background: linear-gradient(135deg, #d4af37, #f5d76e); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -0.5px; margin-bottom: 6px; }
-        .rodape-marca p { font-size: 0.82rem; color: #8b8f99; margin: 0; }
-        .rodape-links { display: flex; flex-direction: column; gap: 10px; }
-        .rodape-links a { color: #c9ccd3 !important; text-decoration: none !important; font-size: 0.88rem; font-weight: 600; transition: color 0.2s; }
-        .rodape-links a:hover { color: #d4af37 !important; }
-        .rodape-info p { margin: 0 0 8px; font-size: 0.85rem; }
-        .rodape-info strong { color: #d4af37; font-weight: 800; }
-        .rodape-copy { max-width: 900px; margin: 0 auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 0.75rem; color: #8b8f99; letter-spacing: 0.3px; }
+        
         @media (max-width: 600px) {
             .hero-moz h1 { font-size: 1.9rem; }
             .filtros-container { flex-direction: column; }
-            .hero-moz { width: 88% !important; padding: 30px 15px 25px !important; border-radius: 16px !important; margin: 15px auto !important; }
-            .search-box { flex-direction: row !important; border-radius: 10px !important; width: 100% !important; overflow: hidden !important; }
-            .search-box input { padding: 12px 10px !important; font-size: 0.85rem !important; flex: 1 !important; min-width: 0 !important; }
-            .search-box button { padding: 0 15px !important; font-size: 0.85rem !important; flex-shrink: 0 !important; }
-            .selos-confianca { gap: 5px !important; margin-top: 15px !important; }
-            .selo-item { padding: 6px 10px !important; }
-            .selo-texto { font-size: 0.6rem !important; }
-            .rodape-conteudo { grid-template-columns: 1fr; text-align: center; }
-            .rodape-links { align-items: center; }
+            .hero-moz { width: 88% !important; padding: 30px 15px 25px !important; margin: 15px auto !important; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-topo">
-            <a href="index.html" class="logo-header">
-                <img src="logo-mzlink.png" alt="MZLINK" class="logo-img">
-            </a>
-            <span class="saudacao">
+
+    <!-- HEADER LIMPO (Só Logo, Nome e 3 Barras) -->
+    <header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border-bottom: 2px solid #d4af37; position: sticky; top: 0; z-index: 999;">
+        <a href="index.html" class="logo-header">
+            <img src="logo-mzlink.png" alt="MZLINK" style="height: 40px;">
+        </a>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="saudacao" style="font-size: 0.9rem; font-weight: 600; color: #1e293b;">
                 Olá, <span id="nomeUserTopo">...</span>
-                <span data-badge-premium></span>
             </span>
+            <span data-badge-premium></span>
+            <button id="btnAbrirMenu" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #0f1115; padding: 0;">☰</button>
         </div>
-        <nav>
-            <button onclick="location.href='login.html'">Entrar</button>
-        </nav>
     </header>
 
+    <!-- OVERLAY E MENU LATERAL -->
+    <div id="overlayMenu"></div>
+    <div id="menuLateral">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 10px;">
+            <strong style="font-size: 1.4rem; color: #d4af37;">MZLINK</strong>
+            <button id="btnFecharMenu" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #dc2626;">✕</button>
+        </div>
+
+        <a href="publicar.html" class="menu-link" style="color: #1E40AF;">📢 Publicar Anúncio</a>
+        <a href="perfil.html" class="menu-link" style="color: #1E40AF;">👤 O Meu Perfil</a>
+        
+        <a href="#" class="menu-link" id="linkMenuSuporte" style="color: #1E40AF;">💬 Suporte MZLINK</a>
+
+        <div class="menu-titulo">Área Premium</div>
+        <a href="premium.html" class="menu-link" id="linkMenuPremium" style="color: #d4af37;">⭐ Ativar Premium</a>
+
+        <div class="menu-titulo">Explorar Categorias</div>
+        <a href="#" onclick="filtrarCategoria('produtos'); return false;" class="menu-link">📦 Produtos</a>
+        <a href="#" onclick="filtrarCategoria('servicos'); return false;" class="menu-link">🛠️ Serviços</a>
+        <a href="#" onclick="filtrarCategoria('vendedores'); return false;" class="menu-link">🏪 Vendedores</a>
+        <a href="#" onclick="filtrarCategoria('profissionais'); return false;" class="menu-link">👷 Profissionais</a>
+        <a href="#" onclick="filtrarCategoria('instituicoes'); return false;" class="menu-link">🏛️ Instituições</a>
+        <a href="#" onclick="filtrarCategoria('empresas'); return false;" class="menu-link">🏢 Empresas</a>
+
+        <a href="login.html" class="menu-link" style="margin-top: 20px; border-top: 1px solid #eee; color: #0f1115;">🔑 Entrar / Registar</a>
+        <a href="#" id="btnSairMenu" class="menu-link" style="color: #dc2626; border: none;">🚪 Terminar Sessão</a>
+    </div>
+
+    <!-- MODAL DE SUPORTE -->
+    <div id="modalSuporte" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10005; justify-content: center; align-items: flex-end;">
+        <div style="background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; padding: 25px; box-sizing: border-box; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #0f1115; font-size: 1.2rem;">💬 Suporte MZLINK</h3>
+                <button id="fecharSuporte" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888;">✕</button>
+            </div>
+            <p style="font-size: 0.85rem; color: #667085; margin-top: 0; margin-bottom: 15px;">Dúvidas ou problemas? Escreve a tua mensagem e a equipa responde.</p>
+            <textarea id="txtMensagemSuporte" placeholder="Escreve a tua mensagem aqui..." style="width: 100%; height: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: none; margin-bottom: 15px; box-sizing: border-box;"></textarea>
+            <button id="btnEnviarSuporte" style="width: 100%; background: #1E40AF; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">Enviar Mensagem</button>
+        </div>
+    </div>
+
+        <!-- CONTEÚDO PRINCIPAL DO SITE -->
     <main>
         <section class="hero-moz">
             <div class="badge-moz">🇲🇿 100% Moçambicano</div>
             <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
-            <p>Produtos, serviços e profissionais de confiança perto de ti. Fala direto no WhatsApp, sem intermediários.</p>
+            <p>Produtos, serviços e profissionais de confiança perto de ti. Fala direto no WhatsApp.</p>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="O que você procura?">
                 <button id="searchButton">Pesquisar</button>
             </div>
-            <div class="selos-confianca">
-                <div class="selo-item"><span class="selo-icone">🤝</span><span class="selo-texto">Vendedores<br>Locais</span></div>
-                <div class="selo-item"><span class="selo-icone">⚡</span><span class="selo-texto">Contacto<br>Imediato</span></div>
-                <div class="selo-item"><span class="selo-icone">🆓</span><span class="selo-texto">100%<br>Gratuito</span></div>
-            </div>
         </section>
 
         <section style="padding: 10px 20px 20px; text-align: center; max-width: 900px; margin: 0 auto;">
-            <div id="provaSocial" style="background: #0f1115; color: #d4af37; padding: 10px 20px; border-radius: 999px; display: inline-block; font-weight: 800; font-size: 0.85rem; margin-bottom: 25px; border: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                🔥 A carregar a nossa comunidade...
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 10px;">
-                <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #d4af37;">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">📝</div>
-                    <h3 style="margin: 0 0 10px 0; color: #0f1115; font-size: 1rem;">1. Cria a Conta</h3>
-                    <p style="margin: 0; color: #667085; font-size: 0.85rem;">Regista-te gratuitamente em menos de 1 minuto.</p>
-                </div>
-                <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #1E40AF;">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">📸</div>
-                    <h3 style="margin: 0 0 10px 0; color: #0f1115; font-size: 1rem;">2. Publica Grátis</h3>
-                    <p style="margin: 0; color: #667085; font-size: 0.85rem;">Tira uma foto e descreve o teu produto ou serviço.</p>
-                </div>
-                <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #25D366;">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">💬</div>
-                    <h3 style="margin: 0 0 10px 0; color: #0f1115; font-size: 1rem;">3. Vende no WhatsApp</h3>
-                    <p style="margin: 0; color: #667085; font-size: 0.85rem;">Fala direto com o cliente e combina a entrega.</p>
-                </div>
+            <div id="provaSocial" style="background: #0f1115; color: #d4af37; padding: 10px 20px; border-radius: 999px; display: inline-block; font-weight: 800; font-size: 0.85rem; margin-bottom: 25px; border: 1px solid #333;">
+                🔥 A carregar...
             </div>
         </section>
 
@@ -168,12 +159,6 @@
                 <option value="Niassa">Niassa</option>
                 <option value="Cabo Delgado">Cabo Delgado</option>
             </select>
-            <select id="filtroEstado" class="filtro-select">
-                <option value="">Qualquer Estado</option>
-                <option value="Novo">Novo</option>
-                <option value="Usado">Usado</option>
-                <option value="Serviço">Serviço</option>
-            </select>
             <select id="filtroOrdenacao" class="filtro-select">
                 <option value="recentes">Mais Recentes</option>
                 <option value="menor_preco">Preço: Menor</option>
@@ -182,156 +167,105 @@
         </div>
 
         <div id="results"></div>
-
-        <h2>Categorias</h2>
-        <div class="categorias">
-            <button data-categoria="produtos">Produtos</button>
-            <button data-categoria="servicos">Serviços</button>
-            <button data-categoria="vendedores">Vendedores</button>
-            <button data-categoria="profissionais">Profissionais</button>
-            <button data-categoria="instituicoes">Instituições</button>
-            <button data-categoria="empresas">Empresas</button>
-        </div>
-
-        <div class="cards">
-            <div class="card"><h3>Encontre</h3><p>Milhares de produtos perto de si</p></div>
-            <div class="card"><h3>Compare</h3><p>Compare preços e avaliações</p></div>
-            <div class="card"><h3>Resolva</h3><p>Resolva a sua necessidade com confiança</p></div>
-        </div>
     </main>
 
-    <button id="btnTopo" title="Voltar ao topo">⬆️</button>
+    <button id="btnTopo" title="Voltar ao topo" style="position: fixed; bottom: 20px; right: 20px; z-index: 99; background-color: #0f1115; color: #d4af37; border: 2px solid #d4af37; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);">⬆️</button>
 
-    <script src="script.js"></script> 
-    <script src="sessao.js" defer></script>
-    <script src="badge-premium.js" defer></script>
-    <script src="avaliações.js" defer></script>
-    <script src="modo-premium.js" defer></script>
-    <script src="galeria.js" defer></script>
-    <script src="header.js?v=3" defer></script>
-    <script src="verificar-premium.js" defer></script>
-
-    <footer class="rodape-mzlink">
-        <div class="rodape-conteudo">
-            <div class="rodape-marca"><strong>MZLINK</strong><p>Encontre, Compare, Resolva. 🇲🇿</p></div>
-            <div class="rodape-links"><a href="sobre.html">Sobre Nós</a><a href="contacto.html">Contacto</a><a href="termos.html">Termos e Condições</a></div>
-            <div class="rodape-info"><p>💬 Suporte: <strong>85 233 7913</strong></p><p>📧 mzlink601@gmail.com</p></div>
-        </div>
-        <div style="text-align: center; margin: 30px auto 20px; max-width: 400px; padding: 0 20px;">
-            <p style="color: #c9ccd3; margin-bottom: 15px; font-weight: 600; font-size: 0.9rem;">Gostaste do MZLINK? Partilha com a tua malta!</p>
-            <a href="https://wa.me/?text=E%20a%C3%AD%20mano%2C%20tudo%20fixe%3F%20%F0%9F%91%8B%20Deixa-me%20apresentar-te%20o%20MZLINK%2C%20a%20nova%20plataforma%20100%25%20mo%C3%A7ambicana%20para%20comprar%20e%20vender.%0A%0AAqui%20encontras%20produtos%2C%20servi%C3%A7os%20e%20profissionais%20de%20confian%C3%A7a.%20E%20o%20melhor%3A%20falas%20DIRETO%20no%20WhatsApp%20com%20o%20vendedor%2C%20sem%20intermedi%C3%A1rios%20e%20sem%20taxas!%20%F0%9F%9A%80%0A%0ASe%20vendes%20algo%2C%20cria%20a%20tua%20conta%20gr%C3%A1tis%20e%20faz%20boladas!%20Se%20procuras%20algo%2C%20d%C3%A1%20uma%20olhada.%0A%0A%F0%9F%91%89%20https%3A%2F%2Fmzlink.co.mz%0A%0A%F0%9F%87%B2%F0%9F%87%BF%20Apoia%20o%20que%20%C3%A9%20nosso!" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #25D366 !important; color: white !important; padding: 15px 30px; border-radius: 12px; font-weight: 800; text-decoration: none !important; font-size: 1rem; box-shadow: 0 4px 15px rgba(37,211,102,0.4); width: 100%;">
-                📲 Partilhar o MZLINK no WhatsApp
-            </a>
-        </div>
-        <div class="rodape-copy">© 2026 MZLINK · Feito em Moçambique 🇲🇿</div>
+    <footer class="rodape-mzlink" style="background: #0f1115; color: #c9ccd3; padding: 30px 20px; text-align: center; margin-top: 50px; border-top: 3px solid #d4af37;">
+        <strong style="color: #d4af37; font-size: 1.2rem;">MZLINK</strong>
+        <p style="font-size: 0.8rem; margin-top: 5px;">© 2026 MZLINK · Feito em Moçambique 🇲🇿</p>
     </footer>
 
-    <!-- SCRIPT DE INSTALAÇÃO PWA -->
+    <!-- SCRIPTS -->
+    <script src="sessao.js" charset="UTF-8"></script>
+    <script src="header.js"></script>
+    <script src="modo-premium.js"></script>
+    <script src="script.js"></script> 
+    <script src="avaliações.js" defer></script>
+    <script src="galeria.js" defer></script>
+
+    <!-- SCRIPT DE CONTROLO DO MENU E SUPORTE -->
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('SW OK!'))
-            .catch(err => console.log('Erro SW:', err));
-        });
-      }
-    </script>
+        // Abrir e Fechar Menu
+        const btnAbrirMenu = document.getElementById('btnAbrirMenu');
+        const btnFecharMenu = document.getElementById('btnFecharMenu');
+        const menuLateral = document.getElementById('menuLateral');
+        const overlayMenu = document.getElementById('overlayMenu');
 
-    <!-- BOTÃO DE INSTALAR (Topo) -->
-    <div id="wrapperInstalar" style="display: flex; position: fixed; top: 65px; right: 10px; z-index: 9999; align-items: center; gap: 5px;">
-        <button id="btnInstalarApp" style="background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.75rem; padding: 8px 12px; border-radius: 20px; border: 1px solid #fff; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.5); cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
-            <span style="font-size: 0.9rem;">📲</span> Instalar
-        </button>
-        <button id="fecharBtnInstalar" style="background: #0f1115; color: #d4af37; border: 1px solid #d4af37; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center;">✕</button>
-    </div>
+        function abrirMenu() { menuLateral.style.left = '0px'; overlayMenu.style.display = 'block'; }
+        function fecharMenu() { menuLateral.style.left = '-300px'; overlayMenu.style.display = 'none'; }
 
-    <!-- MODAL DE INSTALAÇÃO -->
-    <div id="modalInstalar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
-        <div style="background: #1a1d24; border: 2px solid #d4af37; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
-            <button id="fecharModal" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #c9ccd3; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            <h2 style="color: #d4af37; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Instalar MZLINK</h2>
-            <p style="color: #c9ccd3; font-size: 0.9rem; margin-bottom: 20px;">Leve o MZLINK sempre consigo. Instale a nossa App no seu telemóvel!</p>
-            <div style="background: #fff; padding: 15px; border-radius: 12px; display: inline-block; margin-bottom: 20px;">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://mzlink.co.mz" alt="QR Code MZLINK" style="display: block; width: 150px; height: 150px;">
-            </div>
-            <p style="color: #8b8f99; font-size: 0.75rem; margin-top: -10px; margin-bottom: 20px;">Aponte a câmara do seu telemóvel</p>
-            <button id="btnInstalarNativo" style="display: flex; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 12px; border: none; cursor: pointer; width: 100%; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
-                <span style="font-size: 1.2rem;">📲</span> Instalar Agora
-            </button>
-            <p style="color: #c9ccd3; font-size: 0.8rem; text-align: left; background: #0f1115; padding: 10px; border-radius: 8px; line-height: 1.5;">
-                <strong>Não funciona?</strong><br>1. Toque nos <strong>3 pontinhos</strong> do Chrome.<br>2. Escolha <strong>"Instalar aplicação"</strong>.
-            </p>
-        </div>
-    </div>
+        btnAbrirMenu.addEventListener('click', abrirMenu);
+        btnFecharMenu.addEventListener('click', fecharMenu);
+        overlayMenu.addEventListener('click', fecharMenu);
 
-    <!-- BOTÃO E MODAL DE SUPORTE -->
-    <button id="btnSuporte" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; background: #1E40AF; color: white; border: none; border-radius: 50%; width: 55px; height: 55px; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4); cursor: pointer; display: flex; justify-content: center; align-items: center;">💬</button>
-
-    <div id="modalSuporte" style="display: none; position: fixed; bottom: 90px; left: 20px; width: 300px; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 9999; padding: 20px; border: 1px solid #e2e8f0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 style="margin: 0; color: #0f1115; font-size: 1.1rem;">💬 Suporte MZLINK</h3>
-            <button id="fecharSuporte" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #888;">✕</button>
-        </div>
-        <p style="font-size: 0.8rem; color: #667085; margin-top: 0; margin-bottom: 15px;">Dúvidas sobre o Premium ou problemas no site? Fala connosco!</p>
-        <textarea id="txtMensagemSuporte" placeholder="Escreve a tua mensagem aqui..." style="width: 100%; height: 80px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem; resize: none; margin-bottom: 10px; box-sizing: border-box;"></textarea>
-        <button id="btnEnviarSuporte" style="width: 100%; background: #1E40AF; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">Enviar Mensagem</button>
-    </div>
-
-    <!-- LÓGICA DOS BOTÕES -->
-    <script>
-        // Lógica do Botão de Instalar
-        let deferredPrompt;
-        const wrapperInstalar = document.getElementById('wrapperInstalar');
-        const btnInstalar = document.getElementById('btnInstalarApp');
-        const fecharBtnInstalar = document.getElementById('fecharBtnInstalar');
-        const modalInstalar = document.getElementById('modalInstalar');
-        const btnInstalarNativo = document.getElementById('btnInstalarNativo');
-        const fecharModal = document.getElementById('fecharModal');
-
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-        if(btnInstalar) btnInstalar.addEventListener('click', () => { modalInstalar.style.display = 'flex'; });
-        if(fecharModal) fecharModal.addEventListener('click', () => { modalInstalar.style.display = 'none'; });
-        if(fecharBtnInstalar) fecharBtnInstalar.addEventListener('click', () => { wrapperInstalar.style.display = 'none'; });
-        
-        if(btnInstalarNativo) btnInstalarNativo.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') { modalInstalar.style.display = 'none'; wrapperInstalar.style.display = 'none'; }
-                deferredPrompt = null;
-            } else {
-                alert("Para instalar a MZLINK:\n\n1. Toque nos 3 pontinhos do Chrome.\n2. Escolha 'Instalar aplicação' ou 'Adicionar ao ecrã inicial'.");
+        // Filtros do Menu
+        function filtrarCategoria(categoria) {
+            const dropdown = document.getElementById("filtroCategoria");
+            if (dropdown) {
+                dropdown.value = categoria;
+                dropdown.dispatchEvent(new Event('change')); 
             }
-        });
-        
-        if(btnInstalar) {
-            btnInstalar.addEventListener('touchstart', () => { btnInstalar.style.transform = 'scale(0.95)'; });
-            btnInstalar.addEventListener('touchend', () => { btnInstalar.style.transform = 'scale(1)'; });
+            fecharMenu();
+            document.getElementById("results").scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Lógica do Suporte
-        document.getElementById('btnSuporte').onclick = () => { document.getElementById('modalSuporte').style.display = 'block'; };
-        document.getElementById('fecharSuporte').onclick = () => { document.getElementById('modalSuporte').style.display = 'none'; };
+        // Modal de Suporte
+        document.getElementById('linkMenuSuporte').onclick = (e) => {
+            e.preventDefault();
+            fecharMenu();
+            document.getElementById('modalSuporte').style.display = 'flex';
+        };
+        document.getElementById('fecharSuporte').onclick = () => {
+            document.getElementById('modalSuporte').style.display = 'none';
+        };
+
+        // Enviar Suporte
         document.getElementById('btnEnviarSuporte').onclick = async () => {
             const btn = document.getElementById('btnEnviarSuporte');
             const msg = document.getElementById('txtMensagemSuporte').value.trim();
             if (!msg) return alert("Escreve uma mensagem primeiro!");
             btn.innerText = "A enviar..."; btn.disabled = true;
+
             try {
                 const sessao = await MZ.sessaoValida();
-                if (!sessao) { alert("Precisas de fazer login para enviar uma mensagem de suporte!"); window.location.href = "login.html"; return; }
+                if (!sessao) { alert("Precisas de fazer login!"); window.location.href = "login.html"; return; }
+                
                 const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
                 const user = await userRes.json();
+
                 const r = await fetch(MZ.url + "/rest/v1/suporte", {
                     method: "POST",
                     headers: { "apikey": MZ.key, "Authorization": "Bearer " + sessao.access_token, "Content-Type": "application/json" },
                     body: JSON.stringify({ user_id: user.id, email: user.email, mensagem: msg })
                 });
-                if (r.ok) { alert("✅ Mensagem enviada! Vamos responder em breve."); document.getElementById('txtMensagemSuporte').value = ""; document.getElementById('modalSuporte').style.display = 'none'; }
-                else { alert("❌ Erro ao enviar. Tenta novamente."); }
+                
+                if (r.ok) { 
+                    alert("✅ Mensagem enviada!"); 
+                    document.getElementById('txtMensagemSuporte').value = ""; 
+                    document.getElementById('modalSuporte').style.display = 'none'; 
+                } else { alert("❌ Erro ao enviar."); }
             } catch (e) { alert("❌ Erro de ligação."); }
             finally { btn.innerText = "Enviar Mensagem"; btn.disabled = false; }
         };
+
+        // Verificar se é Premium para mudar o texto do Menu
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const sessao = await MZ.sessaoValida();
+                if (!sessao) return;
+                
+                const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
+                const user = await userRes.json();
+                
+                const r = await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + user.id + "&select=plano", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
+                const dados = await r.json();
+
+                if (dados.length > 0 && dados[0].plano === 'premium') {
+                    document.getElementById('linkMenuPremium').innerText = "🔄 Renovar Conta Premium";
+                }
+            } catch(e) {}
+        });
     </script>
 </body>
 </html>
