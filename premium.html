@@ -139,12 +139,12 @@
         
         <div style="background: #f8f9fb; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 12px; margin: 8px 0 12px 0;">
             <p style="margin: 0; font-size: 0.75rem; color: #475569; line-height: 1.5;">
-                💡 <strong>Dica:</strong> Podes copiar a mensagem inteira. O sistema vai extrair o código por ti!<br><br>
-                <em>Ex: Confirmado <strong>DKE5MBZEFCL</strong>. Transferiste 49.00MT...</em>
+                💡 <strong>Dica:</strong> Podes copiar a mensagem inteira ou só o código. O sistema trata do resto!<br><br>
+                <em>Ex: Confirmado <strong>DKE5MBZEFC</strong>. Transferiste 49.00MT...</em>
             </p>
         </div>
 
-        <input type="text" id="inputComprovativo" class="input-comprovativo" placeholder="Cola o SMS completo aqui...">
+        <input type="text" id="inputComprovativo" class="input-comprovativo" placeholder="Cola o SMS completo ou só o código aqui...">
         <p id="msgCodigoDetetado" style="text-align: center; font-weight: bold; font-size: 0.85rem; margin-top: 5px; color: #16a34a;"></p>
         <p id="msgPedido" style="text-align: center; font-weight: bold; font-size: 0.85rem; margin-top: 5px; color: red;"></p>
       </div>
@@ -195,10 +195,10 @@
 
     // ===== 1. EXTRATOR E VALIDADOR DE SMS =====
     document.getElementById('inputComprovativo').addEventListener('input', function() {
-        const texto = this.value;
+        const texto = this.value.trim();
         const msg = document.getElementById('msgCodigoDetetado');
         
-        const regexMpesa = /(?:Confirmado|ID|TxID)\s+([A-Z0-9]{10})/i;
+        const regexMpesa = /(?:Confirmado|ID|TxID|Ref)\s*([A-Z0-9]{9,10})/i;
         const matchMpesa = texto.match(regexMpesa);
         const regexEmola = /\b\d{10}\b/;
         const matchEmola = texto.match(regexEmola);
@@ -206,7 +206,13 @@
         let codigo = null;
         let valido = false;
 
-        if (matchMpesa && matchMpesa[1]) {
+        // Se o utilizador colou APENAS o código (sem espaços ou texto extra)
+        const apenasCodigo = /^[A-Z0-9]{9,10}$/i.test(texto);
+
+        if (apenasCodigo) {
+            codigo = texto.toUpperCase();
+            valido = true; // Confia no código, pois o utilizador colou só ele
+        } else if (matchMpesa && matchMpesa[1]) {
             codigo = matchMpesa[1].toUpperCase();
             if (texto.includes(PAGAMENTO_CONFIG.mpesa.numero) || texto.toUpperCase().includes(PAGAMENTO_CONFIG.mpesa.nome.split(' ')[0])) valido = true;
         } else if (matchEmola && matchEmola[0]) {
@@ -215,9 +221,9 @@
         }
 
         if (codigo) {
-            this.value = codigo; // Limpa o texto e deixa só o código
+            this.value = codigo; 
             if (valido) {
-                msg.innerText = "✅ Pagamento detetado para o MZLINK!";
+                msg.innerText = "✅ Código detetado com sucesso!";
                 msg.style.color = "#16a34a";
             } else {
                 msg.innerText = "⚠️ Pagamento para outro número! Verifica.";
