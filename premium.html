@@ -242,10 +242,25 @@
             const d = new Date(dadosPerfil[0].premium_ate);
             if (dataElement) dataElement.innerText = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
 
-            // Mudar textos para RENOVAÇÃO
-            if (btnPremium) { btnPremium.innerText = "🔄 Renovar Premium"; btnPremium.style.background = "#1E40AF"; btnPremium.style.color = "#fff"; }
+            // Premium Card: Renovar
+            if (btnPremium) { 
+                btnPremium.innerText = "🔄 Renovar Premium"; 
+                btnPremium.style.background = "#1E40AF"; 
+                btnPremium.style.color = "#fff"; 
+            }
             if (btnHeroPremium) { btnHeroPremium.innerText = "🔄 Renovar Premium"; }
-            if (btnBasico) { btnBasico.innerText = "Plano Atual"; }
+            
+            // Básico Card: Dar a opção de mudar (Visual diferente)
+            if (btnBasico) { 
+                btnBasico.innerText = "Mudar para Básico"; 
+                btnBasico.disabled = false; // Permite clicar
+                btnBasico.style.background = "#fff";
+                btnBasico.style.color = "#dc2626";
+                btnBasico.style.border = "2px solid #dc2626";
+                btnBasico.onclick = function() {
+                    alert("Para voltar ao plano Básico, entre em contacto com o suporte no site.");
+                };
+            }
             
             // Mudar o título da secção de pagamento
             const tituloPagamento = document.getElementById("tituloPagamento");
@@ -255,7 +270,15 @@
             
           } else {
             // === UTILIZADOR É BÁSICO (MODO ATIVAÇÃO NORMAL) ===
-            if (btnBasico) btnBasico.innerText = "Plano Atual";
+            if (btnBasico) { 
+                btnBasico.innerText = "Plano Atual"; 
+                btnBasico.disabled = true;
+            }
+            if (btnPremium) { 
+                btnPremium.innerText = "Ativar Premium"; 
+                btnPremium.style.background = "linear-gradient(135deg, #f5d76e, #d4af37)"; 
+                btnPremium.style.color = "#0f1115";
+            }
           }
         }
       } catch (e) { console.error("Erro ao verificar plano:", e); }
