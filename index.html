@@ -36,7 +36,6 @@
     <link rel="apple-touch-icon" href="favicon.png">
 
     <style>
-        /* ===== ESTILOS DO HERO E GERAL ===== */
         body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
         
         .hero-moz {
@@ -93,7 +92,6 @@
         .selo-icone { font-size: 1.1rem; }
         .selo-texto { font-size: 0.65rem; font-weight: 800; color: #1e293b; line-height: 1.1; text-align: left; text-transform: uppercase; }
 
-        /* ===== FILTROS E CATEGORIAS ===== */
         .filtros-container { display: flex; gap: 10px; margin: 20px auto; max-width: 90%; flex-wrap: wrap; }
         .filtro-select {
             flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 8px;
@@ -121,42 +119,6 @@
         }
         #btnTopo:hover { background-color: #d4af37; color: #0f1115; transform: translateY(-5px); }
 
-        /* ===== CARTÃO VIP ===== */
-        .cartao-vip-seccao-home { display: none; justify-content: center; margin: 30px auto 10px; padding: 0 15px; }
-        .card-vip {
-            width: 100%; max-width: 380px; height: 230px;
-            background: radial-gradient(circle at 10% 20%, #2a2a2a 0%, #0a0a0a 90%);
-            border-radius: 16px; position: relative; overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.1);
-            display: flex; flex-direction: column; justify-content: space-between;
-            padding: 25px 30px; box-sizing: border-box; border: 1px solid #333;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-        .card-vip::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.15), transparent);
-            transform: skewX(-25deg); animation: brilhoCartao 4s infinite; pointer-events: none;
-        }
-        @keyframes brilhoCartao { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
-        .card-vip:hover { transform: translateY(-5px) rotateX(5deg) rotateY(-5deg); box-shadow: 0 30px 50px rgba(0,0,0,0.9), 0 0 30px rgba(212, 175, 55, 0.3); }
-        .costura-vip { position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 1.5px dashed rgba(212, 175, 55, 0.4); border-radius: 12px; pointer-events: none; }
-        .card-topo { text-align: center; z-index: 2; }
-        .card-logo { font-family: 'Inter', sans-serif; color: #d4af37; font-weight: 900; font-size: 1.2rem; letter-spacing: 4px; text-shadow: 0 2px 5px rgba(212, 175, 55, 0.4); }
-        .card-meio { text-align: center; z-index: 2; margin-top: -10px; }
-        .texto-bem-vindo { font-family: 'Great Vibes', cursive; font-size: 2.8rem; margin: 0; background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1; text-shadow: 0px 4px 10px rgba(0,0,0,0.5); }
-        .texto-modo { font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 800; color: #ffffff; letter-spacing: 3px; margin: 5px 0 0 0; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .card-base { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; width: 100%; }
-        .chip-ouro { width: 45px; height: 35px; background: linear-gradient(135deg, #fcf6ba, #bf953f, #b38728); border-radius: 6px; position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.5); overflow: hidden; border: 1px solid #aa771c; }
-        .chip-linha-h { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(0,0,0,0.4); transform: translateY(-50%); }
-        .chip-linha-v { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: rgba(0,0,0,0.4); transform: translateX(-50%); }
-        .chip-centro { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 15px; border: 2px solid rgba(0,0,0,0.4); border-radius: 4px; }
-        .card-info-direita { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-        .card-status { font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 800; color: #d4af37; letter-spacing: 1px; text-transform: uppercase; }
-        .data-expiracao { display: flex; flex-direction: column; align-items: flex-end; }
-        .data-expiracao span { font-family: 'Inter', sans-serif; font-size: 0.55rem; font-weight: 700; color: #a0a0a0; letter-spacing: 1px; }
-        .data-expiracao strong { font-family: 'Courier New', Courier, monospace; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: 1px; }
-
-        /* ===== RODAPÉ ===== */
         .rodape-mzlink { background: linear-gradient(180deg, #0f1115, #1a1d24) !important; color: #c9ccd3 !important; margin-top: 60px !important; padding: 32px 20px 20px !important; border-top: 3px solid #d4af37 !important; text-align: center; }
         .rodape-conteudo { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 24px; text-align: left; }
         .rodape-marca strong { display: block; font-size: 1.3rem; font-weight: 900; background: linear-gradient(135deg, #d4af37, #f5d76e); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -0.5px; margin-bottom: 6px; }
@@ -184,7 +146,7 @@
     </style>
 </head>
 
-    <body>
+<body>
     <header>
         <div class="header-topo">
             <a href="index.html" class="logo-header">
@@ -241,6 +203,39 @@
             </div>
         </section>
 
+        <!-- ===== PROVA SOCIAL E COMO FUNCIONA ===== -->
+        <section style="padding: 10px 20px 20px; text-align: center; max-width: 900px; margin: 0 auto;">
+            <div id="provaSocial" style="background: #0f1115; color: #d4af37; padding: 10px 20px; border-radius: 999px; display: inline-block; font-weight: 800; font-size: 0.85rem; margin-bottom: 25px; border: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                🔥 A carregar a nossa comunidade...
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 10px;">
+                <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #d4af37;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📝</div>
+                    <h3 style="margin: 0 0 10px 0; color: #0f1115; font-size: 1rem;">1. Cria a Conta</h3>
+                    <p style="margin: 0; color: #667085; font-size: 0.85rem;">Regista-te gratuitamente em menos de 1 minuto.</p>
+                </div>
+                <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #1E40AF;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📸</div>
+                    <h3 style="margin: 0 0 10px 0; color: #0f1115; font-size: 1rem;">2. Publica Grátis</h3>
+                    <p style="margin: 0; color: #667085; font-size: 0.85rem;">Tira uma foto e descreve o teu produto ou serviço.</p>
+                </div>
+                <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #25D366;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">💬</div>
+                    <h3 style="margin: 0 0 10px 0; color: #0f1115; font-size: 1rem;">3. Vende no WhatsApp</h3>
+                    <p style="margin: 0; color: #667085; font-size: 0.85rem;">Fala direto com o cliente e combina a entrega.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TOP VENDEDORES (RANKING) ===== -->
+        <section id="seccaoTopVendedores" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
+            <h2 style="color: #0f1115; font-size: 1.4rem; font-weight: 900; margin-bottom: 20px;">🏆 Top Vendedores do Mês</h2>
+            <div id="listaTopVendedores" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;">
+                <!-- Os cartões vão aparecer aqui -->
+            </div>
+        </section>
+
         <div class="filtros-container">
             <select id="filtroCategoria" class="filtro-select">
                 <option value="">Todas as Categorias</option>
@@ -251,7 +246,6 @@
                 <option value="instituicoes">Instituições</option>
                 <option value="empresas">Empresas</option>
             </select>
-
             <select id="filtroProvincia" class="filtro-select">
                 <option value="">Todas as Províncias</option>
                 <option value="Maputo">Maputo</option>
@@ -265,14 +259,12 @@
                 <option value="Niassa">Niassa</option>
                 <option value="Cabo Delgado">Cabo Delgado</option>
             </select>
-
             <select id="filtroEstado" class="filtro-select">
                 <option value="">Qualquer Estado</option>
                 <option value="Novo">Novo</option>
                 <option value="Usado">Usado</option>
                 <option value="Serviço">Serviço</option>
             </select>
-
             <select id="filtroOrdenacao" class="filtro-select">
                 <option value="recentes">Mais Recentes</option>
                 <option value="menor_preco">Preço: Menor</option>
@@ -310,7 +302,7 @@
     <script src="header.js?v=3" defer></script>
     <script src="verificar-premium.js" defer></script>
 
-            <footer class="rodape-mzlink">
+    <footer class="rodape-mzlink">
         <div class="rodape-conteudo">
             <div class="rodape-marca">
                 <strong>MZLINK</strong>
@@ -329,8 +321,8 @@
 
         <div style="text-align: center; margin: 30px auto 20px; max-width: 400px; padding: 0 20px;">
             <p style="color: #c9ccd3; margin-bottom: 15px; font-weight: 600; font-size: 0.9rem;">Gostaste do MZLINK? Partilha com a tua malta!</p>
-            <a href="https://wa.me/?text=Ol%C3%A1!%20Procurando%20uma%20plataforma%20s%C3%A9ria%20para%20expandir%20o%20seu%20neg%C3%B3cio%20em%20Mo%C3%A7ambique%3F%0A%0AApresentamos%20o%20MZLINK%2C%20o%20marketplace%20100%25%20mo%C3%A7ambicano.%20Publique%20os%20seus%20produtos%20gratuitamente%2C%20receba%20contactos%20diretos%20no%20WhatsApp%20e%20venda%20sem%20pagar%20taxas%20a%20intermedi%C3%A1rios.%0A%0AAceda%20agora%20e%20crie%20a%20sua%20conta%3A%0A%F0%9F%91%89%20https%3A%2F%2Fmzlink.co.mz%0A%0AEquipa%20MZLINK%20%F0%9F%87%B2%F0%9F%87%BF" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #25D366 !important; color: white !important; padding: 15px 30px; border-radius: 12px; font-weight: 800; text-decoration: none !important; font-size: 1rem; box-shadow: 0 4px 15px rgba(37,211,102,0.4); width: 100%;">
-    📲 Partilhar o MZLINK no WhatsApp
+            <a href="https://wa.me/?text=..." target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #25D366 !important; color: white !important; padding: 15px 30px; border-radius: 12px; font-weight: 800; text-decoration: none !important; font-size: 1rem; box-shadow: 0 4px 15px rgba(37,211,102,0.4); width: 100%;">
+                📲 Partilhar o MZLINK no WhatsApp
             </a>
         </div>
 
@@ -339,11 +331,7 @@
         </div>
     </footer>
 
-    <!-- ========================================== -->
-    <!-- LÓGICA DE INSTALAÇÃO DA APP (PWA) -->
-    <!-- ========================================== -->
-
-    <!-- 1. Registo do Service Worker -->
+        <!-- SCRIPT DE INSTALAÇÃO PWA -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -354,33 +342,27 @@
       }
     </script>
 
-    <!-- 2. O Botão de Instalação (No TOPO!) -->
-    <div id="wrapperInstalar" style="display: flex; position: fixed; top: 75px; right: 10px; z-index: 9999; align-items: center; gap: 5px;">
-        <button id="btnInstalarApp" style="background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.85rem; padding: 10px 15px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.6); cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
-            <span style="font-size: 1rem;">📲</span> Instalar App
+    <!-- BOTÃO DE INSTALAR NO TOPO -->
+    <div id="wrapperInstalar" style="display: flex; position: fixed; top: 15px; right: 10px; z-index: 9999; align-items: center; gap: 5px;">
+        <button id="btnInstalarApp" style="background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.75rem; padding: 8px 12px; border-radius: 20px; border: 1px solid #fff; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.5); cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
+            <span style="font-size: 0.9rem;">📲</span> Instalar
         </button>
-        <!-- Botão de fechar o botão de instalar -->
-        <button id="fecharBtnInstalar" style="background: #0f1115; color: #d4af37; border: 1px solid #d4af37; border-radius: 50%; width: 25px; height: 25px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center;">✕</button>
+        <button id="fecharBtnInstalar" style="background: #0f1115; color: #d4af37; border: 1px solid #d4af37; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center;">✕</button>
     </div>
 
-    <!-- 3. MODAL PERSONALIZADO -->
+    <!-- MODAL DO QR CODE -->
     <div id="modalInstalar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
         <div style="background: #1a1d24; border: 2px solid #d4af37; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
-            
             <button id="fecharModal" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #c9ccd3; font-size: 1.5rem; cursor: pointer;">&times;</button>
-
             <h2 style="color: #d4af37; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Instalar MZLINK</h2>
             <p style="color: #c9ccd3; font-size: 0.9rem; margin-bottom: 20px;">Leve o MZLINK sempre consigo. Instale a nossa App no seu telemóvel!</p>
-
             <div style="background: #fff; padding: 15px; border-radius: 12px; display: inline-block; margin-bottom: 20px;">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://mzlink.co.mz" alt="QR Code MZLINK" style="display: block; width: 150px; height: 150px;">
             </div>
             <p style="color: #8b8f99; font-size: 0.75rem; margin-top: -10px; margin-bottom: 20px;">Aponte a câmara do seu telemóvel</p>
-
             <button id="btnInstalarNativo" style="display: flex; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 12px; border: none; cursor: pointer; width: 100%; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
                 <span style="font-size: 1.2rem;">📲</span> Instalar Agora
             </button>
-
             <p style="color: #c9ccd3; font-size: 0.8rem; text-align: left; background: #0f1115; padding: 10px; border-radius: 8px; line-height: 1.5;">
                 <strong>Não funciona?</strong><br>
                 1. Toque nos <strong>3 pontinhos</strong> do Chrome.<br>
@@ -389,7 +371,7 @@
         </div>
     </div>
 
-    <!-- 4. Script de Controlo -->
+    <!-- LÓGICA DO BOTÃO DE INSTALAÇÃO -->
     <script>
         let deferredPrompt;
         const wrapperInstalar = document.getElementById('wrapperInstalar');
@@ -404,22 +386,10 @@
             deferredPrompt = e;
         });
 
-        // Abre o modal
-        btnInstalar.addEventListener('click', () => {
-            modalInstalar.style.display = 'flex';
-        });
+        btnInstalar.addEventListener('click', () => { modalInstalar.style.display = 'flex'; });
+        fecharModal.addEventListener('click', () => { modalInstalar.style.display = 'none'; });
+        fecharBtnInstalar.addEventListener('click', () => { wrapperInstalar.style.display = 'none'; });
 
-        // Fecha o modal
-        fecharModal.addEventListener('click', () => {
-            modalInstalar.style.display = 'none';
-        });
-
-        // Fecha o botão de instalar do topo
-        fecharBtnInstalar.addEventListener('click', () => {
-            wrapperInstalar.style.display = 'none';
-        });
-
-        // Ação de instalar dentro do modal
         btnInstalarNativo.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
@@ -430,7 +400,7 @@
                 }
                 deferredPrompt = null;
             } else {
-                alert("O Chrome está a bloquear a instalação automática. Por favor, siga as instruções abaixo do botão.");
+                alert("Para instalar a MZLINK:\n\n1. Toque nos 3 pontinhos do Chrome.\n2. Escolha 'Instalar aplicação' ou 'Adicionar ao ecrã inicial'.");
             }
         });
 
