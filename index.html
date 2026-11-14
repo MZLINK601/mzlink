@@ -30,24 +30,22 @@
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
         
+        /* ===== EFEITO DE ONDA (RIPPLE) NOS LINKS ===== */
+        .menu-link { position: relative; overflow: hidden; text-decoration: none; color: #0f1115; font-weight: 700; font-size: 1rem; padding: 12px 10px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; border-radius: 8px; transition: background 0.2s; cursor: pointer;}
+        .menu-link:hover { background: #f8f9fb; color: #1E40AF; }
+        
+        .onda-efeito {
+            position: absolute; border-radius: 50%; background: rgba(212, 175, 55, 0.5);
+            transform: scale(0); animation: ondaAgua 0.6s ease-out;
+            pointer-events: none; z-index: 10;
+        }
+        @keyframes ondaAgua { 100% { transform: scale(4); opacity: 0; } }
+
         /* ===== ESTILOS DO MENU LATERAL ===== */
         #menuLateral { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: #fff; z-index: 10001; transition: left 0.3s ease; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         #overlayMenu { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; backdrop-filter: blur(2px); }
         
-        .menu-link { text-decoration: none; color: #0f1115; font-weight: 700; font-size: 1rem; padding: 12px 10px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; border-radius: 8px; transition: transform 0.2s ease, background 0.2s; }
-        .menu-link:hover { transform: translateX(5px); background: #f8f9fb; color: #1E40AF; }
         .menu-titulo { font-size: 0.75rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 5px; padding-left: 10px; }
-
-        /* ===== EFEITO DE ONDA (RIPPLE) ===== */
-        @keyframes ondaAgua {
-            0% { transform: scale(0); opacity: 0.8; }
-            100% { transform: scale(4); opacity: 0; }
-        }
-        .onda-efeito {
-            position: fixed; border-radius: 50%; background: rgba(212, 175, 55, 0.5);
-            transform: scale(0); animation: ondaAgua 1.2s ease-out forwards;
-            pointer-events: none; z-index: 10002;
-        }
 
         /* ===== HERO E GERAL ===== */
         .hero-moz { background: linear-gradient(rgba(15, 17, 21, 0.7), rgba(15, 17, 21, 0.9)), url('ponte.jpg') center/cover no-repeat !important; padding: 50px 20px 40px !important; text-align: center; width: 92% !important; max-width: 1100px !important; margin: 20px auto !important; border-radius: 12px !important; border: 2px solid #d4af37 !important; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important; position: relative; overflow: hidden; }
@@ -82,7 +80,7 @@
             </span>
             <span data-badge-premium></span>
             <!-- BOTÃO DO MENU -->
-            <button id="btnAbrirMenu" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #0f1115; padding: 0;">☰</button>
+            <button id="btnAbrirMenu" class="menu-link" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #0f1115; padding: 0; display: flex; justify-content: center; align-items: center;">☰</button>
         </div>
     </header>
 
@@ -91,17 +89,18 @@
     <div id="menuLateral">
         <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
             <strong style="font-size: 1.5rem; color: #d4af37; letter-spacing: 2px;">MZLINK</strong>
-            <button id="btnFecharMenu" style="background: #d4af37; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1rem; cursor: pointer; color: #0f1115; display: flex; justify-content: center; align-items: center; font-weight: bold;">✕</button>
+            <button id="btnFecharMenu" class="menu-link" style="background: #d4af37; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1rem; cursor: pointer; color: #0f1115; display: flex; justify-content: center; align-items: center; font-weight: bold;">✕</button>
         </div>
 
         <a href="publicar.html" class="menu-link" style="color: #1E40AF;">📢 Publicar Anúncio</a>
         <a href="perfil.html" class="menu-link" style="color: #1E40AF;">👤 O Meu Perfil</a>
-        <a href="#" class="menu-link" id="linkMenuSuporte" style="color: #1E40AF;">💬 Suporte MZLINK</a>
         
-        <!-- BOTÃO DE INSTALAR APP -->
-        <div id="areaInstalarApp" style="display: none; background: linear-gradient(135deg, #f5d76e, #d4af37); padding: 12px; border-radius: 8px; text-align: center; margin-top: 10px; cursor: pointer; box-shadow: 0 4px 10px rgba(212,175,55,0.3);" onclick="instalarApp()">
-            <strong style="color: #0f1115; font-size: 0.95rem;">📲 Instalar App MZLINK</strong>
+        <!-- BOTÃO DE INSTALAR APP (Agora dentro do menu!) -->
+        <div id="areaInstalarApp" class="menu-link" style="display: none; background: linear-gradient(135deg, #f5d76e, #d4af37); border: none; margin-top: 5px; justify-content: center;" onclick="instalarApp()">
+            <strong style="color: #0f1115; font-size: 1rem;">📲 Instalar App MZLINK</strong>
         </div>
+
+        <a href="#" class="menu-link" id="linkMenuSuporte" style="color: #1E40AF;">💬 Suporte MZLINK</a>
 
         <div class="menu-titulo">Área Premium</div>
         <a href="premium.html" class="menu-link" id="linkMenuPremium" style="color: #d4af37;">⭐ Ativar Premium</a>
@@ -116,7 +115,7 @@
 
         <a href="login.html" class="menu-link" style="margin-top: 20px; border-top: 1px solid #eee; color: #0f1115;">🔑 Entrar / Registar</a>
         <a href="#" id="btnSairMenu" class="menu-link" style="color: #dc2626; border: none;">🚪 Terminar Sessão</a>
-    </div>
+            </div>
 
     <!-- CONTEÚDO PRINCIPAL -->
 <main>
@@ -180,27 +179,27 @@
     <div id="results"></div>
 </main>
 
-        <button id="btnTopo" title="Voltar ao topo" style="position: fixed; bottom: 20px; right: 20px; z-index: 99; background-color: #0f1115; color: #d4af37; border: 2px solid #d4af37; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);">⬆️</button>
+<button id="btnTopo" title="Voltar ao topo" style="position: fixed; bottom: 20px; right: 20px; z-index: 99; background-color: #0f1115; color: #d4af37; border: 2px solid #d4af37; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);">⬆️</button>
 
-    <footer class="rodape-mzlink" style="background: #0f1115; color: #c9ccd3; padding: 30px 20px; text-align: center; margin-top: 50px; border-top: 3px solid #d4af37;">
-        <strong style="color: #d4af37; font-size: 1.2rem;">MZLINK</strong>
-        <p style="font-size: 0.8rem; margin-top: 5px;">© 2026 MZLINK · Feito em Moçambique 🇲🇿</p>
-    </footer>
+<footer class="rodape-mzlink" style="background: #0f1115; color: #c9ccd3; padding: 30px 20px; text-align: center; margin-top: 50px; border-top: 3px solid #d4af37;">
+    <strong style="color: #d4af37; font-size: 1.2rem;">MZLINK</strong>
+    <p style="font-size: 0.8rem; margin-top: 5px;">© 2026 MZLINK · Feito em Moçambique 🇲🇿</p>
+</footer>
 
-    <!-- MODAL DE SUPORTE -->
-    <div id="modalSuporte" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10005; justify-content: center; align-items: flex-end;">
-        <div style="background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; padding: 25px; box-sizing: border-box; position: relative;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #0f1115; font-size: 1.2rem;">💬 Suporte MZLINK</h3>
-                <button id="fecharSuporte" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888;">✕</button>
-            </div>
-            <p style="font-size: 0.85rem; color: #667085; margin-top: 0; margin-bottom: 15px;">Dúvidas ou problemas? Escreve a tua mensagem e a equipa responde.</p>
-            <textarea id="txtMensagemSuporte" placeholder="Escreve a tua mensagem aqui..." style="width: 100%; height: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: none; margin-bottom: 15px; box-sizing: border-box;"></textarea>
-            <button id="btnEnviarSuporte" style="width: 100%; background: #1E40AF; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">Enviar Mensagem</button>
+<!-- MODAL DE SUPORTE -->
+<div id="modalSuporte" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10005; justify-content: center; align-items: flex-end;">
+    <div style="background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; padding: 25px; box-sizing: border-box; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0; color: #0f1115; font-size: 1.2rem;">💬 Suporte MZLINK</h3>
+            <button id="fecharSuporte" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888;">✕</button>
         </div>
+        <p style="font-size: 0.85rem; color: #667085; margin-top: 0; margin-bottom: 15px;">Dúvidas ou problemas? Escreve a tua mensagem e a equipa responde.</p>
+        <textarea id="txtMensagemSuporte" placeholder="Escreve a tua mensagem aqui..." style="width: 100%; height: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: none; margin-bottom: 15px; box-sizing: border-box;"></textarea>
+        <button id="btnEnviarSuporte" style="width: 100%; background: #1E40AF; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">Enviar Mensagem</button>
     </div>
+</div>
 
-    <!-- SCRIPTS -->
+        <!-- SCRIPTS -->
     <script src="sessao.js" charset="UTF-8"></script>
     <script src="header.js"></script>
     <script src="modo-premium.js"></script>
@@ -209,34 +208,43 @@
     <script src="galeria.js" defer></script>
 
     <script>
-        // ===== LÓGICA DO MENU E EFEITO RIPPLE =====
+        // ===== LÓGICA DO MENU E EFEITO DE ONDA =====
         const btnAbrirMenu = document.getElementById('btnAbrirMenu');
         const btnFecharMenu = document.getElementById('btnFecharMenu');
         const menuLateral = document.getElementById('menuLateral');
         const overlayMenu = document.getElementById('overlayMenu');
 
-        function abrirMenu(e) {
-            // Efeito Ripple (Onda de água)
-            const rect = btnAbrirMenu.getBoundingClientRect();
+        // Função que cria a onda em qualquer link do menu
+        function criarOnda(e) {
+            const el = e.currentTarget;
+            const rect = el.getBoundingClientRect();
             const onda = document.createElement('span');
             onda.classList.add('onda-efeito');
+            
+            // Tamanho da onda baseado no tamanho do botão
             const tamanho = Math.max(rect.width, rect.height) * 2;
             onda.style.width = onda.style.height = `${tamanho}px`;
-            onda.style.left = `${rect.left + rect.width / 2 - tamanho / 2}px`;
-            onda.style.top = `${rect.top + rect.height / 2 - tamanho / 2}px`;
-            document.body.appendChild(onda);
             
-            setTimeout(() => { onda.remove(); }, 1200);
-
-            setTimeout(() => {
-                menuLateral.style.left = '0px';
-                overlayMenu.style.display = 'block';
-            }, 150);
+            // Posição da onda baseada no toque do dedo
+            onda.style.left = `${e.clientX - rect.left - tamanho / 2}px`;
+            onda.style.top = `${e.clientY - rect.top - tamanho / 2}px`;
+            
+            el.appendChild(onda);
+            setTimeout(() => { onda.remove(); }, 600); // Remove depois de 0.6 segundos
         }
 
-        function fecharMenu() {
-            menuLateral.style.left = '-320px';
-            overlayMenu.style.display = 'none';
+        // Adiciona a onda a todos os links do menu
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.addEventListener('click', criarOnda);
+        });
+
+        function abrirMenu() { 
+            menuLateral.style.left = '0px'; 
+            overlayMenu.style.display = 'block'; 
+        }
+        function fecharMenu() { 
+            menuLateral.style.left = '-320px'; 
+            overlayMenu.style.display = 'none'; 
         }
 
         btnAbrirMenu.addEventListener('click', abrirMenu);
@@ -299,7 +307,7 @@
             e.preventDefault();
             deferredPrompt = e;
             const btnInstalar = document.getElementById('areaInstalarApp');
-            if (btnInstalar) btnInstalar.style.display = 'block'; 
+            if (btnInstalar) btnInstalar.style.display = 'flex'; // Mostra o botão dentro do menu
         });
 
         window.instalarApp = async function() {
