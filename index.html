@@ -30,13 +30,26 @@
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
         
-        /* Estilos do Menu Lateral */
-        #menuLateral { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #fff; z-index: 10001; transition: left 0.3s ease; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
+        /* ===== ESTILOS DO MENU LATERAL ===== */
+        #menuLateral { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: #fff; z-index: 10001; transition: left 0.3s ease; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         #overlayMenu { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; backdrop-filter: blur(2px); }
-        .menu-link { text-decoration: none; color: #0f1115; font-weight: 700; font-size: 1.05rem; padding: 12px 0; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; }
-        .menu-link:hover { color: #1E40AF; }
-        .menu-titulo { font-size: 0.75rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 5px; }
+        
+        .menu-link { text-decoration: none; color: #0f1115; font-weight: 700; font-size: 1rem; padding: 12px 10px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; border-radius: 8px; transition: transform 0.2s ease, background 0.2s; }
+        .menu-link:hover { transform: translateX(5px); background: #f8f9fb; color: #1E40AF; }
+        .menu-titulo { font-size: 0.75rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 5px; padding-left: 10px; }
 
+        /* ===== EFEITO DE ONDA (RIPPLE) ===== */
+        @keyframes ondaAgua {
+            0% { transform: scale(0); opacity: 0.8; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+        .onda-efeito {
+            position: fixed; border-radius: 50%; background: rgba(212, 175, 55, 0.5);
+            transform: scale(0); animation: ondaAgua 1.2s ease-out forwards;
+            pointer-events: none; z-index: 10002;
+        }
+
+        /* ===== HERO E GERAL ===== */
         .hero-moz { background: linear-gradient(rgba(15, 17, 21, 0.7), rgba(15, 17, 21, 0.9)), url('ponte.jpg') center/cover no-repeat !important; padding: 50px 20px 40px !important; text-align: center; width: 92% !important; max-width: 1100px !important; margin: 20px auto !important; border-radius: 12px !important; border: 2px solid #d4af37 !important; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important; position: relative; overflow: hidden; }
         .badge-moz { display: inline-flex; align-items: center; gap: 6px; background: #E31937; color: #fff; font-weight: 800; font-size: 0.75rem; padding: 8px 16px; border-radius: 999px; margin-bottom: 20px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(227, 25, 55, 0.4); position: relative; z-index: 2; }
         .hero-moz h1 { font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1.1; margin: 0 0 12px 0; letter-spacing: -1px; text-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; z-index: 2; }
@@ -58,7 +71,7 @@
 </head>
 <body>
 
-    <!-- HEADER LIMPO (Só Logo, Nome e 3 Barras) -->
+    <!-- HEADER LIMPO -->
     <header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border-bottom: 2px solid #d4af37; position: sticky; top: 0; z-index: 999;">
         <a href="index.html" class="logo-header">
             <img src="logo-mzlink.png" alt="MZLINK" style="height: 40px;">
@@ -68,6 +81,7 @@
                 Olá, <span id="nomeUserTopo">...</span>
             </span>
             <span data-badge-premium></span>
+            <!-- BOTÃO DO MENU -->
             <button id="btnAbrirMenu" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #0f1115; padding: 0;">☰</button>
         </div>
     </header>
@@ -75,15 +89,19 @@
     <!-- OVERLAY E MENU LATERAL -->
     <div id="overlayMenu"></div>
     <div id="menuLateral">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 10px;">
-            <strong style="font-size: 1.4rem; color: #d4af37;">MZLINK</strong>
-            <button id="btnFecharMenu" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #dc2626;">✕</button>
+        <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+            <strong style="font-size: 1.5rem; color: #d4af37; letter-spacing: 2px;">MZLINK</strong>
+            <button id="btnFecharMenu" style="background: #d4af37; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1rem; cursor: pointer; color: #0f1115; display: flex; justify-content: center; align-items: center; font-weight: bold;">✕</button>
         </div>
 
         <a href="publicar.html" class="menu-link" style="color: #1E40AF;">📢 Publicar Anúncio</a>
         <a href="perfil.html" class="menu-link" style="color: #1E40AF;">👤 O Meu Perfil</a>
-        
         <a href="#" class="menu-link" id="linkMenuSuporte" style="color: #1E40AF;">💬 Suporte MZLINK</a>
+        
+        <!-- BOTÃO DE INSTALAR APP -->
+        <div id="areaInstalarApp" style="display: none; background: linear-gradient(135deg, #f5d76e, #d4af37); padding: 12px; border-radius: 8px; text-align: center; margin-top: 10px; cursor: pointer; box-shadow: 0 4px 10px rgba(212,175,55,0.3);" onclick="instalarApp()">
+            <strong style="color: #0f1115; font-size: 0.95rem;">📲 Instalar App MZLINK</strong>
+        </div>
 
         <div class="menu-titulo">Área Premium</div>
         <a href="premium.html" class="menu-link" id="linkMenuPremium" style="color: #d4af37;">⭐ Ativar Premium</a>
@@ -100,6 +118,75 @@
         <a href="#" id="btnSairMenu" class="menu-link" style="color: #dc2626; border: none;">🚪 Terminar Sessão</a>
     </div>
 
+    <!-- CONTEÚDO PRINCIPAL -->
+<main>
+    <section class="hero-moz">
+        <div class="badge-moz">🇲🇿 100% Moçambicano</div>
+        <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
+        <p>Produtos, serviços e profissionais de confiança perto de ti. Fala direto no WhatsApp.</p>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="O que você procura?">
+            <button id="searchButton">Pesquisar</button>
+        </div>
+    </section>
+
+    <section style="padding: 10px 20px 20px; text-align: center; max-width: 900px; margin: 0 auto;">
+        <div id="provaSocial" style="background: #0f1115; color: #d4af37; padding: 10px 20px; border-radius: 999px; display: inline-block; font-weight: 800; font-size: 0.85rem; margin-bottom: 25px; border: 1px solid #333;">
+            🔥 A carregar...
+        </div>
+    </section>
+
+    <section id="seccaoTopVendedores" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
+        <h2 style="color: #0f1115; font-size: 1.4rem; font-weight: 900; margin-bottom: 20px;">🏆 Top Vendedores do Mês</h2>
+        <div id="listaTopVendedores" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;"></div>
+    </section>
+
+    <div class="filtros-container">
+        <select id="filtroCategoria" class="filtro-select">
+            <option value="">Todas as Categorias</option>
+            <option value="produtos">Produtos</option>
+            <option value="servicos">Serviços</option>
+            <option value="vendedores">Vendedores</option>
+            <option value="profissionais">Profissionais</option>
+            <option value="instituicoes">Instituições</option>
+            <option value="empresas">Empresas</option>
+        </select>
+        <select id="filtroProvincia" class="filtro-select">
+            <option value="">Todas as Províncias</option>
+            <option value="Maputo">Maputo</option>
+            <option value="Gaza">Gaza</option>
+            <option value="Inhambane">Inhambane</option>
+            <option value="Sofala">Sofala</option>
+            <option value="Manica">Manica</option>
+            <option value="Tete">Tete</option>
+            <option value="Zambézia">Zambézia</option>
+            <option value="Nampula">Nampula</option>
+            <option value="Niassa">Niassa</option>
+            <option value="Cabo Delgado">Cabo Delgado</option>
+        </select>
+        <select id="filtroEstado" class="filtro-select">
+            <option value="">Qualquer Estado</option>
+            <option value="Novo">Novo</option>
+            <option value="Usado">Usado</option>
+            <option value="Serviço">Serviço</option>
+        </select>
+        <select id="filtroOrdenacao" class="filtro-select">
+            <option value="recentes">Mais Recentes</option>
+            <option value="menor_preco">Preço: Menor</option>
+            <option value="maior_preco">Preço: Maior</option>
+        </select>
+    </div>
+
+    <div id="results"></div>
+</main>
+
+        <button id="btnTopo" title="Voltar ao topo" style="position: fixed; bottom: 20px; right: 20px; z-index: 99; background-color: #0f1115; color: #d4af37; border: 2px solid #d4af37; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);">⬆️</button>
+
+    <footer class="rodape-mzlink" style="background: #0f1115; color: #c9ccd3; padding: 30px 20px; text-align: center; margin-top: 50px; border-top: 3px solid #d4af37;">
+        <strong style="color: #d4af37; font-size: 1.2rem;">MZLINK</strong>
+        <p style="font-size: 0.8rem; margin-top: 5px;">© 2026 MZLINK · Feito em Moçambique 🇲🇿</p>
+    </footer>
+
     <!-- MODAL DE SUPORTE -->
     <div id="modalSuporte" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10005; justify-content: center; align-items: flex-end;">
         <div style="background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; padding: 25px; box-sizing: border-box; position: relative;">
@@ -113,69 +200,6 @@
         </div>
     </div>
 
-        <!-- CONTEÚDO PRINCIPAL DO SITE -->
-    <main>
-        <section class="hero-moz">
-            <div class="badge-moz">🇲🇿 100% Moçambicano</div>
-            <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
-            <p>Produtos, serviços e profissionais de confiança perto de ti. Fala direto no WhatsApp.</p>
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="O que você procura?">
-                <button id="searchButton">Pesquisar</button>
-            </div>
-        </section>
-
-        <section style="padding: 10px 20px 20px; text-align: center; max-width: 900px; margin: 0 auto;">
-            <div id="provaSocial" style="background: #0f1115; color: #d4af37; padding: 10px 20px; border-radius: 999px; display: inline-block; font-weight: 800; font-size: 0.85rem; margin-bottom: 25px; border: 1px solid #333;">
-                🔥 A carregar...
-            </div>
-        </section>
-
-        <section id="seccaoTopVendedores" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
-            <h2 style="color: #0f1115; font-size: 1.4rem; font-weight: 900; margin-bottom: 20px;">🏆 Top Vendedores do Mês</h2>
-            <div id="listaTopVendedores" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;"></div>
-        </section>
-
-        <div class="filtros-container">
-            <select id="filtroCategoria" class="filtro-select">
-                <option value="">Todas as Categorias</option>
-                <option value="produtos">Produtos</option>
-                <option value="servicos">Serviços</option>
-                <option value="vendedores">Vendedores</option>
-                <option value="profissionais">Profissionais</option>
-                <option value="instituicoes">Instituições</option>
-                <option value="empresas">Empresas</option>
-            </select>
-            <select id="filtroProvincia" class="filtro-select">
-                <option value="">Todas as Províncias</option>
-                <option value="Maputo">Maputo</option>
-                <option value="Gaza">Gaza</option>
-                <option value="Inhambane">Inhambane</option>
-                <option value="Sofala">Sofala</option>
-                <option value="Manica">Manica</option>
-                <option value="Tete">Tete</option>
-                <option value="Zambézia">Zambézia</option>
-                <option value="Nampula">Nampula</option>
-                <option value="Niassa">Niassa</option>
-                <option value="Cabo Delgado">Cabo Delgado</option>
-            </select>
-            <select id="filtroOrdenacao" class="filtro-select">
-                <option value="recentes">Mais Recentes</option>
-                <option value="menor_preco">Preço: Menor</option>
-                <option value="maior_preco">Preço: Maior</option>
-            </select>
-        </div>
-
-        <div id="results"></div>
-    </main>
-
-    <button id="btnTopo" title="Voltar ao topo" style="position: fixed; bottom: 20px; right: 20px; z-index: 99; background-color: #0f1115; color: #d4af37; border: 2px solid #d4af37; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);">⬆️</button>
-
-    <footer class="rodape-mzlink" style="background: #0f1115; color: #c9ccd3; padding: 30px 20px; text-align: center; margin-top: 50px; border-top: 3px solid #d4af37;">
-        <strong style="color: #d4af37; font-size: 1.2rem;">MZLINK</strong>
-        <p style="font-size: 0.8rem; margin-top: 5px;">© 2026 MZLINK · Feito em Moçambique 🇲🇿</p>
-    </footer>
-
     <!-- SCRIPTS -->
     <script src="sessao.js" charset="UTF-8"></script>
     <script src="header.js"></script>
@@ -184,16 +208,36 @@
     <script src="avaliações.js" defer></script>
     <script src="galeria.js" defer></script>
 
-    <!-- SCRIPT DE CONTROLO DO MENU E SUPORTE -->
     <script>
-        // Abrir e Fechar Menu
+        // ===== LÓGICA DO MENU E EFEITO RIPPLE =====
         const btnAbrirMenu = document.getElementById('btnAbrirMenu');
         const btnFecharMenu = document.getElementById('btnFecharMenu');
         const menuLateral = document.getElementById('menuLateral');
         const overlayMenu = document.getElementById('overlayMenu');
 
-        function abrirMenu() { menuLateral.style.left = '0px'; overlayMenu.style.display = 'block'; }
-        function fecharMenu() { menuLateral.style.left = '-300px'; overlayMenu.style.display = 'none'; }
+        function abrirMenu(e) {
+            // Efeito Ripple (Onda de água)
+            const rect = btnAbrirMenu.getBoundingClientRect();
+            const onda = document.createElement('span');
+            onda.classList.add('onda-efeito');
+            const tamanho = Math.max(rect.width, rect.height) * 2;
+            onda.style.width = onda.style.height = `${tamanho}px`;
+            onda.style.left = `${rect.left + rect.width / 2 - tamanho / 2}px`;
+            onda.style.top = `${rect.top + rect.height / 2 - tamanho / 2}px`;
+            document.body.appendChild(onda);
+            
+            setTimeout(() => { onda.remove(); }, 1200);
+
+            setTimeout(() => {
+                menuLateral.style.left = '0px';
+                overlayMenu.style.display = 'block';
+            }, 150);
+        }
+
+        function fecharMenu() {
+            menuLateral.style.left = '-320px';
+            overlayMenu.style.display = 'none';
+        }
 
         btnAbrirMenu.addEventListener('click', abrirMenu);
         btnFecharMenu.addEventListener('click', fecharMenu);
@@ -210,7 +254,7 @@
             document.getElementById("results").scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Modal de Suporte
+        // ===== LÓGICA DO SUPORTE =====
         document.getElementById('linkMenuSuporte').onclick = (e) => {
             e.preventDefault();
             fecharMenu();
@@ -220,7 +264,6 @@
             document.getElementById('modalSuporte').style.display = 'none';
         };
 
-        // Enviar Suporte
         document.getElementById('btnEnviarSuporte').onclick = async () => {
             const btn = document.getElementById('btnEnviarSuporte');
             const msg = document.getElementById('txtMensagemSuporte').value.trim();
@@ -249,7 +292,31 @@
             finally { btn.innerText = "Enviar Mensagem"; btn.disabled = false; }
         };
 
-        // Verificar se é Premium para mudar o texto do Menu
+        // ===== LÓGICA DO BOTÃO DE INSTALAR (PWA) =====
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btnInstalar = document.getElementById('areaInstalarApp');
+            if (btnInstalar) btnInstalar.style.display = 'block'; 
+        });
+
+        window.instalarApp = async function() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('areaInstalarApp').style.display = 'none';
+                    fecharMenu(); 
+                }
+                deferredPrompt = null;
+            } else {
+                alert("Para instalar a MZLINK:\n\n1. Toque nos 3 pontinhos do Chrome.\n2. Escolha 'Instalar aplicação' ou 'Adicionar ao ecrã inicial'.");
+            }
+        };
+
+        // ===== VERIFICAR SE É PREMIUM =====
         document.addEventListener("DOMContentLoaded", async () => {
             try {
                 const sessao = await MZ.sessaoValida();
