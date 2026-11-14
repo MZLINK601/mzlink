@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar e Editar Anúncio (Com Botão Vendido)
+   MZLINK · Publicar e Editar Anúncio (Com Botão Vendido e Aviso Inteligente)
    ============================================================ */
 
 (async function () {
@@ -19,6 +19,7 @@
   var usuario = null;
   var planoUser = "basico";
   var limiteFotos = 4;
+  var limiteAnuncios = 3; // Valor padrão Básico
   var totalMeusAnuncios = 0;
   var ficheiros = []; 
   var idAnuncioEmEdicao = null; 
@@ -119,7 +120,9 @@
       totalMeusAnuncios = anunciosReais.length;
     }
 
+    // --- A CORREÇÃO DO LIMITE AQUI ---
     limiteFotos = planoUser === "premium" ? 20 : 4;
+    limiteAnuncios = planoUser === "premium" ? Infinity : 3;
     
     if (limiteTexto) limiteTexto.textContent = limiteFotos + " fotos";
     if (planoUser === "premium") {
@@ -129,6 +132,34 @@
     }
     
     atualizarContador();
+
+    // Verifica se precisa de bloquear o formulário
+    if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
+      bloquearFormulario();
+    }
+  }
+
+  // --- A MENSAGEM INTELIGENTE AQUI ---
+  function bloquearFormulario() {
+    if (form) form.style.display = "none";
+
+    var aviso = document.createElement("div");
+    aviso.className = "limite-anuncios-aviso";
+    aviso.style.cssText = "background: #fffbeb; border: 2px solid #d4af37; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;";
+    
+    aviso.innerHTML =
+      '<div style="font-size: 3rem; margin-bottom: 10px;">🔒</div>' +
+      '<h3 style="color: #b45309; margin-bottom: 10px;">Limite do Plano Básico Atingido</h3>' +
+      '<p style="color: #667085; font-size: 0.9rem; margin-bottom: 15px;">' +
+        'A tua conta está no <strong>Plano Básico</strong>, que permite apenas 3 anúncios ativos. <br><br>' +
+        'Como tens <strong>' + totalMeusAnuncios + ' anúncios publicados</strong>, precisas de <strong>apagar ou marcar como vendido ' + (totalMeusAnuncios - 3) + ' anúncio(s)</strong> para voltares a publicar.' +
+      '</p>' +
+      '<p style="color: #1E40AF; font-weight: 800; margin-bottom: 20px;">👑 Queres publicar sem limites? Renova o teu Premium!</p>' +
+      '<a href="premium.html" style="display: inline-block; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 800; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);">Renovar Premium Agora</a>';
+
+    if (form && form.parentNode) {
+      form.parentNode.insertBefore(aviso, form);
+    }
   }
 
   function atualizarContador() {
@@ -206,7 +237,6 @@
       var precoTxt = item.preco ? "💰 " + item.preco + " MT" : "A combinar";
       var estadoTxt = item.estado && item.estado !== "Serviço" ? " | " + item.estado : "";
       
-      // Lógica do botão Vendido
       var isVendido = item.vendido === true;
       var btnVendido = isVendido 
         ? '<button type="button" onclick="window.alternarVendido(\'' + item.id + '\', true)" style="background:#fef3c7; color:#d97706; border:1px solid #fcd34d; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.75rem;">🔄 Disponível</button>'
@@ -233,7 +263,6 @@
       listarMeus();
   };
 
-  // FUNÇÃO MÁGICA DO VENDIDO
   window.alternarVendido = async function(id, isVendido) {
       var msg = isVendido ? "Marcar este anúncio como Disponível novamente?" : "Marcar como Vendido? Ele desaparecerá da página inicial, mas continuará no teu perfil.";
       if (!confirm(msg)) return;
@@ -331,6 +360,16 @@
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
     
+    // --- A MENSAGEM DE ERRO INTELIGENTE AQUI ---
+    if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
+      alert(
+        "Ups! A tua conta está no plano Básico (limite de 3 anúncios).\n\n" +
+        "Como tens " + totalMeusAnuncios + " anúncios publicados, precisas de apagar alguns ou renovar o teu Premium para continuares a vender sem limites!"
+      );
+      window.location.href = "premium.html";
+      return;
+    }
+
     var nome = document.getElementById("nome").value.trim();
     var tipo = document.getElementById("tipo").value.trim();
     var descricao = document.getElementById("descricao").value.trim();
@@ -381,7 +420,7 @@
           dadosAnuncio.user_id = usuario.id;
           dadosAnuncio.plano = planoUser;
           dadosAnuncio.fotos = [];
-          dadosAnuncio.vendido = false; // Garante que nasce como não vendido
+          dadosAnuncio.vendido = false; 
 
           var r = await fetch(MZ.url + "/rest/v1/profissionais", {
             method: "POST",
