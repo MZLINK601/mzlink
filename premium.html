@@ -48,7 +48,6 @@
     .data-expiracao { display: flex; flex-direction: column; align-items: flex-end; }
     .data-expiracao span { font-family: 'Inter', sans-serif; font-size: 0.55rem; font-weight: 700; color: #a0a0a0; letter-spacing: 1px; }
     .data-expiracao strong { font-family: 'Courier New', Courier, monospace; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: 1px; }
-    
     .input-comprovativo { width: 100%; padding: 14px; border-radius: 8px; border: 2px solid #e2e8f0; font-family: inherit; font-size: 1rem; margin-bottom: 10px; margin-top: 5px; }
   </style>
 </head>
@@ -91,7 +90,7 @@
       <span class="badge-dourado">⭐ Conta Premium</span>
       <h1>Vende <span class="texto-dourado">3× mais</span> com o MZLINK Premium</h1>
       <p>Mais fotos, mais destaque, mais clientes. Feito para quem leva o negócio a sério. 🇲🇿</p>
-      <a href="#pagamento" class="btn-ouro">Quero ser Premium →</a>
+      <a href="#pagamento" class="btn-ouro" id="btnHeroPremium">Quero ser Premium →</a>
     </div>
     <div class="premium-hero-brilho"></div>
   </section>
@@ -110,7 +109,7 @@
           <li class="no">Sem selo verificado</li>
           <li class="no">Sem estatísticas</li>
         </ul>
-        <button class="btn-plano-basico" disabled>Plano atual</button>
+        <button id="btnPlanoBasico" class="btn-plano-basico" disabled>Plano atual</button>
       </article>
 
       <article class="plano-card plano-destaque">
@@ -124,7 +123,7 @@
           <li class="ok">Estatísticas dos anúncios</li>
           <li class="ok">Suporte prioritário</li>
         </ul>
-        <a href="#pagamento" class="btn-plano-ouro">Ativar Premium</a>
+        <a href="#pagamento" class="btn-plano-ouro" id="btnPlanoPremium">Ativar Premium</a>
       </article>
     </div>
   </section>
@@ -133,8 +132,8 @@
     <div class="pagamento-box">
       <div class="pagamento-topo">
         <span class="icone-coroa">👑</span>
-        <h2>Ativar Conta Premium</h2>
-        <p class="sub">Paga por <strong>M-Pesa</strong> ou <strong>e-Mola</strong> e insere o comprovativo abaixo. Ativação em menos de 5 minutos. ⚡</p>
+        <h2 id="tituloPagamento">Ativar Conta Premium</h2>
+        <p class="sub" id="subPagamento">Paga por <strong>M-Pesa</strong> ou <strong>e-Mola</strong> e insere o comprovativo abaixo. Ativação em menos de 5 minutos. ⚡</p>
       </div>
       <p id="preco" class="preco-destaque">49 MT / mês</p>
 
@@ -173,17 +172,52 @@
   <!-- SCRIPTS -->
   <script src="sessao.js" charset="UTF-8"></script>
   <script src="header.js"></script>
-  <script src="modo-premium.js?v=4"></script>
-  <script src="premium.js?v=7"></script>
   
   <script>
+    const PAGAMENTO_CONFIG = {
+      mpesa:    { numero: "852337913", nome: "AMÓS ELDIO" },
+      emola:    { numero: "879608566", nome: "CELESTE" },
+      whatsapp: "258879608566",
+      preco:    "49 MT / mês",
+      plano:    "Premium MZLINK"
+    };
+
     const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
     const SUPABASE_KEY = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
     const CHAVE = "mzlink_sessao";
 
+    function limparNumero(n) { return String(n).replace(/\D/g, '').replace(/^258/, ''); }
+    function formatarNumero(n) { return limparNumero(n).replace(/^(\d{2})(\d{3})(\d{4})$/, '$1 $2 $3'); }
+
+    function preencherPagamento() {
+      document.getElementById('numMpesa').textContent = formatarNumero(PAGAMENTO_CONFIG.mpesa.numero);
+      document.getElementById('nomeMpesa').textContent = 'Nome: ' + PAGAMENTO_CONFIG.mpesa.nome;
+      document.getElementById('numEmola').textContent = formatarNumero(PAGAMENTO_CONFIG.emola.numero);
+      document.getElementById('nomeEmola').textContent = 'Nome: ' + PAGAMENTO_CONFIG.emola.nome;
+      document.getElementById('preco').textContent = PAGAMENTO_CONFIG.preco;
+    }
+
+    function ativarCopias() {
+      document.querySelectorAll('[data-copiar]').forEach(function (botao) {
+        botao.addEventListener('click', function () {
+          var id = botao.getAttribute('data-copiar');
+          var numero = id === 'numMpesa' ? limparNumero(PAGAMENTO_CONFIG.mpesa.numero) : limparNumero(PAGAMENTO_CONFIG.emola.numero);
+          navigator.clipboard.writeText(numero).then(function() {
+            var original = botao.innerHTML;
+            botao.innerHTML = '✅ Copiado!';
+            setTimeout(function() { botao.innerHTML = original; }, 2000);
+          });
+        });
+      });
+    }
+
     document.addEventListener("DOMContentLoaded", async function() {
+      preencherPagamento();
+      ativarCopias();
+
       const dataElement = document.getElementById("dataExpiracaoCard");
       const seccaoCartao = document.querySelector(".cartao-vip-seccao");
+      
       let sessao = null;
       try { sessao = JSON.parse(localStorage.getItem(CHAVE)); } catch(e) {}
       if (!sessao || !sessao.access_token) return;
@@ -193,16 +227,38 @@
         if(!resUser.ok) return;
         const user = await resUser.json();
         
-        // CORREÇÃO AQUI: Adicionado &categoria=eq.loja
         const resPerfil = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + encodeURIComponent(user.id) + "&categoria=eq.loja&select=plano,premium_ate", { headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token } });
         const dadosPerfil = await resPerfil.json();
 
-        if (dadosPerfil.length > 0 && dadosPerfil[0].plano === 'premium' && dadosPerfil[0].premium_ate) {
-          if (seccaoCartao) seccaoCartao.style.display = "flex";
-          const d = new Date(dadosPerfil[0].premium_ate);
-          if (dataElement) dataElement.innerText = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
+        if (dadosPerfil.length > 0) {
+          const isPremium = dadosPerfil[0].plano === 'premium';
+          const btnBasico = document.getElementById("btnPlanoBasico");
+          const btnPremium = document.getElementById("btnPlanoPremium");
+          const btnHeroPremium = document.getElementById("btnHeroPremium");
+          
+          if (isPremium && dadosPerfil[0].premium_ate) {
+            // === UTILIZADOR JÁ É PREMIUM (MODO RENOVAÇÃO) ===
+            if (seccaoCartao) seccaoCartao.style.display = "flex";
+            const d = new Date(dadosPerfil[0].premium_ate);
+            if (dataElement) dataElement.innerText = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
+
+            // Mudar textos para RENOVAÇÃO
+            if (btnPremium) { btnPremium.innerText = "🔄 Renovar Premium"; btnPremium.style.background = "#1E40AF"; btnPremium.style.color = "#fff"; }
+            if (btnHeroPremium) { btnHeroPremium.innerText = "🔄 Renovar Premium"; }
+            if (btnBasico) { btnBasico.innerText = "Plano Atual"; }
+            
+            // Mudar o título da secção de pagamento
+            const tituloPagamento = document.getElementById("tituloPagamento");
+            const subPagamento = document.getElementById("subPagamento");
+            if (tituloPagamento) tituloPagamento.innerText = "Renovar Conta Premium";
+            if (subPagamento) subPagamento.innerHTML = "A sua conta já é Premium! Faça um novo pagamento para adicionar <strong>+30 dias</strong> à sua data de validade atual.";
+            
+          } else {
+            // === UTILIZADOR É BÁSICO (MODO ATIVAÇÃO NORMAL) ===
+            if (btnBasico) btnBasico.innerText = "Plano Atual";
+          }
         }
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error("Erro ao verificar plano:", e); }
     });
 
     document.getElementById("btnEnviarPedido").addEventListener("click", async function(e) {
@@ -246,7 +302,6 @@
         const userData = await resUser.json();
         const emailUtilizador = userData.email;
 
-        // CORREÇÃO AQUI: Adicionado &categoria=eq.loja para buscar o nome correto
         const resPerfil = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + userData.id + "&categoria=eq.loja&limit=1", {
           headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
         });
@@ -272,7 +327,7 @@
           
           setTimeout(() => {
             const textoZap = 
-              "Olá Equipa MZLINK! Quero ativar a minha conta Premium. 👑\n\n" +
+              "Olá Equipa MZLINK! Quero ativar/renovar a minha conta Premium. 👑\n\n" +
               "📌 Referência: *" + referencia + "*\n" +
               "🏪 Nome da Loja: *" + nomeLoja + "*\n" +
               "📧 E-mail: *" + emailUtilizador + "*\n" +
@@ -280,7 +335,7 @@
               "Já estou a enviar a foto do comprovativo em seguida! 📸";
 
             const zapMsg = encodeURIComponent(textoZap);
-            window.open("https://wa.me/258852337913?text=" + zapMsg, "_blank");
+            window.open("https://wa.me/" + PAGAMENTO_CONFIG.whatsapp + "?text=" + zapMsg, "_blank");
             
             this.textContent = "📲 Enviar Comprovativo e Pedir Premium";
             this.disabled = false;
@@ -305,4 +360,4 @@
     });
   </script>
 </body>
-    </html>
+</html>
