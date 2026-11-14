@@ -93,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function carregarDados() {
     try {
-      // FILTRO &vendido=eq.false ADICIONADO AQUI
       const resposta = await fetch(
         SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,tipo,local,preco,fotos,plano,tipo_conta,user_id,estado,media_estrelas,total_avaliacoes,whatsapp,avatar_url&categoria=neq.loja&vendido=eq.false&order=criado_em.desc&limit=20",
         { headers: { apikey: SUPABASE_KEY } }
@@ -107,6 +106,73 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (erro) {
       console.error("Nao foi possivel carregar os dados:", erro);
       results.innerHTML = "<p style='text-align:center'>Não foi possível carregar os dados. Verifique a internet e atualize a página.</p>";
+    }
+  }
+
+  // ===== NOVA FUNÇÃO: Prova Social =====
+  async function carregarProvaSocial() {
+    const divProva = document.getElementById("provaSocial");
+    if (!divProva) return;
+
+    try {
+      const resposta = await fetch(SUPABASE_URL + "/rest/v1/profissionais?select=id", {
+        headers: { apikey: SUPABASE_KEY }
+      });
+
+      if (resposta.ok) {
+        const lista = await resposta.json();
+        const total = lista.length;
+        if (total > 0) {
+          divProva.innerHTML = `🔥 Já somos <strong style="font-size: 1.1rem;">${total}</strong> vendedores a crescer no MZLINK!`;
+        } else {
+          divProva.innerHTML = `🚀 Sê o primeiro a publicar no MZLINK!`;
+        }
+      }
+    } catch (e) {
+      divProva.style.display = "none"; 
+    }
+  }
+
+  // ===== NOVA FUNÇÃO: Top Vendedores =====
+  async function carregarTopVendedores() {
+    const secao = document.getElementById("seccaoTopVendedores");
+    const listaDiv = document.getElementById("listaTopVendedores");
+    if (!secao || !listaDiv) return;
+
+    try {
+      const resposta = await fetch(
+        SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,avatar_url,media_estrelas,total_avaliacoes,plano&media_estrelas=gt.0&order=media_estrelas.desc,total_avaliacoes.desc&limit=5",
+        { headers: { apikey: SUPABASE_KEY } }
+      );
+
+      if (!resposta.ok) return;
+      const top5 = await resposta.json();
+
+      if (top5.length === 0) return; 
+
+      secao.style.display = "block"; 
+
+      let html = "";
+      top5.forEach(function(v, index) {
+        const medalha = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "🏅";
+        const avatar = v.avatar_url ? `<img src="${v.avatar_url}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px;">` : `<div style="width: 50px; height: 50px; border-radius: 50%; background: #1E40AF; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.2rem; margin: 0 auto 10px;">${v.nome.charAt(0)}</div>`;
+
+        html += `
+          <div style="min-width: 120px; background: #fff; border: 2px solid ${index === 0 ? '#d4af37' : '#e2e8f0'}; border-radius: 12px; padding: 15px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center;">
+            <div style="font-size: 1.5rem; margin-bottom: 5px;">${medalha}</div>
+            ${avatar}
+            <strong style="font-size: 0.85rem; color: #0f1115; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">${v.nome}</strong>
+            <span style="color: #d4af37; font-weight: bold; font-size: 0.9rem; margin-top: 5px;">⭐ ${Number(v.media_estrelas).toFixed(1)}</span>
+            <span style="font-size: 0.7rem; color: #667085;">(${v.total_avaliacoes} aval.)</span>
+          </div>
+        `;
+      });
+
+      listaDiv.innerHTML = html;
+      listaDiv.style.overflowX = "auto";
+
+    } catch (e) {
+      console.log("Erro ao carregar Top Vendedores", e);
     }
   }
 
@@ -182,9 +248,20 @@ document.addEventListener("DOMContentLoaded", function () {
             '</div>' +
             avaliacaoHTML +
             btnAvaliar +
-            '<div style="display: flex; gap: 8px; margin-top: 10px;">' +
-              '<a class="btn-contactar btn-contactar-wa" data-id="' + item.id + '" style="flex: 2; margin-top: 0;" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener">Contactar</a>' +
-              '<a class="btn-partilhar" style="flex: 1;" href="https://wa.me/?text=' + msgPartilha + '" target="_blank" rel="noopener">📤 Partilhar</a>' +
+            '<div style="display: flex; gap: 6px; margin-top: 10px;">' +
+              
+              '<a class="btn-contactar" style="flex: 1; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; text-decoration: none; padding: 10px 0;" href="tel:+' + numero + '">' +
+                '📞 Ligar' +
+              '</a>' +
+
+              '<a class="btn-contactar btn-contactar-wa" data-id="' + item.id + '" style="flex: 1.5; margin-top: 0; padding: 10px 0; display: flex; justify-content: center; align-items: center;" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener">' +
+                '💬 WhatsApp' +
+              '</a>' +
+
+              '<a class="btn-partilhar" style="flex: 1; padding: 10px 0; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem;" href="https://wa.me/?text=' + msgPartilha + '" target="_blank" rel="noopener">' +
+                '📤 Partilhar' +
+              '</a>' +
+
             '</div>' +
           '</div>' +
         '</div>';
@@ -289,5 +366,7 @@ document.addEventListener("DOMContentLoaded", function () {
   (async function init() {
     await carregarUserLogado();
     await carregarDados();
+    await carregarProvaSocial();
+    await carregarTopVendedores();
   })();
 });
