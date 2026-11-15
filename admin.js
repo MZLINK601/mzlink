@@ -115,7 +115,7 @@
     if (r.ok) { alert("🗑 Apagado!"); carregarAnuncios(); carregarTudo(); } else { alert("Erro ao apagar."); }
   };
 
-  async function carregarPendentes() {
+   async function carregarPendentes() {
     var div = document.getElementById("tabelaPendentes");
     if (!div) return;
     try {
@@ -143,9 +143,9 @@
       await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + userId, { method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ plano: "premium", premium_ate: dataFutura.toISOString() }) });
       alert("✅ Promovido!"); await carregarTudo(); await carregarPendentes(); 
     } catch (e) { alert("Erro ao aprovar."); }
-          }
+  }
 
-   async function carregarSuporte() {
+  async function carregarSuporte() {
     var div = document.getElementById("listaSuporte");
     if (!div) return;
     try {
@@ -219,31 +219,36 @@
     } catch (e) { divVendas.innerHTML = "<p style='color:red;'>Erro de ligação.</p>"; }
   }
 
+  // ===== FUNÇÃO CORRIGIDA COM VERIFICAÇÃO DE ERRO =====
   window.libertarPagamento = async function(vendaId, produtoId) {
     if (!confirm("Confirmas que já enviaste o dinheiro ao vendedor? Isto conclui a venda.")) return;
     var sessao = await MZ.sessaoValida();
     try {
-        await fetch(MZ.url + "/rest/v1/vendas_protegidas?id=eq." + vendaId, {
+        var r1 = await fetch(MZ.url + "/rest/v1/vendas_protegidas?id=eq." + vendaId, {
             method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
             body: JSON.stringify({ status: "concluido" })
         });
-        await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + produtoId, {
+
+        var r2 = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + produtoId, {
             method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
             body: JSON.stringify({ vendido: true })
         });
-        alert("✅ Pagamento libertado e anúncio marcado como vendido!");
-        carregarVendasProtegidas(); 
-        carregarTudo(); 
-    } catch (e) { alert("Erro ao libertar pagamento."); }
+
+        if (r1.ok && r2.ok) {
+            alert("✅ Pagamento libertado e anúncio marcado como vendido!");
+            carregarVendasProtegidas(); 
+            carregarTudo(); 
+        } else {
+            alert("❌ Erro no banco de dados. Verifica as regras do Supabase.");
+        }
+    } catch (e) { alert("❌ Erro de ligação."); }
   };
 
   window.abrirModalSaque = function() {
       var valor = prompt("Quanto queres sacar? (MT)");
       if (!valor || isNaN(valor)) return;
-      
       var numero = prompt("Para que número vais receber? (M-Pesa/e-Mola)");
       if (!numero) return;
-
       executarSaque(valor, numero);
   };
 
@@ -255,15 +260,8 @@
               headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
               body: JSON.stringify({ valor: Number(valor), metodo: "M-Pesa", numero: numero })
           });
-
-          if (r.ok) {
-              alert("✅ Saque registado! Transfere o dinheiro para o número indicado.");
-          } else {
-              alert("❌ Erro ao registar saque.");
-          }
-      } catch (e) {
-          alert("❌ Erro de ligação.");
-      }
+          if (r.ok) { alert("✅ Saque registado!"); } else { alert("❌ Erro ao registar saque."); }
+      } catch (e) { alert("❌ Erro de ligação."); }
   }
 
   function esc(t) { var d = document.createElement("div"); d.textContent = String(t == null ? "" : t); return d.innerHTML; }
