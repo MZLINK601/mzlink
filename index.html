@@ -360,5 +360,47 @@
             } catch(e) {}
         });
     </script>
+    <!-- POPUP DE AVISO DE MUDANÇAS -->
+<div id="popupAviso" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10005; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
+    <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); border: 2px solid #d4af37; border-radius: 20px; padding: 30px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3); position: relative;">
+        
+        <div style="font-size: 3rem; margin-bottom: 10px;">🚀</div>
+        <h2 style="color: #d4af37; font-size: 1.5rem; margin-top: 0; font-weight: 900; letter-spacing: 1px;">GRANDES MUDANÇAS!</h2>
+        <p style="color: #c9ccd3; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5;">
+            O MZLINK está a evoluir para te dar mais segurança e conforto!
+        </p>
+        
+        <div style="background: #1E40AF; color: white; border-radius: 8px; padding: 12px; margin-bottom: 20px; text-align: left; font-size: 0.85rem;">
+            <p style="margin: 0 0 5px 0;">🛡️ <strong>Pagamento Protegido:</strong> O teu dinheiro só sai depois de receberes o produto!</p>
+            <p style="margin: 0 0 5px 0;">📲 <strong>App Oficial:</strong> Instala o MZLINK no teu telemóvel.</p>
+            <p style="margin: 0;">⭐ <strong>Novas Taxas:</strong> Apenas 4% de comissão (máximo 500 MT).</p>
+        </div>
+
+        <button onclick="fecharAviso()" style="width: 100%; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);">
+            Entendi, vamos a isso! 🚀
+        </button>
+    </div>
+</div>
+
+<script>
+    // Lógica do Popup (Aparece apenas 1 vez por dia)
+    function fecharAviso() {
+        document.getElementById('popupAviso').style.display = 'none';
+        // Guarda a data de hoje no browser para não voltar a aparecer hoje
+        localStorage.setItem('mzlink_aviso_visto', new Date().toDateString());
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const avisoVisto = localStorage.getItem('mzlink_aviso_visto');
+        const hoje = new Date().toDateString();
+        
+        // Se a data guardada for diferente de hoje, mostra o popup
+        if (avisoVisto !== hoje) {
+            setTimeout(() => {
+                document.getElementById('popupAviso').style.display = 'flex';
+            }, 1000); // Aparece 1 segundo depois de abrir a página
+        }
+    });
+</script>
 </body>
 </html>
