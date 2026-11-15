@@ -402,8 +402,133 @@ document.addEventListener("DOMContentLoaded", function () {
   })();
 });
 
-// ===== FUNÇÃO PROVISÓRIA DO BOTÃO DE COMPRA =====
-// (Amanhã vamos criar o modal completo. Por agora, ele mostra apenas um aviso)
+// ==========================================
+// LÓGICA DO MODAL DE PAGAMENTO PROTEGIDO
+// ==========================================
+let produtoAtualCompra = null;
+let valorAtualCompra = 0;
+
 window.iniciarCompraProtegida = function(produtoId, valorTotal) {
-    alert("🛡️ Compra Protegida MZLINK!\n\nProduto ID: " + produtoId + "\nTotal a pagar: " + valorTotal.toFixed(2) + " MT\n\nO modal de pagamento vai ser criado na próxima fase.");
+    const chave = "mzlink_sessao";
+    let sessao = null;
+    try { sessao = JSON.parse(localStorage.getItem(chave)); } catch(e) {}
+
+    if (!sessao || !sessao.access_token) {
+        alert("⚠️ Para comprar com Proteção MZLINK, precisas de estar logado.\n\nVais ser redirecionado para o login.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    produtoAtualCompra = produtoId;
+    valorAtualCompra = valorTotal;
+
+    document.getElementById('valorTotalPagamento').innerText = valorTotal.toFixed(2) + " MT";
+    document.getElementById('inputComprovativoCompra').value = "";
+    document.getElementById('msgCodigoCompra').innerText = "";
+    document.getElementById('modalPagamento').style.display = 'flex';
 };
+
+function fecharModalPagamento() {
+    document.getElementById('modalPagamento').style.display = 'none';
+}
+
+// Extrator de SMS
+document.getElementById('inputComprovativoCompra')?.addEventListener('input', function() {
+    const texto = this.value.trim();
+    const msg = document.getElementById('msgCodigoCompra');
+    
+    const regexMpesa = /(?:Confirmado|ID|TxID|Ref)\s*([A-Z0-9]{9,10})/i;
+    const matchMpesa = texto.match(regexMpesa);
+    const regexEmola = /\b\d{10}\b/;
+    const matchEmola = texto.match(regexEmola);
+
+    let codigo = null;
+    let valido = false;
+    const apenasCodigo = /^[A-Z0-9]{9,10}$/i.test(texto);
+
+    if (apenasCodigo) {
+        codigo = texto.toUpperCase();
+        valido = true;
+    } else if (matchMpesa && matchMpesa[1]) {
+        codigo = matchMpesa[1].toUpperCase();
+        if (texto.includes("852337913") || texto.toUpperCase().includes("AMÓS")) valido = true;
+    } else if (matchEmola && matchEmola[0]) {
+        codigo = matchEmola[0];
+              if (texto.includes("879608566") || texto.toUpperCase().includes("CELESTE")) valido = true;
+    }
+
+    if (codigo) {
+        this.value = codigo; 
+        if (valido) {
+            msg.innerText = "✅ Código detetado com sucesso!";
+            msg.style.color = "#16a34a";
+        } else {
+            msg.innerText = "⚠️ Pagamento para outro número! Verifica.";
+            msg.style.color = "#dc2626";
+        }
+    } else {
+        msg.innerText = "";
+    }
+});
+
+// Confirmar o Pagamento no Supabase
+document.getElementById('btnConfirmarPagamento')?.addEventListener('click', async function() {
+    const comprovativo = document.getElementById('inputComprovativoCompra').value.trim();
+    const msg = document.getElementById('msgCodigoCompra');
+    
+    if (!comprovativo) return alert("Cola o código do comprovativo primeiro.");
+    if (msg.style.color === 'rgb(220, 38, 38)') return alert("❌ O pagamento não foi feito para os números do MZLINK.");
+
+    this.innerText = "A processar...";
+    this.disabled = true;
+
+    try {
+        const chave = "mzlink_sessao";
+        let sessao = JSON.parse(localStorage.getItem(chave));
+        const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
+
+        const userRes = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token } });
+        const user = await userRes.json();
+
+        // 1. Buscar os dados do vendedor
+        const produtoRes = await fetch(SUPABASE_URL + "/rest/v1/profissionais?id=eq." + produtoAtualCompra + "&select=user_id,whatsapp,nome", { headers: { apikey: SUPABASE_KEY } });
+        const produtoDados = await produtoRes.json();
+        
+        if (produtoDados.length === 0) throw new Error("Produto não encontrado.");
+        const vendedorId = produtoDados[0].user_id;
+        const vendedorWhatsapp = produtoDados[0].whatsapp;
+
+        // 2. Registar a venda protegida
+        const vendaRes = await fetch(SUPABASE_URL + "/rest/v1/vendas_protegidas", {
+            method: "POST",
+            headers: { apikey: SUPABASE_KEY, "Authorization": "Bearer " + sessao.access_token, "Content-Type": "application/json" },
+            body: JSON.stringify({
+                produto_id: produtoAtualCompra,
+                comprador_id: user.id,
+                vendedor_id: vendedorId,
+                valor_produto: valorAtualCompra / 1.04,
+                taxa_mzlink: valorAtualCompra - (valorAtualCompra / 1.04),
+                valor_total: valorAtualCompra,
+                status: "pago",
+                comprovativo: comprovativo,
+                whatsapp_comprador: user.user_metadata?.whatsapp || user.phone || "Não fornecido",
+                whatsapp_vendedor: vendedorWhatsapp
+            })
+        });
+
+        if (vendaRes.ok) {
+            alert("🎉 Pagamento Confirmado!\n\nO vendedor foi notificado e vai contactar-te em breve. O teu dinheiro está seguro no MZLINK.");
+            fecharModalPagamento();
+        } else {
+            throw new Error("Erro ao registar no banco de dados.");
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("❌ Erro ao processar pagamento. Tenta novamente.");
+    } finally {
+        this.innerText = "✅ Confirmar Pagamento";
+        this.disabled = false;
+    }
+});
