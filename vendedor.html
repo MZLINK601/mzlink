@@ -9,24 +9,8 @@
         body { font-family: 'Inter', sans-serif; background: #f4f7f6; margin: 0; padding-bottom: 40px; }
         
         /* Cabeçalho da Loja */
-        .loja-header {
-            background: linear-gradient(135deg, #0f1115 0%, #1a1d24 100%);
-            color: white;
-            padding: 40px 20px 30px;
-            text-align: center;
-            border-bottom: 4px solid #d4af37;
-            position: relative;
-        }
-        .loja-avatar {
-            width: 100px; height: 100px;
-            border-radius: 50%; background: #1E40AF; color: white;
-            font-size: 3rem; font-weight: 900;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 15px;
-            border: 4px solid #d4af37;
-            background-size: cover; background-position: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
+        .loja-header { background: linear-gradient(135deg, #0f1115 0%, #1a1d24 100%); color: white; padding: 40px 20px 30px; text-align: center; border-bottom: 4px solid #d4af37; position: relative; }
+        .loja-avatar { width: 100px; height: 100px; border-radius: 50%; background: #1E40AF; color: white; font-size: 3rem; font-weight: 900; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; border: 4px solid #d4af37; background-size: cover; background-position: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .loja-nome { font-size: 1.8rem; font-weight: 900; margin: 0 0 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .loja-badges { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
         .badge { padding: 4px 12px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -35,11 +19,7 @@
         .badge-basico { background: #f0f4f9; color: #667085; }
         .loja-local { color: #a0a0a0; font-size: 0.9rem; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 5px; }
         .loja-avaliacao { color: #d4af37; font-weight: bold; font-size: 1rem; margin-bottom: 20px; }
-        
-        .btn-voltar-loja {
-            display: inline-block; color: #d4af37; text-decoration: none;
-            font-weight: 800; font-size: 0.9rem; margin-top: 10px;
-        }
+        .btn-voltar-loja { display: inline-block; color: #d4af37; text-decoration: none; font-weight: 800; font-size: 0.9rem; margin-top: 10px; }
 
         /* Grelha de Anúncios */
         .container-anuncios { max-width: 1100px; margin: -20px auto 0; padding: 0 15px; position: relative; z-index: 2; }
@@ -48,29 +28,22 @@
         .grid-anuncios { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media(min-width: 768px) { .grid-anuncios { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
 
-        /* Cartão de Anúncio (Reutilizado do index) */
-        .card-anuncio {
-            background: #fff; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eef1f5;
-            display: flex; flex-direction: column;
-        }
+        /* Cartão de Anúncio */
+        .card-anuncio { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eef1f5; display: flex; flex-direction: column; }
         .card-anuncio img { width: 100%; height: 200px; object-fit: cover; }
         .card-anuncio .conteudo { padding: 15px; display: flex; flex-direction: column; flex: 1; }
         .card-anuncio h3 { margin: 0 0 5px; font-size: 1.1rem; color: #0f1115; }
-        .card-anuncio .preco { color: #16a34a; font-weight: 900; font-size: 1.2rem; margin-bottom: 10px; }
+        .card-anuncio .preco { color: #16a34a; font-weight: 900; font-size: 1.2rem; margin-bottom: 5px; }
         .card-anuncio .local { color: #667085; font-size: 0.85rem; margin-bottom: 15px; }
-        .card-anuncio .btn-wa {
-            margin-top: auto; display: block; text-align: center;
-            background: #25D366; color: white; padding: 12px;
-            border-radius: 8px; text-decoration: none; font-weight: 800;
-        }
+        
+        .btn-wa { margin-top: auto; display: block; text-align: center; background: #25D366; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 800; }
+        .btn-escrow { margin-top: auto; display: block; text-align: center; background: #16a34a; color: white; padding: 12px; border-radius: 8px; border: none; font-weight: 800; font-size: 1rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <!-- CABEÇALHO DA LOJA -->
     <header class="loja-header" id="lojaHeader">
-        <!-- O conteúdo vai ser preenchido pelo JavaScript -->
         <p style="color:white;">A carregar loja...</p>
     </header>
 
@@ -82,6 +55,34 @@
         </div>
     </div>
 
-    <script src="vendedor.js?v=2"></script>
+    <!-- ===== MODAL DE PAGAMENTO PROTEGIDO (NOVO) ===== -->
+    <div id="modalPagamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
+        <div style="background: #fff; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
+            <button onclick="document.getElementById('modalPagamento').style.display='none'" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <h2 style="color: #16a34a; font-size: 1.4rem; margin-top: 0; font-weight: 900;">🛡️ Compra Protegida</h2>
+            <p style="color: #667085; font-size: 0.9rem; margin-bottom: 15px;">O teu dinheiro está seguro. O vendedor só recebe após confirmares a entrega.</p>
+            <div style="background: #f0fdf4; border: 2px solid #16a34a; border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+                <p style="margin: 0; font-size: 0.8rem; color: #166534; font-weight: 800;">TOTAL A PAGAR</p>
+                <h1 id="valorTotalPagamento" style="color: #16a34a; margin: 5px 0; font-size: 2rem;">0 MT</h1>
+                <p style="margin: 0; font-size: 0.7rem; color: #166534;">Inclui taxa de Proteção MZLINK</p>
+            </div>
+            <p style="font-size: 0.9rem; font-weight: 800; color: #0f1115; text-align: left; margin-bottom: 5px;">Paga para um destes números:</p>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fb; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                <div style="text-align: left;"><strong style="font-size: 0.9rem; color: #0f1115;">M-Pesa: 85 233 7913</strong><br><small style="color: #667085; font-size: 0.75rem;">Nome: AMÓS ELDIO</small></div>
+                <button onclick="navigator.clipboard.writeText('852337913'); alert('Copiado!')" style="background: #1E40AF; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">📋</button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fb; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="text-align: left;"><strong style="font-size: 0.9rem; color: #0f1115;">e-Mola: 87 960 8566</strong><br><small style="color: #667085; font-size: 0.75rem;">Nome: CELESTE</small></div>
+                <button onclick="navigator.clipboard.writeText('879608566'); alert('Copiado!')" style="background: #1E40AF; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">📋</button>
+            </div>
+            <p style="font-size: 0.85rem; font-weight: 800; color: #0f1115; text-align: left; margin-bottom: 5px;">Colar o SMS:</p>
+            <input type="text" id="inputComprovativoCompra" placeholder="Cola o SMS ou o código..." style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box; margin-bottom: 5px;">
+            <p id="msgCodigoCompra" style="text-align: center; font-weight: bold; font-size: 0.8rem; margin-top: 0; margin-bottom: 15px; color: #16a34a;"></p>
+            <button id="btnConfirmarPagamento" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">✅ Confirmar Pagamento</button>
+        </div>
+    </div>
+
+    <script src="vendedor.js?v=3"></script>
 </body>
 </html>
