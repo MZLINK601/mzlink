@@ -180,33 +180,28 @@
     <p style="font-size: 0.8rem; margin-top: 5px;">© 2026 MZLINK · Feito em Moçambique 🇲🇿</p>
 </footer>
 
-        <!-- BOTÃO FLUTUANTE DE INSTALAR APP -->
-    <button id="btnInstalarApp" onclick="abrirModalInstalar()" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.85rem; padding: 12px 18px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.6); cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
-        <span style="font-size: 1.1rem;">📲</span> Instalar App
+        <!-- BOTÃO DE INSTALAR APP (Topo Direito) -->
+    <button id="btnInstalarApp" onclick="abrirModalInstalar()" style="position: fixed; top: 75px; right: 15px; z-index: 9999; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.75rem; padding: 8px 14px; border-radius: 20px; border: 1px solid #fff; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.5); cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
+        <span style="font-size: 0.9rem;">📲</span> Instalar
     </button>
 
-    <!-- MODAL DE INSTALAÇÃO (QR CODE E INSTRUÇÕES) -->
+    <!-- MODAL DE INSTALAÇÃO -->
     <div id="modalInstalar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
         <div style="background: #1a1d24; border: 2px solid #d4af37; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
-            
             <button onclick="fecharModalInstalar()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #c9ccd3; font-size: 1.5rem; cursor: pointer;">&times;</button>
-
             <h2 style="color: #d4af37; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Instalar MZLINK</h2>
             <p style="color: #c9ccd3; font-size: 0.9rem; margin-bottom: 20px;">Leve o MZLINK sempre consigo. Instale a nossa App no seu telemóvel!</p>
-
             <div style="background: #fff; padding: 15px; border-radius: 12px; display: inline-block; margin-bottom: 20px;">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://mzlink.co.mz" alt="QR Code MZLINK" style="display: block; width: 150px; height: 150px;">
             </div>
             <p style="color: #8b8f99; font-size: 0.75rem; margin-top: -10px; margin-bottom: 20px;">Aponte a câmara do seu telemóvel</p>
-
             <button id="btnInstalarNativo" onclick="triggerInstalar()" style="display: flex; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 12px; border: none; cursor: pointer; width: 100%; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
                 <span style="font-size: 1.2rem;">📲</span> Instalar Agora
             </button>
-
             <p style="color: #c9ccd3; font-size: 0.8rem; text-align: left; background: #0f1115; padding: 10px; border-radius: 8px; line-height: 1.5;">
                 <strong>Não funciona?</strong><br>
-                <strong>Android:</strong> Toque nos 3 pontinhos do Chrome e escolha "Instalar aplicação".<br>
-                <strong>iPhone:</strong> Abra no Safari, toque em Partilhar e escolha "Adicionar ao ecrã principal".
+                <strong>Android:</strong> Toque nos 3 pontinhos do Chrome.<br>
+                <strong>iPhone:</strong> Abra no Safari, toque em Partilhar e "Adicionar ao ecrã principal".
             </p>
         </div>
     </div>
@@ -221,6 +216,33 @@
             <p style="font-size: 0.85rem; color: #667085; margin-top: 0; margin-bottom: 15px;">Dúvidas ou problemas? Escreve a tua mensagem e a equipa responde.</p>
             <textarea id="txtMensagemSuporte" placeholder="Escreve a tua mensagem aqui..." style="width: 100%; height: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: none; margin-bottom: 15px; box-sizing: border-box;"></textarea>
             <button id="btnEnviarSuporte" style="width: 100%; background: #1E40AF; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">Enviar Mensagem</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE PAGAMENTO PROTEGIDO (NOVO) -->
+    <div id="modalPagamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
+        <div style="background: #fff; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
+            <button onclick="fecharModalPagamento()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <h2 style="color: #16a34a; font-size: 1.4rem; margin-top: 0; font-weight: 900;">🛡️ Compra Protegida</h2>
+            <p style="color: #667085; font-size: 0.9rem; margin-bottom: 15px;">O teu dinheiro está seguro. O vendedor só recebe após confirmares a entrega.</p>
+            <div style="background: #f0fdf4; border: 2px solid #16a34a; border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+                <p style="margin: 0; font-size: 0.8rem; color: #166534; font-weight: 800;">TOTAL A PAGAR</p>
+                <h1 id="valorTotalPagamento" style="color: #16a34a; margin: 5px 0; font-size: 2rem;">0 MT</h1>
+                <p style="margin: 0; font-size: 0.7rem; color: #166534;">Inclui taxa de Proteção MZLINK</p>
+            </div>
+            <p style="font-size: 0.9rem; font-weight: 800; color: #0f1115; text-align: left; margin-bottom: 5px;">Paga para um destes números:</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fb; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                <div style="text-align: left;"><strong style="font-size: 0.9rem; color: #0f1115;">M-Pesa: 85 233 7913</strong><br><small style="color: #667085; font-size: 0.75rem;">Nome: AMÓS ELDIO</small></div>
+                <button onclick="navigator.clipboard.writeText('852337913'); alert('Copiado!')" style="background: #1E40AF; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">📋</button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fb; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="text-align: left;"><strong style="font-size: 0.9rem; color: #0f1115;">e-Mola: 87 960 8566</strong><br><small style="color: #667085; font-size: 0.75rem;">Nome: CELESTE</small></div>
+                <button onclick="navigator.clipboard.writeText('879608566'); alert('Copiado!')" style="background: #1E40AF; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">📋</button>
+            </div>
+            <p style="font-size: 0.85rem; font-weight: 800; color: #0f1115; text-align: left; margin-bottom: 5px;">Colar o SMS:</p>
+            <input type="text" id="inputComprovativoCompra" placeholder="Cola o SMS ou o código..." style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box; margin-bottom: 5px;">
+            <p id="msgCodigoCompra" style="text-align: center; font-weight: bold; font-size: 0.8rem; margin-top: 0; margin-bottom: 15px; color: #16a34a;"></p>
+            <button id="btnConfirmarPagamento" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">✅ Confirmar Pagamento</button>
         </div>
     </div>
 
