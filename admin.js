@@ -26,19 +26,23 @@
     await carregarTudo();
     await carregarPendentes(); 
     await carregarAnuncios(); 
-    await carregarSuporte(); // <--- CHAMADA DO SUPORTE
+    await carregarSuporte();
+    await carregarVendasProtegidas();
   }
 
   async function carregarTudo() {
     var sessao = await MZ.sessaoValida();
     var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id, user_id, nome, whatsapp, criado_em, plano, premium_ate&order=criado_em.desc", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
     if (!r.ok) { $("#tbodyUsers").innerHTML = '<tr><td colspan="4" class="sem-resultados">Erro ao carregar.</td></tr>'; return; }
+    
     var lista = await r.json();
     todosUsers = lista || [];
     $("#statUsers").textContent = todosUsers.length;
+
     var totalPremium = 0;
     for (var k = 0; k < todosUsers.length; k++) { if (todosUsers[k].plano === "premium") totalPremium++; }
     var elPremium = $("#statPremium"); if (elPremium) elPremium.textContent = totalPremium;
+
     await atualizarEstatisticasExtras(sessao);
     renderTabela(todosUsers);
   }
@@ -47,6 +51,7 @@
     try {
         var rAnuncios = await fetch(MZ.url + "/rest/v1/profissionais?select=id", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
         if (rAnuncios.ok) { var anuncios = await rAnuncios.json(); var elAnuncios = $("#statAnuncios"); if (elAnuncios) elAnuncios.textContent = anuncios.length; }
+        
         var rVisitas = await fetch(MZ.url + "/rest/v1/visitas?select=id", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
         if (rVisitas.ok) { var visitas = await rVisitas.json(); var elVisitas = $("#statVisitas"); if (elVisitas) elVisitas.textContent = visitas.length; }
     } catch (e) { console.log("Erro extras", e); }
@@ -138,10 +143,9 @@
       await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + userId, { method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ plano: "premium", premium_ate: dataFutura.toISOString() }) });
       alert("✅ Promovido!"); await carregarTudo(); await carregarPendentes(); 
     } catch (e) { alert("Erro ao aprovar."); }
-  }
+          }
 
-  // ===== SUPORTE (TICKETS) =====
-  async function carregarSuporte() {
+   async function carregarSuporte() {
     var div = document.getElementById("listaSuporte");
     if (!div) return;
     try {
@@ -164,6 +168,103 @@
     var r = await fetch(MZ.url + "/rest/v1/suporte?id=eq." + id, { method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ status: "resolvido" }) });
     if (r.ok) { alert("✅ Resolvido!"); carregarSuporte(); }
   };
+
+  async function carregarVendasProtegidas() {
+    var divVendas = document.getElementById("listaVendasProtegidas");
+    var divSaldo = document.getElementById("saldoMZLink");
+    if (!divVendas) return;
+
+    try {
+        var sessao = await MZ.sessaoValida();
+        var r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?status=in.(pago,enviado)&order=criado_em.desc", {
+            headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
+        });
+
+        if (!r.ok) { divVendas.innerHTML = "<p style='color:red;'>Erro ao carregar vendas.</p>"; return; }
+        var vendas = await r.json();
+        
+        var saldoTotal = 0;
+        vendas.forEach(v => saldoTotal += Number(v.taxa_mzlink));
+        if (divSaldo) divSaldo.innerText = saldoTotal.toFixed(2) + " MT";
+
+        if (vendas.length === 0) {
+            divVendas.innerHTML = "<p style='padding:15px; color:#16a34a; font-weight:bold;'>✅ Nenhuma venda pendente de libertação.</p>";
+            return;
+        }
+
+        var html = `<table style="width:100%; table-layout: fixed; border-collapse: collapse; text-align: left;">
+            <tr style="background: #f8f9fb; border-bottom: 2px solid #eee;">
+                <th style="padding: 8px 5px; font-size: 0.75rem; width: 40%;">Vendedor (WhatsApp)</th>
+                <th style="padding: 8px 5px; font-size: 0.75rem; width: 30%;">Valor a Enviar</th>
+                <th style="padding: 8px 5px; font-size: 0.75rem; width: 30%;">Ação</th>
+            </tr>`;
+
+        vendas.forEach(function(v) {
+            html += `<tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 8px 5px; font-size: 0.8rem; word-break: break-all;">
+                    <strong>${esc(v.whatsapp_vendedor)}</strong><br>
+                    <small style="color: #667085; font-size: 0.7rem;">Status: ${v.status.toUpperCase()}</small>
+                </td>
+                <td style="padding: 8px 5px; font-size: 0.85rem; font-weight: bold; color: #16a34a;">
+                    ${Number(v.valor_produto).toFixed(2)} MT
+                </td>
+                <td style="padding: 8px 5px; text-align: center;">
+                    <button onclick="window.libertarPagamento('${v.id}', '${v.produto_id}')" style="background: #16a34a; color: white; border: none; padding: 6px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.7rem;">✅ Pago ao Vendedor</button>
+                </td>
+            </tr>`;
+        });
+        html += `</table>`;
+        divVendas.innerHTML = html;
+
+    } catch (e) { divVendas.innerHTML = "<p style='color:red;'>Erro de ligação.</p>"; }
+  }
+
+  window.libertarPagamento = async function(vendaId, produtoId) {
+    if (!confirm("Confirmas que já enviaste o dinheiro ao vendedor? Isto conclui a venda.")) return;
+    var sessao = await MZ.sessaoValida();
+    try {
+        await fetch(MZ.url + "/rest/v1/vendas_protegidas?id=eq." + vendaId, {
+            method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "concluido" })
+        });
+        await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + produtoId, {
+            method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
+            body: JSON.stringify({ vendido: true })
+        });
+        alert("✅ Pagamento libertado e anúncio marcado como vendido!");
+        carregarVendasProtegidas(); 
+        carregarTudo(); 
+    } catch (e) { alert("Erro ao libertar pagamento."); }
+  };
+
+  window.abrirModalSaque = function() {
+      var valor = prompt("Quanto queres sacar? (MT)");
+      if (!valor || isNaN(valor)) return;
+      
+      var numero = prompt("Para que número vais receber? (M-Pesa/e-Mola)");
+      if (!numero) return;
+
+      executarSaque(valor, numero);
+  };
+
+  async function executarSaque(valor, numero) {
+      var sessao = await MZ.sessaoValida();
+      try {
+          var r = await fetch(MZ.url + "/rest/v1/saques_mzlink", {
+              method: "POST",
+              headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
+              body: JSON.stringify({ valor: Number(valor), metodo: "M-Pesa", numero: numero })
+          });
+
+          if (r.ok) {
+              alert("✅ Saque registado! Transfere o dinheiro para o número indicado.");
+          } else {
+              alert("❌ Erro ao registar saque.");
+          }
+      } catch (e) {
+          alert("❌ Erro de ligação.");
+      }
+  }
 
   function esc(t) { var d = document.createElement("div"); d.textContent = String(t == null ? "" : t); return d.innerHTML; }
 
