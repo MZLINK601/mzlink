@@ -169,6 +169,7 @@
     if (r.ok) { alert("✅ Resolvido!"); carregarSuporte(); }
   };
 
+  // ===== CARTEIRA E VENDAS PROTEGIDAS (CORRIGIDA) =====
   async function carregarVendasProtegidas() {
     var divVendas = document.getElementById("listaVendasProtegidas");
     var divSaldo = document.getElementById("saldoMZLink");
@@ -176,16 +177,25 @@
 
     try {
         var sessao = await MZ.sessaoValida();
+
+        // 1. Calcular a Carteira (Soma das comissões de vendas CONCLUÍDAS)
+        var rSaldo = await fetch(MZ.url + "/rest/v1/vendas_protegidas?status=eq.concluido&select=taxa_mzlink", {
+            headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
+        });
+        if (rSaldo.ok) {
+            var vendasConcluidas = await rSaldo.json();
+            var saldoTotal = 0;
+            vendasConcluidas.forEach(v => saldoTotal += Number(v.taxa_mzlink));
+            if (divSaldo) divSaldo.innerText = saldoTotal.toFixed(2) + " MT";
+        }
+
+        // 2. Mostrar a Lista (Vendas PENDENTES de libertação: pago ou enviado)
         var r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?status=in.(pago,enviado)&order=criado_em.desc", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
 
         if (!r.ok) { divVendas.innerHTML = "<p style='color:red;'>Erro ao carregar vendas.</p>"; return; }
         var vendas = await r.json();
-        
-        var saldoTotal = 0;
-        vendas.forEach(v => saldoTotal += Number(v.taxa_mzlink));
-        if (divSaldo) divSaldo.innerText = saldoTotal.toFixed(2) + " MT";
 
         if (vendas.length === 0) {
             divVendas.innerHTML = "<p style='padding:15px; color:#16a34a; font-weight:bold;'>✅ Nenhuma venda pendente de libertação.</p>";
@@ -219,7 +229,6 @@
     } catch (e) { divVendas.innerHTML = "<p style='color:red;'>Erro de ligação.</p>"; }
   }
 
-  // ===== FUNÇÃO CORRIGIDA COM VERIFICAÇÃO DE ERRO =====
   window.libertarPagamento = async function(vendaId, produtoId) {
     if (!confirm("Confirmas que já enviaste o dinheiro ao vendedor? Isto conclui a venda.")) return;
     var sessao = await MZ.sessaoValida();
