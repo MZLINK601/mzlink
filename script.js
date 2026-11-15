@@ -229,6 +229,41 @@ document.addEventListener("DOMContentLoaded", function () {
         fotoHTML = '<div class="foto-principal-card sem-foto"><span>📸</span><small>Sem fotos</small></div>';
       }
 
+      // ===== CÁLCULO DA COMISSÃO E BOTÕES =====
+      let precoHTML = "";
+      let botoesHTML = "";
+
+      if (item.preco && Number(item.preco) > 0) {
+        // PRODUTO COM PREÇO FIXO -> COMPRA PROTEGIDA
+        const precoBase = Number(item.preco);
+        let taxa = precoBase * 0.04; // 4% de comissão
+        if (taxa > 500) taxa = 500; // Teto máximo de 500 MT
+        const precoFinal = precoBase + taxa;
+
+        precoHTML = `
+          <p style="color: #16a34a; font-weight: 900; font-size: 1.1rem; margin-top: 4px;">💰 ${precoFinal.toFixed(2)} MT</p>
+          <p style="color: #667085; font-size: 0.65rem; margin-top: 0;">🛡️ Inclui taxa de Proteção MZLINK</p>
+        `;
+
+        botoesHTML = `
+          <div style="display: flex; gap: 6px; margin-top: 10px;">
+            <a class="btn-contactar" style="flex: 1; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; text-decoration: none; padding: 10px 0;" href="tel:+${numero}">📞 Ligar</a>
+            <button onclick="iniciarCompraProtegida('${item.id}', ${precoFinal})" style="flex: 2; background: #16a34a; color: white; border: none; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; cursor: pointer; padding: 10px 0;">🛡️ Comprar Protegido</button>
+          </div>
+        `;
+      } else {
+        // PRODUTO COM PREÇO A COMBINAR -> CONTACTO DIRETO
+        precoHTML = `<p style="color: #667085; font-size: 0.85rem; margin-top: 4px; font-style: italic;">Preço a combinar</p>`;
+        
+        botoesHTML = `
+          <div style="display: flex; gap: 6px; margin-top: 10px;">
+            <a class="btn-contactar" style="flex: 1; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; text-decoration: none; padding: 10px 0;" href="tel:+${numero}">📞 Ligar</a>
+            <a class="btn-contactar btn-contactar-wa" data-id="${item.id}" style="flex: 2; background: #25D366; color: white; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; text-decoration: none; padding: 10px 0;" href="https://wa.me/${numero}?text=${msg}" target="_blank" rel="noopener">💬 WhatsApp</a>
+            <a class="btn-partilhar" style="flex: 1; padding: 10px 0; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; border: 1px solid #1E40AF; color: #1E40AF; border-radius: 8px; text-decoration: none;" href="https://wa.me/?text=${msgPartilha}" target="_blank" rel="noopener">📤</a>
+          </div>
+        `;
+      }
+
       html +=
         '<div class="result-card ' + (ehPremium ? 'card-premium' : '') + '">' +
           fotoHTML +
@@ -243,22 +278,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 '</a>' +
                 '<span class="tag">' + limpar(item.tipo) + '</span>' + badgeEstado +
                 '<p>📍 ' + limpar(item.local) + '</p>' +
-                (item.preco ? '<p style="color: #16a34a; font-weight: 900; font-size: 1.1rem; margin-top: 4px;">💰 ' + item.preco + ' MT</p>' : '<p style="color: #667085; font-size: 0.85rem; margin-top: 4px; font-style: italic;">Preço a combinar</p>') +
+                precoHTML +
               '</div>' +
             '</div>' +
             avaliacaoHTML +
             btnAvaliar +
-            '<div style="display: flex; gap: 6px; margin-top: 10px;">' +
-              '<a class="btn-contactar" style="flex: 1; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; text-decoration: none; padding: 10px 0;" href="tel:+' + numero + '">' +
-                '📞 Ligar' +
-              '</a>' +
-              '<a class="btn-contactar btn-contactar-wa" data-id="' + item.id + '" style="flex: 1.5; margin-top: 0; padding: 10px 0; display: flex; justify-content: center; align-items: center;" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener">' +
-                '💬 WhatsApp' +
-              '</a>' +
-              '<a class="btn-partilhar" style="flex: 1; padding: 10px 0; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem;" href="https://wa.me/?text=' + msgPartilha + '" target="_blank" rel="noopener">' +
-                '📤 Partilhar' +
-              '</a>' +
-            '</div>' +
+            botoesHTML +
           '</div>' +
         '</div>';
     });
@@ -287,13 +312,12 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.addEventListener("click", function () {
         const id = this.getAttribute("data-id");
         if (id) {
-            window.registarCliqueContato(id);
+          window.registarCliqueContato(id);
         }
       });
     });
   }
 
-  // ===== A FUNÇÃO DE FILTRAR COM SCROLL INTELIGENTE =====
   function filtrarEExibir() {
     const termo = searchInput ? normalizar(searchInput.value) : "";
     const catSelecionada = document.getElementById("filtroCategoria") ? document.getElementById("filtroCategoria").value : "";
@@ -302,22 +326,18 @@ document.addEventListener("DOMContentLoaded", function () {
     
     let listaFiltrada = dados;
 
-    // Filtro de Categoria
     if (catSelecionada) {
       listaFiltrada = listaFiltrada.filter(item => normalizar(item.categoria) === normalizar(catSelecionada));
     }
 
-    // Filtro de Província
     if (provSelecionada) {
       listaFiltrada = listaFiltrada.filter(item => normalizar(item.local).includes(normalizar(provSelecionada)));
     }
 
-    // Filtro de Estado
     if (estadoSelecionado) {
       listaFiltrada = listaFiltrada.filter(item => normalizar(item.estado) === normalizar(estadoSelecionado));
     }
 
-    // Filtro de Pesquisa (nome, tipo, local, categoria)
     if (termo) {
       listaFiltrada = listaFiltrada.filter(item => {
         const nome = normalizar(item.nome);
@@ -381,3 +401,9 @@ document.addEventListener("DOMContentLoaded", function () {
     await carregarTopVendedores();
   })();
 });
+
+// ===== FUNÇÃO PROVISÓRIA DO BOTÃO DE COMPRA =====
+// (Amanhã vamos criar o modal completo. Por agora, ele mostra apenas um aviso)
+window.iniciarCompraProtegida = function(produtoId, valorTotal) {
+    alert("🛡️ Compra Protegida MZLINK!\n\nProduto ID: " + produtoId + "\nTotal a pagar: " + valorTotal.toFixed(2) + " MT\n\nO modal de pagamento vai ser criado na próxima fase.");
+};
