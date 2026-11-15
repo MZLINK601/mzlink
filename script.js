@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   function normalizar(texto) {
-    return String(texto).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return String(texto || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
   }
 
   function limpar(texto) {
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function carregarDados() {
     try {
       const resposta = await fetch(
-        SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,tipo,local,preco,fotos,plano,tipo_conta,user_id,estado,media_estrelas,total_avaliacoes,whatsapp,avatar_url&categoria=neq.loja&vendido=eq.false&order=criado_em.desc&limit=20",
+        SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,tipo,local,preco,fotos,plano,tipo_conta,user_id,estado,media_estrelas,total_avaliacoes,whatsapp,avatar_url,categoria&categoria=neq.loja&vendido=eq.false&order=criado_em.desc&limit=30",
         { headers: { apikey: SUPABASE_KEY } }
       );
 
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // ===== NOVA FUNÇÃO: Prova Social =====
+  // ===== PROVA SOCIAL =====
   async function carregarProvaSocial() {
     const divProva = document.getElementById("provaSocial");
     if (!divProva) return;
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // ===== NOVA FUNÇÃO: Top Vendedores =====
+  // ===== TOP VENDEDORES =====
   async function carregarTopVendedores() {
     const secao = document.getElementById("seccaoTopVendedores");
     const listaDiv = document.getElementById("listaTopVendedores");
@@ -249,19 +249,15 @@ document.addEventListener("DOMContentLoaded", function () {
             avaliacaoHTML +
             btnAvaliar +
             '<div style="display: flex; gap: 6px; margin-top: 10px;">' +
-              
               '<a class="btn-contactar" style="flex: 1; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; text-decoration: none; padding: 10px 0;" href="tel:+' + numero + '">' +
                 '📞 Ligar' +
               '</a>' +
-
               '<a class="btn-contactar btn-contactar-wa" data-id="' + item.id + '" style="flex: 1.5; margin-top: 0; padding: 10px 0; display: flex; justify-content: center; align-items: center;" href="https://wa.me/' + numero + '?text=' + msg + '" target="_blank" rel="noopener">' +
                 '💬 WhatsApp' +
               '</a>' +
-
               '<a class="btn-partilhar" style="flex: 1; padding: 10px 0; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem;" href="https://wa.me/?text=' + msgPartilha + '" target="_blank" rel="noopener">' +
                 '📤 Partilhar' +
               '</a>' +
-
             '</div>' +
           '</div>' +
         '</div>';
@@ -297,33 +293,40 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // ===== A FUNÇÃO DE FILTRAR COM SCROLL INTELIGENTE =====
   function filtrarEExibir() {
-    const termo = searchInput ? normalizar(searchInput.value.trim()) : "";
+    const termo = searchInput ? normalizar(searchInput.value) : "";
     const catSelecionada = document.getElementById("filtroCategoria") ? document.getElementById("filtroCategoria").value : "";
     const provSelecionada = document.getElementById("filtroProvincia") ? document.getElementById("filtroProvincia").value : "";
     const estadoSelecionado = document.getElementById("filtroEstado") ? document.getElementById("filtroEstado").value : "";
     
     let listaFiltrada = dados;
 
+    // Filtro de Categoria
     if (catSelecionada) {
-      listaFiltrada = listaFiltrada.filter(item => item.categoria === catSelecionada);
+      listaFiltrada = listaFiltrada.filter(item => normalizar(item.categoria) === normalizar(catSelecionada));
     }
 
+    // Filtro de Província
     if (provSelecionada) {
       listaFiltrada = listaFiltrada.filter(item => normalizar(item.local).includes(normalizar(provSelecionada)));
     }
 
+    // Filtro de Estado
     if (estadoSelecionado) {
-      listaFiltrada = listaFiltrada.filter(item => item.estado === estadoSelecionado);
+      listaFiltrada = listaFiltrada.filter(item => normalizar(item.estado) === normalizar(estadoSelecionado));
     }
 
+    // Filtro de Pesquisa (nome, tipo, local, categoria)
     if (termo) {
-      listaFiltrada = listaFiltrada.filter(item => 
-        normalizar(item.nome).includes(termo) || 
-        normalizar(item.tipo).includes(termo) || 
-        normalizar(item.local).includes(termo) ||
-        normalizar(item.categoria || "").includes(termo)
-      );
+      listaFiltrada = listaFiltrada.filter(item => {
+        const nome = normalizar(item.nome);
+        const tipo = normalizar(item.tipo);
+        const local = normalizar(item.local);
+        const categoria = normalizar(item.categoria);
+        
+        return nome.includes(termo) || tipo.includes(termo) || local.includes(termo) || categoria.includes(termo);
+      });
     }
 
     let titulo = "Anúncios Recentes";
@@ -332,6 +335,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     mostrar(listaFiltrada, titulo);
+
+    // ===== SCROLL INTELIGENTE (Desliza até aos resultados) =====
+    const resultsDiv = document.getElementById("results");
+    if (resultsDiv) {
+      setTimeout(() => {
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
   }
 
   if (searchButton) searchButton.addEventListener("click", filtrarEExibir);
