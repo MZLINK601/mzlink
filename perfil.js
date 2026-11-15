@@ -1,248 +1,194 @@
-(function () {
-  'use strict';
-
-  var ADMINS = ["amoselidiomavie258@gmail.com"];
-  var $ = function (s) { return document.querySelector(s); };
-  var todosUsers = [];
-
-  iniciar();
-
-  async function iniciar() {
-    var sessao = await MZ.sessaoValida();
-    if (!sessao) { window.location.href = "login.html"; return; }
-
-    var r = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
-    if (!r.ok) { window.location.href = "login.html"; return; }
-    var user = await r.json();
-
-    if (ADMINS.indexOf(user.email) === -1) {
-      var aviso = $("#avisoAcesso");
-      aviso.style.display = "block";
-      aviso.innerHTML = "⛔ Acesso restrito.<br><br>Esta conta (<strong>" + esc(user.email) + "</strong>) não é admin.";
-      return;
+document.addEventListener("DOMContentLoaded", async function () {
+    // 1. Verificar Sessão
+    if (typeof MZ === "undefined" || !MZ.sessaoValida) return;
+    const sessao = await MZ.sessaoValida();
+    if (!sessao || !sessao.access_token) {
+        window.location.href = "login.html";
+        return;
     }
 
-    $("#painelAdmin").style.display = "block";
-    await carregarTudo();
-    await carregarPendentes(); 
-    await carregarAnuncios(); 
-    await carregarSuporte();
-    await carregarVendasProtegidas(); // Nova função do Cofre
-  }
+    const SUPABASE_URL = MZ.url;
+    const SUPABASE_KEY = MZ.key;
 
-  async function carregarTudo() {
-    var sessao = await MZ.sessaoValida();
-    var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id, user_id, nome, whatsapp, criado_em, plano, premium_ate&order=criado_em.desc", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
-    if (!r.ok) { $("#tbodyUsers").innerHTML = '<tr><td colspan="4" class="sem-resultados">Erro ao carregar.</td></tr>'; return; }
+    try {
+        // 2. Buscar dados do Utilizador
+        const userRes = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token } });
+        const user = await userRes.json();
+
+        // 3. Buscar Perfil na tabela 'profissionais'
+        const perfilRes = await fetch(SUPABASE_URL + "/rest/v1/profissionais?user_id=eq." + user.id + "&limit=1", {
+            headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token }
+        });
+        const perfilDados = await perfilRes.json();
+        const perfil = perfilDados.length > 0 ? perfilDados[0] : null;
+
+        // 4. Desenhar o Perfil no Ecrã
+        renderizarPerfil(user, perfil);
+
+        // 5. Carregar as Vendas Protegidas
+        carregarVendasProtegidasVendedor(user.id);
+
+    } catch (e) {
+        console.error("Erro ao carregar perfil:", e);
+        document.getElementById("conteudo").innerHTML = "<div class='aviso erro visivel'>Erro ao carregar perfil. Faz login novamente.</div>";
+    }
+});
+
+// ===== FUNÇÃO QUE DESENHA O PERFIL =====
+function renderizarPerfil(user, perfil) {
+    const nome = perfil?.nome || user.user_metadata?.nome || "Utilizador";
+    const email = user.email;
+    const whatsapp = perfil?.whatsapp || "Não definido";
+    const local = perfil?.local || "Não definido";
+    const plano = perfil?.plano || "basico";
+    const avatarUrl = perfil?.avatar_url || "";
+    const isPremium = plano === "premium";
+
+    const iniciais = nome.charAt(0).toUpperCase();
+    const corAvatar = isPremium ? "premium" : "";
     
-    var lista = await r.json();
-    todosUsers = lista || [];
-    $("#statUsers").textContent = todosUsers.length;
+    const html = `
+        <div class="hero">
+            <div class="avatar-grande ${corAvatar}" id="avatarContainer">
+                ${avatarUrl ? `<img src="${avatarUrl}" style="display:block;">` : iniciais}
+                <div class="icone-camara">📷</div>
+            </div>
+            <h1>${nome}</h1>
+            <p class="email">${email}</p>
+            <div class="badge-moz">🇲🇿 Membro MZLINK</div>
+            <div class="plano-badge ${plano}">
+                ${isPremium ? "👑 PREMIUM" : "Básico"}
+            </div>
+        </div>
 
-    var totalPremium = 0;
-    for (var k = 0; k < todosUsers.length; k++) { if (todosUsers[k].plano === "premium") totalPremium++; }
-    var elPremium = $("#statPremium"); if (elPremium) elPremium.textContent = totalPremium;
+        <div class="card">
+            <h2>Informações Pessoais</h2>
+            <div class="campo">
+                <div class="campo-info">
+                    <label>Nome</label>
+                    <div class="valor">${nome}</div>
+                </div>
+            </div>
+            <div class="campo">
+                <div class="campo-info">
+                    <label>WhatsApp</label>
+                    <div class="valor">${whatsapp}</div>
+                </div>
+            </div>
+            <div class="campo">
+                <div class="campo-info">
+                    <label>Localização</label>
+                    <div class="valor">${local}</div>
+                </div>
+            </div>
+            <div class="campo">
+                <div class="campo-info">
+                    <label>E-mail</label>
+                    <div class="valor bloqueado">${email}</div>
+                </div>
+            </div>
+        </div>
 
-    await atualizarEstatisticasExtras(sessao);
-    renderTabela(todosUsers);
-  }
+        <div class="card">
+            <h2>Ações</h2>
+            <a href="index.html" class="btn-acao principal">🏠 Ir para o Início</a>
+            <button onclick="sair()" class="btn-acao sair">🚪 Terminar Sessão</button>
+        </div>
+    `;
 
-  async function atualizarEstatisticasExtras(sessao) {
+    document.getElementById("conteudo").innerHTML = html;
+}
+
+window.sair = function() {
+    if (typeof MZ.limparSessao === "function") MZ.limparSessao();
+    localStorage.removeItem("mzlink_sessao");
+    window.location.href = "index.html";
+};
+
+// ===== LÓGICA DE VENDAS PROTEGIDAS =====
+async function carregarVendasProtegidasVendedor(userId) {
+    const seccao = document.getElementById('seccaoVendasProtegidas');
+    const listaDiv = document.getElementById('listaVendasVendedor');
+    if (!seccao || !listaDiv) return;
+
     try {
-        var rAnuncios = await fetch(MZ.url + "/rest/v1/profissionais?select=id", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
-        if (rAnuncios.ok) { var anuncios = await rAnuncios.json(); var elAnuncios = $("#statAnuncios"); if (elAnuncios) elAnuncios.textContent = anuncios.length; }
+        const sessao = await MZ.sessaoValida();
         
-        var rVisitas = await fetch(MZ.url + "/rest/v1/visitas?select=id", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
-        if (rVisitas.ok) { var visitas = await rVisitas.json(); var elVisitas = $("#statVisitas"); if (elVisitas) elVisitas.textContent = visitas.length; }
-    } catch (e) { console.log("Erro extras", e); }
-  }
-
-  function renderTabela(lista) {
-    var tbody = $("#tbodyUsers");
-    if (!lista.length) { tbody.innerHTML = '<tr><td colspan="4" class="sem-resultados">Nenhum utilizador.</td></tr>'; return; }
-    var html = "";
-    for (var i = 0; i < lista.length; i++) {
-      var u = lista[i];
-      var ehPremium = u.plano === "premium";
-      var textoPremium = "⭐ Premium";
-      if (ehPremium && u.premium_ate) { var dataExpiracao = new Date(u.premium_ate); textoPremium += " (até " + dataExpiracao.toLocaleDateString('pt-MZ') + ")"; }
-      html += "<tr><td><strong>" + (esc(u.nome) || "—") + "</strong></td><td>" + (esc(u.whatsapp) || "—") + "</td><td><span class='tag-plano " + (ehPremium ? "premium" : "basico") + "'>" + (ehPremium ? textoPremium : "Básico") + "</span></td><td>" + (ehPremium ? '<button class="btn-acao btn-rebaixar" data-id="' + esc(u.id) + '" data-acao="rebaixar">Rebaixar</button>' : '<button class="btn-acao btn-promover" data-id="' + esc(u.id) + '" data-acao="promover">⭐ Promover</button>') + "</td></tr>";
-    }
-    tbody.innerHTML = html;
-    var botoes = tbody.querySelectorAll("[data-id]");
-    for (var j = 0; j < botoes.length; j++) {
-      botoes[j].addEventListener("click", function () { alterarPlano(this.getAttribute("data-id"), this.getAttribute("data-acao")); });
-    }
-  }
-
-  async function alterarPlano(id, acao) {
-    var novoPlano = acao === "promover" ? "premium" : "basico";
-    if (!confirm(acao === "promover" ? "Promover a Premium por 30 dias?" : "Rebaixar para Básico?")) return;
-    try {
-      var sessao = await MZ.sessaoValida();
-      var dataExpiracao = null;
-      if (novoPlano === "premium") { var dataFutura = new Date(); dataFutura.setDate(dataFutura.getDate() + 30); dataExpiracao = dataFutura.toISOString(); }
-      var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + encodeURIComponent(id), {
-          method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json", Prefer: "return=minimal" },
-          body: JSON.stringify({ plano: novoPlano, premium_ate: dataExpiracao })
-      });
-      if (!r.ok) { alert("❌ Erro ao atualizar."); return; }
-      alert("✅ Atualizado!"); await carregarTudo();
-    } catch (e) { alert("❌ Erro de ligação."); }
-  }
-
-  async function carregarAnuncios() {
-    var div = document.getElementById("listaAnuncios");
-    if (!div) return;
-    try {
-        var sessao = await MZ.sessaoValida();
-        var r = await fetch(MZ.url + "/rest/v1/profissionais?select=id, nome, preco, criado_em&order=criado_em.desc&limit=20", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
-        if (!r.ok) { div.innerHTML = "<p style='color:red;'>Erro ao carregar.</p>"; return; }
-        var anuncios = await r.json();
-        if (anuncios.length === 0) { div.innerHTML = "<p style='padding:15px; color:#16a34a; font-weight:bold;'>✅ Nenhum anúncio publicado ainda.</p>"; return; }
-        var html = `<table style="width:100%; table-layout: fixed; border-collapse: collapse; text-align: left;"><tr style="background: #f8f9fb; border-bottom: 2px solid #eee;"><th style="padding: 8px 5px; font-size: 0.8rem; width: 50%;">Título</th><th style="padding: 8px 5px; font-size: 0.8rem; width: 25%;">Preço</th><th style="padding: 8px 5px; font-size: 0.8rem; width: 25%; text-align: center;">Ação</th></tr>`;
-        anuncios.forEach(function(a) {
-            html += `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 5px; font-weight: bold; font-size: 0.8rem; word-wrap: break-word;">${esc(a.nome)}</td><td style="padding: 8px 5px; color: #16a34a; font-weight: bold; font-size: 0.8rem; word-wrap: break-word;">${esc(a.preco || 'A combinar')} MT</td><td style="padding: 8px 5px; text-align: center;"><button onclick="window.apagarAnuncio('${a.id}')" style="background: #dc2626; color: white; border: none; padding: 6px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.7rem;">🗑 Apagar</button></td></tr>`;
-        });
-        html += `</table>`; div.innerHTML = html;
-    } catch (e) { div.innerHTML = "<p style='color:red;'>Erro de ligação.</p>"; }
-  }
-
-  window.apagarAnuncio = async function(id) {
-    if (!confirm("Apagar este anúncio permanentemente?")) return;
-    var sessao = await MZ.sessaoValida();
-    var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + id, { method: "DELETE", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
-    if (r.ok) { alert("🗑 Apagado!"); carregarAnuncios(); carregarTudo(); } else { alert("Erro ao apagar."); }
-  };
-
-  async function carregarPendentes() {
-    var div = document.getElementById("tabelaPendentes");
-    if (!div) return;
-    try {
-      var sessao = await MZ.sessaoValida();
-      var r = await fetch(MZ.url + "/rest/v1/pedidos_premium?status=eq.pendente&select=*", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
-      if (!r.ok) return;
-      var pedidos = await r.json();
-      if (pedidos.length === 0) { div.innerHTML = "<p style='padding:20px; color:#16a34a; font-weight:bold;'>✅ Nenhum pedido pendente.</p>"; return; }
-      var html = `<table style="width:100%; border-collapse: collapse; text-align: left;"><tr style="background: #f8f9fb; border-bottom: 2px solid #eee;"><th style="padding: 15px;">Loja</th><th style="padding: 15px;">Comprovativo</th><th style="padding: 15px;">Ação</th></tr>`;
-      pedidos.forEach(function(p) {
-          html += `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 15px; font-weight: bold;">${esc(p.nome_loja) || 'Sem nome'}</td><td style="padding: 15px; color: #d4af37; font-weight: bold; font-size: 1.1rem;">${esc(p.numero_comprovativo)}</td><td style="padding: 15px;"><button class="btn-aprovar-pedido" data-id="${esc(p.id)}" data-user="${esc(p.user_id)}" style="background: #16a34a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;">✅ Aprovar</button></td></tr>`;
-      });
-      html += `</table>`; div.innerHTML = html;
-      var btns = div.querySelectorAll(".btn-aprovar-pedido");
-      for (var i = 0; i < btns.length; i++) { btns[i].addEventListener("click", function() { aprovarPremium(this.getAttribute("data-id"), this.getAttribute("data-user")); }); }
-    } catch (e) { console.error(e); }
-  }
-
-  async function aprovarPremium(idPedido, userId) {
-    if (!confirm("Ativar Premium por 30 dias?")) return;
-    var sessao = await MZ.sessaoValida();
-    try {
-      await fetch(MZ.url + "/rest/v1/pedidos_premium?id=eq." + idPedido, { method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ status: "aprovado" }) });
-      var dataFutura = new Date(); dataFutura.setDate(dataFutura.getDate() + 30);
-      await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + userId, { method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ plano: "premium", premium_ate: dataFutura.toISOString() }) });
-      alert("✅ Promovido!"); await carregarTudo(); await carregarPendentes(); 
-    } catch (e) { alert("Erro ao aprovar."); }
-
-        // ===== SUPORTE (TICKETS) =====
-  async function carregarSuporte() {
-    var div = document.getElementById("listaSuporte");
-    if (!div) return;
-    try {
-        var sessao = await MZ.sessaoValida();
-        var r = await fetch(MZ.url + "/rest/v1/suporte?status=eq.pendente&order=criado_em.desc", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
-        if (!r.ok) { div.innerHTML = `<p style="color:red;">Erro ao carregar suporte.</p>`; return; }
-        var tickets = await r.json();
-        if (tickets.length === 0) { div.innerHTML = "<p style='padding:15px; color:#16a34a; font-weight:bold;'>✅ Nenhuma mensagem pendente.</p>"; return; }
-        var html = `<table style="width:100%; table-layout: fixed; border-collapse: collapse; text-align: left;"><tr style="background: #f8f9fb; border-bottom: 2px solid #eee;"><th style="padding: 8px 5px; font-size: 0.8rem; width: 30%;">Email</th><th style="padding: 8px 5px; font-size: 0.8rem; width: 50%;">Mensagem</th><th style="padding: 8px 5px; font-size: 0.8rem; width: 20%; text-align: center;">Ação</th></tr>`;
-        tickets.forEach(function(t) {
-            html += `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 5px; font-size: 0.75rem; word-break: break-all;">${esc(t.email)}</td><td style="padding: 8px 5px; font-size: 0.8rem; word-wrap: break-word;">${esc(t.mensagem)}</td><td style="padding: 8px 5px; text-align: center;"><button onclick="window.resolverTicket('${t.id}')" style="background: #16a34a; color: white; border: none; padding: 6px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.7rem;">✅ Resolver</button></td></tr>`;
-        });
-        html += `</table>`; div.innerHTML = html;
-    } catch (e) { div.innerHTML = `<p style="color:red;">Erro de ligação.</p>`; }
-  }
-
-  window.resolverTicket = async function(id) {
-    if (!confirm("Marcar esta mensagem como resolvida?")) return;
-    var sessao = await MZ.sessaoValida();
-    var r = await fetch(MZ.url + "/rest/v1/suporte?id=eq." + id, { method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ status: "resolvido" }) });
-    if (r.ok) { alert("✅ Resolvido!"); carregarSuporte(); }
-  };
-
-  // ===== CARTEIRA E VENDAS PROTEGIDAS (ESCROW) =====
-  async function carregarVendasProtegidas() {
-    var divVendas = document.getElementById("listaVendasProtegidas");
-    var divSaldo = document.getElementById("saldoMZLink");
-    if (!divVendas) return;
-
-    try {
-        var sessao = await MZ.sessaoValida();
-        // Buscar vendas com status 'pago' ou 'enviado'
-        var r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?status=in.(pago,enviado)&order=criado_em.desc", {
+        const r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?vendedor_id=eq." + userId + "&status=in.(pago,enviado)&order=criado_em.desc", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
 
-        if (!r.ok) { divVendas.innerHTML = "<p style='color:red;'>Erro ao carregar vendas.</p>"; return; }
-        var vendas = await r.json();
-        
-        var saldoTotal = 0;
-        vendas.forEach(v => saldoTotal += Number(v.taxa_mzlink));
-        if (divSaldo) divSaldo.innerText = saldoTotal.toFixed(2) + " MT";
+        if (!r.ok) return;
+        const vendas = await r.json();
 
         if (vendas.length === 0) {
-            divVendas.innerHTML = "<p style='padding:15px; color:#16a34a; font-weight:bold;'>✅ Nenhuma venda pendente de libertação.</p>";
+            seccao.style.display = 'none';
             return;
         }
 
-        var html = `<table style="width:100%; table-layout: fixed; border-collapse: collapse; text-align: left;">
-            <tr style="background: #f8f9fb; border-bottom: 2px solid #eee;">
-                <th style="padding: 8px 5px; font-size: 0.75rem; width: 40%;">Vendedor (WhatsApp)</th>
-                <th style="padding: 8px 5px; font-size: 0.75rem; width: 30%;">Valor a Enviar</th>
-                <th style="padding: 8px 5px; font-size: 0.75rem; width: 30%;">Ação</th>
-            </tr>`;
+        seccao.style.display = 'block';
+        let html = "";
 
-        vendas.forEach(function(v) {
-            html += `<tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 8px 5px; font-size: 0.8rem; word-break: break-all;">
-                    <strong>${esc(v.whatsapp_vendedor)}</strong><br>
-                    <small style="color: #667085; font-size: 0.7rem;">Status: ${v.status.toUpperCase()}</small>
-                </td>
-                <td style="padding: 8px 5px; font-size: 0.85rem; font-weight: bold; color: #16a34a;">
-                    ${Number(v.valor_produto).toFixed(2)} MT
-                </td>
-                <td style="padding: 8px 5px; text-align: center;">
-                    <button onclick="window.libertarPagamento('${v.id}', '${v.produto_id}')" style="background: #16a34a; color: white; border: none; padding: 6px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.7rem;">✅ Pago ao Vendedor</button>
-                </td>
-            </tr>`;
+        vendas.forEach(venda => {
+            const numeroComprador = String(venda.whatsapp_comprador || "").replace(/\D/g, '');
+            const msgZap = encodeURIComponent("Olá! Vi que compraste o meu produto no MZLINK (Pedido #" + venda.id + "). Já recebi a confirmação do pagamento. Como combinamos a entrega?");
+            
+            const jaEnviado = venda.status === 'enviado';
+            const botaoEnviado = jaEnviado 
+                ? `<button disabled style="flex: 1; background: #cbd5e1; color: #475569; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 0.85rem;">✅ Produto Enviado</button>`
+                : `<button onclick="marcarComoEnviado(${venda.id})" style="flex: 1; background: #1E40AF; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer;">📦 Marcar como Enviado</button>`;
+
+            html += `
+                <div style="background: #f0fdf4; border: 1px solid #16a34a; border-radius: 8px; padding: 15px; position: relative;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <strong style="color: #166534; font-size: 1rem;">Venda #${venda.id}</strong>
+                            <p style="margin: 5px 0; font-size: 0.85rem; color: #475569;">
+                                Valor a receber: <strong style="color: #16a34a; font-size: 1.1rem;">${Number(venda.valor_produto).toFixed(2)} MT</strong>
+                            </p>
+                            <p style="margin: 0; font-size: 0.75rem; color: #64748b;">Comprovativo: ${venda.comprovativo}</p>
+                        </div>
+                        <span style="background: ${jaEnviado ? '#1E40AF' : '#16a34a'}; color: white; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 20px;">
+                            ${jaEnviado ? 'ENVIADO 📦' : 'PAGO ✅'}
+                        </span>
+                    </div>
+                    
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <a href="https://wa.me/258${numeroComprador}?text=${msgZap}" target="_blank" style="flex: 1; background: #25D366; color: white; text-align: center; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; text-decoration: none;">💬 Falar com o Comprador</a>
+                        ${botaoEnviado}
+                    </div>
+                </div>
+            `;
         });
-        html += `</table>`;
-        divVendas.innerHTML = html;
 
-    } catch (e) { divVendas.innerHTML = "<p style='color:red;'>Erro de ligação.</p>"; }
-  }
+        listaDiv.innerHTML = html;
 
-  window.libertarPagamento = async function(vendaId, produtoId) {
-    if (!confirm("Confirmas que já enviaste o dinheiro ao vendedor? Isto conclui a venda.")) return;
-    var sessao = await MZ.sessaoValida();
+    } catch (e) {
+        console.error("Erro ao carregar vendas:", e);
+    }
+}
+
+async function marcarComoEnviado(vendaId) {
+    if (!confirm("Confirmas que já entregaste ou enviaste o produto ao cliente?")) return;
+
     try {
-        await fetch(MZ.url + "/rest/v1/vendas_protegidas?id=eq." + vendaId, {
-            method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "concluido" })
+        const sessao = await MZ.sessaoValida();
+        const r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?id=eq." + vendaId, {
+            method: "PATCH",
+            headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "enviado" })
         });
-        await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + produtoId, {
-            method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
-            body: JSON.stringify({ vendido: true })
-        });
-        alert("✅ Pagamento libertado e anúncio marcado como vendido!");
-        carregarVendasProtegidas(); 
-        carregarTudo(); 
-    } catch (e) { alert("Erro ao libertar pagamento."); }
-  };
 
-  function esc(t) { var d = document.createElement("div"); d.textContent = String(t == null ? "" : t); return d.innerHTML; }
-
-  var btnSair = $("#btnSair");
-  if (btnSair) { btnSair.addEventListener("click", function (e) { e.preventDefault(); if (typeof MZ.limparSessao === "function") MZ.limparSessao(); localStorage.removeItem("mzlink_sessao"); window.location.href = "index.html"; }); }
-
-})();
-                                                                                                                                                                                                                                                                                                                                                                                                                           }
+        if (r.ok) {
+            alert("✅ Status atualizado! O comprador foi notificado.");
+            const sessao2 = await MZ.sessaoValida();
+            const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao2.access_token } });
+            const user = await userRes.json();
+            carregarVendasProtegidasVendedor(user.id); 
+        } else {
+            alert("Erro ao atualizar.");
+        }
+    } catch (e) {
+        alert("Erro de ligação.");
+    }
+}
