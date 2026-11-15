@@ -109,7 +109,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // ===== PROVA SOCIAL =====
   async function carregarProvaSocial() {
     const divProva = document.getElementById("provaSocial");
     if (!divProva) return;
@@ -133,7 +132,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // ===== TOP VENDEDORES =====
   async function carregarTopVendedores() {
     const secao = document.getElementById("seccaoTopVendedores");
     const listaDiv = document.getElementById("listaTopVendedores");
@@ -234,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let botoesHTML = "";
 
       if (item.preco && Number(item.preco) > 0) {
-        // PRODUTO COM PREÇO FIXO -> COMPRA PROTEGIDA
+        // PRODUTO COM PREÇO FIXO -> SÓ COMPRA PROTEGIDA
         const precoBase = Number(item.preco);
         let taxa = precoBase * 0.04; // 4% de comissão
         if (taxa > 500) taxa = 500; // Teto máximo de 500 MT
@@ -247,8 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         botoesHTML = `
           <div style="display: flex; gap: 6px; margin-top: 10px;">
-            <a class="btn-contactar" style="flex: 1; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; text-decoration: none; padding: 10px 0;" href="tel:+${numero}">📞 Ligar</a>
-            <button onclick="iniciarCompraProtegida('${item.id}', ${precoFinal})" style="flex: 2; background: #16a34a; color: white; border: none; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; cursor: pointer; padding: 10px 0;">🛡️ Comprar Protegido</button>
+            <button onclick="iniciarCompraProtegida('${item.id}', ${precoFinal})" style="flex: 1; background: #16a34a; color: white; border: none; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.9rem; cursor: pointer; padding: 12px 0;">🛡️ Comprar Protegido</button>
           </div>
         `;
       } else {
@@ -262,9 +259,9 @@ document.addEventListener("DOMContentLoaded", function () {
             <a class="btn-partilhar" style="flex: 1; padding: 10px 0; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; border: 1px solid #1E40AF; color: #1E40AF; border-radius: 8px; text-decoration: none;" href="https://wa.me/?text=${msgPartilha}" target="_blank" rel="noopener">📤</a>
           </div>
         `;
-      }
+        }
 
-      html +=
+                        html +=
         '<div class="result-card ' + (ehPremium ? 'card-premium' : '') + '">' +
           fotoHTML +
           '<div class="card-conteudo">' +
@@ -356,7 +353,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     mostrar(listaFiltrada, titulo);
 
-    // ===== SCROLL INTELIGENTE (Desliza até aos resultados) =====
     const resultsDiv = document.getElementById("results");
     if (resultsDiv) {
       setTimeout(() => {
@@ -432,7 +428,6 @@ function fecharModalPagamento() {
     document.getElementById('modalPagamento').style.display = 'none';
 }
 
-// Extrator de SMS
 document.getElementById('inputComprovativoCompra')?.addEventListener('input', function() {
     const texto = this.value.trim();
     const msg = document.getElementById('msgCodigoCompra');
@@ -454,7 +449,7 @@ document.getElementById('inputComprovativoCompra')?.addEventListener('input', fu
         if (texto.includes("852337913") || texto.toUpperCase().includes("AMÓS")) valido = true;
     } else if (matchEmola && matchEmola[0]) {
         codigo = matchEmola[0];
-              if (texto.includes("879608566") || texto.toUpperCase().includes("CELESTE")) valido = true;
+        if (texto.includes("879608566") || texto.toUpperCase().includes("CELESTE")) valido = true;
     }
 
     if (codigo) {
@@ -471,7 +466,6 @@ document.getElementById('inputComprovativoCompra')?.addEventListener('input', fu
     }
 });
 
-// Confirmar o Pagamento no Supabase
 document.getElementById('btnConfirmarPagamento')?.addEventListener('click', async function() {
     const comprovativo = document.getElementById('inputComprovativoCompra').value.trim();
     const msg = document.getElementById('msgCodigoCompra');
@@ -491,7 +485,6 @@ document.getElementById('btnConfirmarPagamento')?.addEventListener('click', asyn
         const userRes = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + sessao.access_token } });
         const user = await userRes.json();
 
-        // 1. Buscar os dados do vendedor
         const produtoRes = await fetch(SUPABASE_URL + "/rest/v1/profissionais?id=eq." + produtoAtualCompra + "&select=user_id,whatsapp,nome", { headers: { apikey: SUPABASE_KEY } });
         const produtoDados = await produtoRes.json();
         
@@ -499,10 +492,9 @@ document.getElementById('btnConfirmarPagamento')?.addEventListener('click', asyn
         const vendedorId = produtoDados[0].user_id;
         const vendedorWhatsapp = produtoDados[0].whatsapp;
 
-        // 2. Registar a venda protegida
         const vendaRes = await fetch(SUPABASE_URL + "/rest/v1/vendas_protegidas", {
             method: "POST",
-            headers: { apikey: SUPABASE_KEY, "Authorization": "Bearer " + sessao.access_token, "Content-Type": "application/json" },
+            headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + sessao.access_token, "Content-Type": "application/json" },
             body: JSON.stringify({
                 produto_id: produtoAtualCompra,
                 comprador_id: user.id,
