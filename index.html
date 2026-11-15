@@ -94,12 +94,6 @@
 
         <a href="publicar.html" class="menu-link" style="color: #1E40AF;">📢 Publicar Anúncio</a>
         <a href="perfil.html" class="menu-link" style="color: #1E40AF;">👤 O Meu Perfil</a>
-        
-        <!-- BOTÃO DE INSTALAR APP (Agora dentro do menu!) -->
-        <div id="areaInstalarApp" class="menu-link" style="display: none; background: linear-gradient(135deg, #f5d76e, #d4af37); border: none; margin-top: 5px; justify-content: center;" onclick="instalarApp()">
-            <strong style="color: #0f1115; font-size: 1rem;">📲 Instalar App MZLINK</strong>
-        </div>
-
         <a href="#" class="menu-link" id="linkMenuSuporte" style="color: #1E40AF;">💬 Suporte MZLINK</a>
 
         <div class="menu-titulo">Área Premium</div>
@@ -115,7 +109,7 @@
 
         <a href="login.html" class="menu-link" style="margin-top: 20px; border-top: 1px solid #eee; color: #0f1115;">🔑 Entrar / Registar</a>
         <a href="#" id="btnSairMenu" class="menu-link" style="color: #dc2626; border: none;">🚪 Terminar Sessão</a>
-            </div>
+    </div>
 
     <!-- CONTEÚDO PRINCIPAL -->
 <main>
@@ -186,20 +180,51 @@
     <p style="font-size: 0.8rem; margin-top: 5px;">© 2026 MZLINK · Feito em Moçambique 🇲🇿</p>
 </footer>
 
-<!-- MODAL DE SUPORTE -->
-<div id="modalSuporte" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10005; justify-content: center; align-items: flex-end;">
-    <div style="background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; padding: 25px; box-sizing: border-box; position: relative;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 style="margin: 0; color: #0f1115; font-size: 1.2rem;">💬 Suporte MZLINK</h3>
-            <button id="fecharSuporte" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888;">✕</button>
-        </div>
-        <p style="font-size: 0.85rem; color: #667085; margin-top: 0; margin-bottom: 15px;">Dúvidas ou problemas? Escreve a tua mensagem e a equipa responde.</p>
-        <textarea id="txtMensagemSuporte" placeholder="Escreve a tua mensagem aqui..." style="width: 100%; height: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: none; margin-bottom: 15px; box-sizing: border-box;"></textarea>
-        <button id="btnEnviarSuporte" style="width: 100%; background: #1E40AF; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">Enviar Mensagem</button>
-    </div>
-</div>
+        <!-- BOTÃO FLUTUANTE DE INSTALAR APP -->
+    <button id="btnInstalarApp" onclick="abrirModalInstalar()" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.85rem; padding: 12px 18px; border-radius: 30px; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.6); cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
+        <span style="font-size: 1.1rem;">📲</span> Instalar App
+    </button>
 
-        <!-- SCRIPTS -->
+    <!-- MODAL DE INSTALAÇÃO (QR CODE E INSTRUÇÕES) -->
+    <div id="modalInstalar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
+        <div style="background: #1a1d24; border: 2px solid #d4af37; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
+            
+            <button onclick="fecharModalInstalar()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #c9ccd3; font-size: 1.5rem; cursor: pointer;">&times;</button>
+
+            <h2 style="color: #d4af37; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Instalar MZLINK</h2>
+            <p style="color: #c9ccd3; font-size: 0.9rem; margin-bottom: 20px;">Leve o MZLINK sempre consigo. Instale a nossa App no seu telemóvel!</p>
+
+            <div style="background: #fff; padding: 15px; border-radius: 12px; display: inline-block; margin-bottom: 20px;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://mzlink.co.mz" alt="QR Code MZLINK" style="display: block; width: 150px; height: 150px;">
+            </div>
+            <p style="color: #8b8f99; font-size: 0.75rem; margin-top: -10px; margin-bottom: 20px;">Aponte a câmara do seu telemóvel</p>
+
+            <button id="btnInstalarNativo" onclick="triggerInstalar()" style="display: flex; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 12px; border: none; cursor: pointer; width: 100%; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <span style="font-size: 1.2rem;">📲</span> Instalar Agora
+            </button>
+
+            <p style="color: #c9ccd3; font-size: 0.8rem; text-align: left; background: #0f1115; padding: 10px; border-radius: 8px; line-height: 1.5;">
+                <strong>Não funciona?</strong><br>
+                <strong>Android:</strong> Toque nos 3 pontinhos do Chrome e escolha "Instalar aplicação".<br>
+                <strong>iPhone:</strong> Abra no Safari, toque em Partilhar e escolha "Adicionar ao ecrã principal".
+            </p>
+        </div>
+    </div>
+
+    <!-- MODAL DE SUPORTE -->
+    <div id="modalSuporte" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10005; justify-content: center; align-items: flex-end;">
+        <div style="background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; padding: 25px; box-sizing: border-box; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #0f1115; font-size: 1.2rem;">💬 Suporte MZLINK</h3>
+                <button id="fecharSuporte" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888;">✕</button>
+            </div>
+            <p style="font-size: 0.85rem; color: #667085; margin-top: 0; margin-bottom: 15px;">Dúvidas ou problemas? Escreve a tua mensagem e a equipa responde.</p>
+            <textarea id="txtMensagemSuporte" placeholder="Escreve a tua mensagem aqui..." style="width: 100%; height: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: none; margin-bottom: 15px; box-sizing: border-box;"></textarea>
+            <button id="btnEnviarSuporte" style="width: 100%; background: #1E40AF; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">Enviar Mensagem</button>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
     <script src="sessao.js" charset="UTF-8"></script>
     <script src="header.js"></script>
     <script src="modo-premium.js"></script>
@@ -214,63 +239,42 @@
         const menuLateral = document.getElementById('menuLateral');
         const overlayMenu = document.getElementById('overlayMenu');
 
-        // Função que cria a onda em qualquer link do menu
         function criarOnda(e) {
             const el = e.currentTarget;
             const rect = el.getBoundingClientRect();
             const onda = document.createElement('span');
             onda.classList.add('onda-efeito');
-            
-            // Tamanho da onda baseado no tamanho do botão
             const tamanho = Math.max(rect.width, rect.height) * 2;
             onda.style.width = onda.style.height = `${tamanho}px`;
-            
-            // Posição da onda baseada no toque do dedo
             onda.style.left = `${e.clientX - rect.left - tamanho / 2}px`;
             onda.style.top = `${e.clientY - rect.top - tamanho / 2}px`;
-            
             el.appendChild(onda);
-            setTimeout(() => { onda.remove(); }, 600); // Remove depois de 0.6 segundos
+            setTimeout(() => { onda.remove(); }, 600);
         }
 
-        // Adiciona a onda a todos os links do menu
         document.querySelectorAll('.menu-link').forEach(link => {
             link.addEventListener('click', criarOnda);
         });
 
-        function abrirMenu() { 
-            menuLateral.style.left = '0px'; 
-            overlayMenu.style.display = 'block'; 
-        }
-        function fecharMenu() { 
-            menuLateral.style.left = '-320px'; 
-            overlayMenu.style.display = 'none'; 
-        }
+        function abrirMenu() { menuLateral.style.left = '0px'; overlayMenu.style.display = 'block'; }
+        function fecharMenu() { menuLateral.style.left = '-320px'; overlayMenu.style.display = 'none'; }
 
         btnAbrirMenu.addEventListener('click', abrirMenu);
         btnFecharMenu.addEventListener('click', fecharMenu);
         overlayMenu.addEventListener('click', fecharMenu);
 
-        // Filtros do Menu
         function filtrarCategoria(categoria) {
             const dropdown = document.getElementById("filtroCategoria");
-            if (dropdown) {
-                dropdown.value = categoria;
-                dropdown.dispatchEvent(new Event('change')); 
-            }
+            if (dropdown) { dropdown.value = categoria; dropdown.dispatchEvent(new Event('change')); }
             fecharMenu();
             document.getElementById("results").scrollIntoView({ behavior: 'smooth' });
         }
 
         // ===== LÓGICA DO SUPORTE =====
         document.getElementById('linkMenuSuporte').onclick = (e) => {
-            e.preventDefault();
-            fecharMenu();
-            document.getElementById('modalSuporte').style.display = 'flex';
+            e.preventDefault(); fecharMenu(); document.getElementById('modalSuporte').style.display = 'flex';
         };
-        document.getElementById('fecharSuporte').onclick = () => {
-            document.getElementById('modalSuporte').style.display = 'none';
-        };
+        document.getElementById('fecharSuporte').onclick = () => { document.getElementById('modalSuporte').style.display = 'none'; };
 
         document.getElementById('btnEnviarSuporte').onclick = async () => {
             const btn = document.getElementById('btnEnviarSuporte');
@@ -281,16 +285,13 @@
             try {
                 const sessao = await MZ.sessaoValida();
                 if (!sessao) { alert("Precisas de fazer login!"); window.location.href = "login.html"; return; }
-                
                 const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
                 const user = await userRes.json();
-
                 const r = await fetch(MZ.url + "/rest/v1/suporte", {
                     method: "POST",
                     headers: { "apikey": MZ.key, "Authorization": "Bearer " + sessao.access_token, "Content-Type": "application/json" },
                     body: JSON.stringify({ user_id: user.id, email: user.email, mensagem: msg })
                 });
-                
                 if (r.ok) { 
                     alert("✅ Mensagem enviada!"); 
                     document.getElementById('txtMensagemSuporte').value = ""; 
@@ -302,37 +303,32 @@
 
         // ===== LÓGICA DO BOTÃO DE INSTALAR (PWA) =====
         let deferredPrompt;
-        
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            const btnInstalar = document.getElementById('areaInstalarApp');
-            if (btnInstalar) btnInstalar.style.display = 'flex'; // Mostra o botão dentro do menu
         });
 
-        window.instalarApp = async function() {
+        function abrirModalInstalar() { document.getElementById('modalInstalar').style.display = 'flex'; }
+        function fecharModalInstalar() { document.getElementById('modalInstalar').style.display = 'none'; }
+
+        async function triggerInstalar() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    document.getElementById('areaInstalarApp').style.display = 'none';
-                    fecharMenu(); 
-                }
+                if (outcome === 'accepted') { fecharModalInstalar(); }
                 deferredPrompt = null;
             } else {
                 alert("Para instalar a MZLINK:\n\n1. Toque nos 3 pontinhos do Chrome.\n2. Escolha 'Instalar aplicação' ou 'Adicionar ao ecrã inicial'.");
             }
-        };
+        }
 
         // ===== VERIFICAR SE É PREMIUM =====
         document.addEventListener("DOMContentLoaded", async () => {
             try {
                 const sessao = await MZ.sessaoValida();
                 if (!sessao) return;
-                
                 const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
                 const user = await userRes.json();
-                
                 const r = await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + user.id + "&select=plano", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
                 const dados = await r.json();
 
