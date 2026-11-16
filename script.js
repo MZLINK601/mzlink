@@ -91,6 +91,30 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (e) { /* silencioso */ }
   }
 
+  // ===== VERIFICAR NOTIFICAÇÕES (SININHO) =====
+  async function verificarNotificacoesVendedor() {
+    try {
+        const sessao = await MZ.sessaoValida();
+        if (!sessao) return;
+
+        const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
+        const user = await userRes.json();
+
+        const r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?vendedor_id=eq." + user.id + "&status=eq.pago&select=id", {
+            headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
+        });
+
+        if (r.ok) {
+            const vendas = await r.json();
+            const sino = document.getElementById('sinoNotificacoes');
+            if (vendas.length > 0 && sino) {
+                sino.style.display = 'inline-block';
+                sino.innerText = '🔔 ' + vendas.length;
+            }
+        }
+    } catch (e) { console.log("Erro notificação", e); }
+  }
+
   async function carregarDados() {
     try {
       const resposta = await fetch(
@@ -112,12 +136,8 @@ document.addEventListener("DOMContentLoaded", function () {
   async function carregarProvaSocial() {
     const divProva = document.getElementById("provaSocial");
     if (!divProva) return;
-
     try {
-      const resposta = await fetch(SUPABASE_URL + "/rest/v1/profissionais?select=id", {
-        headers: { apikey: SUPABASE_KEY }
-      });
-
+      const resposta = await fetch(SUPABASE_URL + "/rest/v1/profissionais?select=id", { headers: { apikey: SUPABASE_KEY } });
       if (resposta.ok) {
         const lista = await resposta.json();
         const total = lista.length;
@@ -127,9 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
           divProva.innerHTML = `🚀 Sê o primeiro a publicar no MZLINK!`;
         }
       }
-    } catch (e) {
-      divProva.style.display = "none"; 
-    }
+    } catch (e) { divProva.style.display = "none"; }
   }
 
   async function carregarTopVendedores() {
@@ -142,12 +160,9 @@ document.addEventListener("DOMContentLoaded", function () {
         SUPABASE_URL + "/rest/v1/profissionais?select=id,nome,avatar_url,media_estrelas,total_avaliacoes,plano&media_estrelas=gt.0&order=media_estrelas.desc,total_avaliacoes.desc&limit=5",
         { headers: { apikey: SUPABASE_KEY } }
       );
-
       if (!resposta.ok) return;
       const top5 = await resposta.json();
-
       if (top5.length === 0) return; 
-
       secao.style.display = "block"; 
 
       let html = "";
@@ -165,13 +180,55 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
         `;
       });
-
       listaDiv.innerHTML = html;
-      listaDiv.style.overflowX = "auto";
+    } catch (e) { console.log("Erro ao carregar Top Vendedores", e); }
+  }
 
-    } catch (e) {
-      console.log("Erro ao carregar Top Vendedores", e);
-    }
+  // ===== LÓGICA DE VISTOS RECENTEMENTE =====
+  function guardarVisto(idProduto) {
+      let vistos = JSON.parse(localStorage.getItem("mzlink_vistos") || "[]");
+      vistos = vistos.filter(id => id !== String(idProduto));
+      vistos.unshift(String(idProduto));
+      if (vistos.length > 5) vistos.pop();
+      localStorage.setItem("mzlink_vistos", JSON.stringify(vistos));
+  }
+
+  async function carregarVistos() {
+      const secao = document.getElementById("seccaoVistos");
+      const lista = document.getElementById("listaVistos");
+      if (!secao || !lista) return;
+
+      let vistos = JSON.parse(localStorage.getItem("mzlink_vistos") || "[]");
+      if (vistos.length === 0) { secao.style.display = "none"; return; }
+
+      try {
+          const resposta = await fetch(SUPABASE_URL + "/rest/v1/profissionais?id=in.(" + vistos.join(",") + ")&select=id,nome,tipo,preco,fotos&vendido=eq.false", { headers: { apikey: SUPABASE_KEY } });
+          if (!resposta.ok) return;
+          let produtos = await resposta.json();
+          if (produtos.length === 0) { secao.style.display = "none"; return; }
+
+          secao.style.display = "block";
+          let html = "";
+          produtos.sort((a, b) => vistos.indexOf(String(a.id)) - vistos.indexOf(String(b.id)));
+
+          produtos.forEach(function(item) {
+              const foto = (item.fotos && item.fotos.length > 0) ? item.fotos[0] : "https://via.placeholder.com/150?text=Sem+Foto";
+              const precoBase = Number(item.preco) || 0;
+              let taxa = precoBase * 0.04; if (taxa > 500) taxa = 500;
+              const precoFinal = precoBase > 0 ? (precoBase + taxa).toFixed(2) + " MT" : "A combinar";
+
+              html += `
+                  <div onclick="guardarVisto('${item.id}')" style="min-width: 140px; max-width: 140px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                      <img src="${foto}" style="width: 100%; height: 100px; object-fit: cover;">
+                      <div style="padding: 10px;">
+                          <p style="font-size: 0.75rem; color: #0f1115; font-weight: 800; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.tipo}</p>
+                          <p style="font-size: 0.8rem; color: #16a34a; font-weight: 900; margin: 4px 0 0 0;">${precoFinal}</p>
+                      </div>
+                  </div>
+              `;
+          });
+          lista.innerHTML = html;
+      } catch (e) { console.log("Erro ao carregar vistos:", e); }
   }
 
   function mostrar(lista, titulo) {
@@ -198,8 +255,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const media = Number(item.media_estrelas) || 0;
       const total = Number(item.total_avaliacoes) || 0;
 
+      const msgPartilha = encodeURIComponent(
+        "Olha este anúncio no MZLINK: " + item.nome + " (" + item.tipo + " em " + item.local + "). Fala com ele aqui: https://mzlink.co.mz/"
+      );
+
       const badgePremium = ehPremium ? '<span class="badge-premium-card">👑 PREMIUM</span>' : '';
       const badgeEmpresa = ehEmpresa ? '<span style="background: #E0F2FE; color: #0369A1; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 800; vertical-align: middle; margin-left: 4px;">🏢 EMPRESA</span>' : '';
+      const badgeEstado = item.estado ? `<span style="background: #f3f4f6; color: #4b5563; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 4px;">${item.estado}</span>` : '';
 
       let avaliacaoHTML = "";
       if (total > 0) {
@@ -236,7 +298,7 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
 
         botoesHTML = `
-            <button onclick="iniciarCompraProtegida('${item.id}', ${precoFinal})" style="flex: 1; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 800; font-size: 0.75rem; cursor: pointer; padding: 8px 0;">🛡️ Comprar</button>
+            <button onclick="event.stopPropagation(); iniciarCompraProtegida('${item.id}', ${precoFinal})" style="flex: 1; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 800; font-size: 0.75rem; cursor: pointer; padding: 8px 0;">🛡️ Comprar</button>
         `;
       } else {
         precoHTML = `<p style="color: #667085; font-size: 0.8rem; margin: 0; font-style: italic;">Preço a combinar</p>`;
@@ -247,21 +309,19 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
       }
 
-      // ===== MONTAGEM DO CARTÃO HORIZONTAL =====
+      // ===== CARTÃO HORIZONTAL =====
       html += `
-        <div class="result-card ${ehPremium ? 'card-premium' : ''}" style="display: flex; flex-direction: row; padding: 10px; gap: 12px; align-items: stretch; margin-bottom: 15px;">
+        <div class="result-card ${ehPremium ? 'card-premium' : ''}" onclick="guardarVisto('${item.id}')" style="display: flex; flex-direction: row; padding: 10px; gap: 12px; align-items: stretch; margin-bottom: 15px; cursor: pointer;">
           
-          <!-- Imagem (Esquerda) -->
           <div style="width: 110px; min-width: 110px; height: 130px;">
              ${fotoHTML}
           </div>
 
-          <!-- Conteúdo (Direita) -->
           <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
              
              <div>
                  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                     <a href="vendedor.html?id=${item.user_id}" style="text-decoration: none; color: inherit; display: block; max-width: 70%;">
+                     <a href="vendedor.html?id=${item.user_id}" onclick="event.stopPropagation();" style="text-decoration: none; color: inherit; display: block; max-width: 70%;">
                          <h3 style="margin: 0; font-size: 0.95rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${limpar(item.nome)}</h3>
                      </a>
                      ${badgePremium}
@@ -289,9 +349,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     results.innerHTML = html;
 
-    // Listeners para as imagens e botões do WhatsApp
     results.querySelectorAll(".foto-principal-card[data-fotos]").forEach(function (el) {
-      el.onclick = function () {
+      el.onclick = function (e) {
+        e.stopPropagation(); // Impede o clique de guardar visto duas vezes
         try {
           const fotosData = JSON.parse(decodeURIComponent(el.getAttribute("data-fotos")));
           const nome = el.getAttribute("data-nome") || "";
@@ -301,16 +361,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     results.querySelectorAll(".btn-contactar-wa").forEach(function (btn) {
-      btn.addEventListener("click", function () {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
         const id = this.getAttribute("data-id");
-        if (id) {
-          window.registarCliqueContato(id);
-        }
+        if (id) { window.registarCliqueContato(id); }
       });
     });
-  }
+                          }
 
-  function filtrarEExibir() {
+                            function filtrarEExibir() {
     const termo = searchInput ? normalizar(searchInput.value) : "";
     const catSelecionada = document.getElementById("filtroCategoria") ? document.getElementById("filtroCategoria").value : "";
     const provSelecionada = document.getElementById("filtroProvincia") ? document.getElementById("filtroProvincia").value : "";
@@ -318,58 +377,36 @@ document.addEventListener("DOMContentLoaded", function () {
     
     let listaFiltrada = dados;
 
-    if (catSelecionada) {
-      listaFiltrada = listaFiltrada.filter(item => normalizar(item.categoria) === normalizar(catSelecionada));
-    }
-
-    if (provSelecionada) {
-      listaFiltrada = listaFiltrada.filter(item => normalizar(item.local).includes(normalizar(provSelecionada)));
-    }
-
-    if (estadoSelecionado) {
-      listaFiltrada = listaFiltrada.filter(item => normalizar(item.estado) === normalizar(estadoSelecionado));
-    }
+    if (catSelecionada) { listaFiltrada = listaFiltrada.filter(item => normalizar(item.categoria) === normalizar(catSelecionada)); }
+    if (provSelecionada) { listaFiltrada = listaFiltrada.filter(item => normalizar(item.local).includes(normalizar(provSelecionada))); }
+    if (estadoSelecionado) { listaFiltrada = listaFiltrada.filter(item => normalizar(item.estado) === normalizar(estadoSelecionado)); }
 
     if (termo) {
       listaFiltrada = listaFiltrada.filter(item => {
-        const nome = normalizar(item.nome);
-        const tipo = normalizar(item.tipo);
-        const local = normalizar(item.local);
-        const categoria = normalizar(item.categoria);
-        
+        const nome = normalizar(item.nome); const tipo = normalizar(item.tipo);
+        const local = normalizar(item.local); const categoria = normalizar(item.categoria);
         return nome.includes(termo) || tipo.includes(termo) || local.includes(termo) || categoria.includes(termo);
       });
     }
 
     let titulo = "Anúncios Recentes";
-    if (termo || catSelecionada || provSelecionada || estadoSelecionado) {
-      titulo = "Resultados da busca";
-    }
-
+    if (termo || catSelecionada || provSelecionada || estadoSelecionado) { titulo = "Resultados da busca"; }
     mostrar(listaFiltrada, titulo);
 
     const resultsDiv = document.getElementById("results");
-    if (resultsDiv) {
-      setTimeout(() => {
-        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
+    if (resultsDiv) { setTimeout(() => { resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); }
   }
 
   if (searchButton) searchButton.addEventListener("click", filtrarEExibir);
   if (searchInput) {
     searchInput.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        filtrarEExibir();
-      }
+      if (e.key === "Enter") { e.preventDefault(); filtrarEExibir(); }
     });
   }
 
   document.querySelectorAll("[data-categoria]").forEach(function (botao) {
     botao.addEventListener("click", function () {
-      const cat = botao.dataset.categoria;
-      const dropdown = document.getElementById("filtroCategoria");
+      const cat = botao.dataset.categoria; const dropdown = document.getElementById("filtroCategoria");
       if (dropdown) dropdown.value = cat;
       filtrarEExibir();
     });
@@ -390,6 +427,8 @@ document.addEventListener("DOMContentLoaded", function () {
     await carregarDados();
     await carregarProvaSocial();
     await carregarTopVendedores();
+    await carregarVistos();
+    await verificarNotificacoesVendedor(); // INICIA O SININHO
   })();
 });
 
@@ -400,9 +439,8 @@ let produtoAtualCompra = null;
 let valorAtualCompra = 0;
 
 window.iniciarCompraProtegida = function(produtoId, valorTotal) {
-    const chave = "mzlink_sessao";
     let sessao = null;
-    try { sessao = JSON.parse(localStorage.getItem(chave)); } catch(e) {}
+    try { sessao = JSON.parse(localStorage.getItem("mzlink_sessao")); } catch(e) {}
 
     if (!sessao || !sessao.access_token) {
       alert("⚠️ Para comprar com Proteção MZLINK, precisas de estar logado.\n\nVais ser redirecionado para o login.");
@@ -472,8 +510,7 @@ document.getElementById('btnConfirmarPagamento')?.addEventListener('click', asyn
     this.disabled = true;
 
     try {
-                const chave = "mzlink_sessao";
-        let sessao = JSON.parse(localStorage.getItem(chave));
+        let sessao = JSON.parse(localStorage.getItem("mzlink_sessao"));
         const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
         const SUPABASE_KEY = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
 
@@ -505,8 +542,24 @@ document.getElementById('btnConfirmarPagamento')?.addEventListener('click', asyn
         });
 
         if (vendaRes.ok) {
-            alert("🎉 Pagamento Confirmado!\n\nO vendedor foi notificado e vai contactar-te em breve. O teu dinheiro está seguro no MZLINK.");
+            alert("🎉 Pagamento Confirmado!\n\nO vendedor vai ser notificado agora no WhatsApp. O teu dinheiro está seguro no MZLINK.");
             fecharModalPagamento();
+            
+            // ===== A MAGIA DO WHATSAPP AUTOMÁTICO =====
+            try {
+                const nomeProduto = produtoDados[0].nome || "Produto MZLINK";
+                const msgTexto = `Olá! Acabei de fazer um pagamento no MZLINK. 🛡️\n\n📦 Produto: *${nomeProduto}*\n💰 Valor: *${valorAtualCompra.toFixed(2)} MT*\n🧾 Código do Comprovativo: *${comprovativo}*\n\nJá estou a enviar o print do comprovativo! Podes confirmar a entrega?`;
+                
+                const msgZap = encodeURIComponent(msgTexto);
+                let numVendedor = String(vendedorWhatsapp).replace(/\D/g, "");
+                if (numVendedor && !numVendedor.startsWith("258")) numVendedor = "258" + numVendedor;
+
+                setTimeout(() => {
+                    window.open(`https://wa.me/${numVendedor}?text=${msgZap}`, "_blank");
+                }, 500);
+            } catch (err) { console.error("Erro ao abrir WhatsApp", err); }
+            // ==========================================
+
         } else {
             throw new Error("Erro ao registar no banco de dados.");
         }
