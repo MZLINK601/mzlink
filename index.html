@@ -30,17 +30,16 @@
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
         
+        /* Menu */
         .menu-link { position: relative; overflow: hidden; text-decoration: none; color: #0f1115; font-weight: 700; font-size: 1rem; padding: 12px 10px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; border-radius: 8px; transition: background 0.2s; cursor: pointer;}
         .menu-link:hover { background: #f8f9fb; color: #1E40AF; }
-        
         .onda-efeito { position: absolute; border-radius: 50%; background: rgba(212, 175, 55, 0.5); transform: scale(0); animation: ondaAgua 0.6s ease-out; pointer-events: none; z-index: 10; }
         @keyframes ondaAgua { 100% { transform: scale(4); opacity: 0; } }
-
         #menuLateral { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: #fff; z-index: 10001; transition: left 0.3s ease; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         #overlayMenu { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; backdrop-filter: blur(2px); }
-        
         .menu-titulo { font-size: 0.75rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 5px; padding-left: 10px; }
 
+        /* Hero */
         .hero-moz { background: linear-gradient(rgba(15, 17, 21, 0.7), rgba(15, 17, 21, 0.9)), url('ponte.jpg') center/cover no-repeat !important; padding: 50px 20px 40px !important; text-align: center; width: 92% !important; max-width: 1100px !important; margin: 20px auto !important; border-radius: 12px !important; border: 2px solid #d4af37 !important; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important; position: relative; overflow: hidden; }
         .badge-moz { display: inline-flex; align-items: center; gap: 6px; background: #E31937; color: #fff; font-weight: 800; font-size: 0.75rem; padding: 8px 16px; border-radius: 999px; margin-bottom: 20px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(227, 25, 55, 0.4); position: relative; z-index: 2; }
         .hero-moz h1 { font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1.1; margin: 0 0 12px 0; letter-spacing: -1px; text-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; z-index: 2; }
@@ -50,6 +49,7 @@
         .search-box input { flex: 1 !important; border: none !important; padding: 16px 20px !important; font-size: 0.95rem !important; outline: none !important; background: transparent !important; color: #0f1115 !important; }
         .search-box button { background: #1E40AF !important; color: white !important; border: none !important; padding: 0 20px !important; font-weight: 800 !important; font-size: 0.9rem !important; cursor: pointer !important; }
         
+        /* Filtros */
         .filtros-container { display: flex; gap: 10px; margin: 20px auto; max-width: 90%; flex-wrap: wrap; }
         .filtro-select { flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 0.85rem; font-weight: 700; color: #0f1115; background-color: #ffffff; font-family: inherit; outline: none; transition: all 0.2s; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E40AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 14px top 50%; background-size: 10px auto; }
         
@@ -118,6 +118,12 @@
         </div>
     </section>
 
+    <!-- SECÇÃO INTELIGENTE: VISTOS RECENTEMENTE -->
+    <section id="seccaoVistos" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
+        <h2 style="color: #0f1115; font-size: 1.3rem; font-weight: 900; margin-bottom: 15px;">👀 Vistos Recentemente</h2>
+        <div id="listaVistos" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; text-align: left;"></div>
+    </section>
+
     <section id="seccaoTopVendedores" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
         <h2 style="color: #0f1115; font-size: 1.4rem; font-weight: 900; margin-bottom: 20px;">🏆 Top Vendedores do Mês</h2>
         <div id="listaTopVendedores" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;"></div>
@@ -172,7 +178,7 @@
     </div>
 </footer>
 
-        <!-- MODAL DE TERMOS (Aparece logo ao entrar) -->
+        <!-- POPUP DE TERMOS E CONDIÇÕES (O ÚNICO QUE FICA) -->
     <div id="modalTermos" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10010; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
         <div style="background: #fff; border-radius: 20px; padding: 30px 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
             <div style="font-size: 3rem; margin-bottom: 10px;">⚖️</div>
@@ -257,59 +263,27 @@
         </div>
     </div>
 
-    <!-- POPUP DE MUDANÇAS -->
-    <div id="popupAviso" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10005; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
-        <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); border: 2px solid #d4af37; border-radius: 20px; padding: 30px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3); position: relative;">
-            <div style="font-size: 3rem; margin-bottom: 10px;">🚀</div>
-            <h2 style="color: #d4af37; font-size: 1.5rem; margin-top: 0; font-weight: 900; letter-spacing: 1px;">GRANDES MUDANÇAS!</h2>
-            <p style="color: #c9ccd3; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5;">O MZLINK está a evoluir para te dar mais segurança e conforto!</p>
-            <div style="background: #1E40AF; color: white; border-radius: 8px; padding: 12px; margin-bottom: 20px; text-align: left; font-size: 0.85rem;">
-                <p style="margin: 0 0 5px 0;">🛡️ <strong>Pagamento Protegido:</strong> O teu dinheiro só sai depois de receberes o produto!</p>
-                <p style="margin: 0 0 5px 0;">📲 <strong>App Oficial:</strong> Instala o MZLINK no teu telemóvel.</p>
-                <p style="margin: 0;">⭐ <strong>Novas Taxas:</strong> Apenas 4% de comissão (máximo 500 MT).</p>
-            </div>
-            <button onclick="fecharAviso()" style="width: 100%; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);">Entendi, vamos a isso! 🚀</button>
-        </div>
-    </div>
-
     <!-- SCRIPTS -->
     <script src="sessao.js" charset="UTF-8"></script>
     <script src="header.js"></script>
     <script src="modo-premium.js"></script>
-    <script src="script.js?v=6"></script> 
+    <script src="script.js?v=8"></script> <!-- ATUALIZADO PARA v=8 PARA O VISTOS RECENTEMENTE -->
     <script src="avaliações.js" defer></script>
     <script src="galeria.js" defer></script>
 
     <script>
-        // ===== LÓGICA DOS TERMOS =====
+        // ===== LÓGICA DOS TERMOS (O único popup que fica) =====
         function aceitarTermos() {
             localStorage.setItem('mzlink_termos_aceites', 'sim');
             document.getElementById('modalTermos').style.display = 'none';
-            verificarAvisoMudancas();
         }
 
         document.addEventListener("DOMContentLoaded", () => {
             const termosAceites = localStorage.getItem('mzlink_termos_aceites');
             if (termosAceites !== 'sim') {
                 document.getElementById('modalTermos').style.display = 'flex';
-            } else {
-                verificarAvisoMudancas();
             }
         });
-
-        function verificarAvisoMudancas() {
-            const avisoVisto = localStorage.getItem('mzlink_aviso_visto');
-            const hoje = new Date().toDateString();
-            const popupAviso = document.getElementById('popupAviso');
-            if (popupAviso && avisoVisto !== hoje) {
-                setTimeout(() => { popupAviso.style.display = 'flex'; }, 1000);
-            }
-        }
-
-        function fecharAviso() {
-            document.getElementById('popupAviso').style.display = 'none';
-            localStorage.setItem('mzlink_aviso_visto', new Date().toDateString());
-        }
 
         // ===== LÓGICA DO MENU E EFEITO DE ONDA =====
         const btnAbrirMenu = document.getElementById('btnAbrirMenu');
@@ -417,4 +391,4 @@
         });
     </script>
 </body>
-                    </html>
+                </html>
