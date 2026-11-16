@@ -30,24 +30,17 @@
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
         
-        /* ===== EFEITO DE ONDA (RIPPLE) NOS LINKS ===== */
         .menu-link { position: relative; overflow: hidden; text-decoration: none; color: #0f1115; font-weight: 700; font-size: 1rem; padding: 12px 10px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; border-radius: 8px; transition: background 0.2s; cursor: pointer;}
         .menu-link:hover { background: #f8f9fb; color: #1E40AF; }
         
-        .onda-efeito {
-            position: absolute; border-radius: 50%; background: rgba(212, 175, 55, 0.5);
-            transform: scale(0); animation: ondaAgua 0.6s ease-out;
-            pointer-events: none; z-index: 10;
-        }
+        .onda-efeito { position: absolute; border-radius: 50%; background: rgba(212, 175, 55, 0.5); transform: scale(0); animation: ondaAgua 0.6s ease-out; pointer-events: none; z-index: 10; }
         @keyframes ondaAgua { 100% { transform: scale(4); opacity: 0; } }
 
-        /* ===== ESTILOS DO MENU LATERAL ===== */
         #menuLateral { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: #fff; z-index: 10001; transition: left 0.3s ease; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         #overlayMenu { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; backdrop-filter: blur(2px); }
         
         .menu-titulo { font-size: 0.75rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 5px; padding-left: 10px; }
 
-        /* ===== HERO E GERAL ===== */
         .hero-moz { background: linear-gradient(rgba(15, 17, 21, 0.7), rgba(15, 17, 21, 0.9)), url('ponte.jpg') center/cover no-repeat !important; padding: 50px 20px 40px !important; text-align: center; width: 92% !important; max-width: 1100px !important; margin: 20px auto !important; border-radius: 12px !important; border: 2px solid #d4af37 !important; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important; position: relative; overflow: hidden; }
         .badge-moz { display: inline-flex; align-items: center; gap: 6px; background: #E31937; color: #fff; font-weight: 800; font-size: 0.75rem; padding: 8px 16px; border-radius: 999px; margin-bottom: 20px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(227, 25, 55, 0.4); position: relative; z-index: 2; }
         .hero-moz h1 { font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1.1; margin: 0 0 12px 0; letter-spacing: -1px; text-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; z-index: 2; }
@@ -69,7 +62,6 @@
 </head>
 <body>
 
-    <!-- HEADER LIMPO -->
     <header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border-bottom: 2px solid #d4af37; position: sticky; top: 0; z-index: 999;">
         <a href="index.html" class="logo-header">
             <img src="logo-mzlink.png" alt="MZLINK" style="height: 40px;">
@@ -79,12 +71,10 @@
                 Olá, <span id="nomeUserTopo">...</span>
             </span>
             <span data-badge-premium></span>
-            <!-- BOTÃO DO MENU -->
             <button id="btnAbrirMenu" class="menu-link" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #0f1115; padding: 0; display: flex; justify-content: center; align-items: center;">☰</button>
         </div>
     </header>
 
-    <!-- OVERLAY E MENU LATERAL -->
     <div id="overlayMenu"></div>
     <div id="menuLateral">
         <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
@@ -111,8 +101,7 @@
         <a href="#" id="btnSairMenu" class="menu-link" style="color: #dc2626; border: none;">🚪 Terminar Sessão</a>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-<main>
+    <main>
     <section class="hero-moz">
         <div class="badge-moz">🇲🇿 100% Moçambicano</div>
         <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
@@ -178,9 +167,26 @@
 <footer class="rodape-mzlink" style="background: #0f1115; color: #c9ccd3; padding: 30px 20px; text-align: center; margin-top: 50px; border-top: 3px solid #d4af37;">
     <strong style="color: #d4af37; font-size: 1.2rem;">MZLINK</strong>
     <p style="font-size: 0.8rem; margin-top: 5px;">© 2026 MZLINK · Feito em Moçambique 🇲🇿</p>
+    <div style="margin-top: 15px; display: flex; justify-content: center; gap: 15px; font-size: 0.8rem;">
+        <a href="termos.html" style="color: #c9ccd3; text-decoration: none;">Termos e Condições</a>
+    </div>
 </footer>
 
-        <!-- BOTÃO DE INSTALAR APP (Topo Direito) -->
+        <!-- MODAL DE TERMOS (Aparece logo ao entrar) -->
+    <div id="modalTermos" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10010; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
+        <div style="background: #fff; border-radius: 20px; padding: 30px 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">⚖️</div>
+            <h2 style="color: #0f1115; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Termos e Condições</h2>
+            <p style="color: #475569; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; text-align: left;">
+                Para usar o MZLINK e comprar com <strong>Pagamento Protegido</strong>, precisas de aceitar as nossas regras de segurança, taxas de comissão (4%) e política de privacidade.
+            </p>
+            <a href="termos.html" target="_blank" style="display: block; margin-bottom: 20px; color: #1E40AF; font-weight: bold; text-decoration: underline; font-size: 0.9rem;">📄 Ler os Termos Completos</a>
+            <button onclick="aceitarTermos()" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);">✅ Aceito os Termos</button>
+            <button onclick="window.location.href='https://www.google.com'" style="width: 100%; background: none; color: #94a3b8; font-weight: bold; font-size: 0.85rem; padding: 15px 0 0 0; border: none; cursor: pointer;">Não aceito (Sair)</button>
+        </div>
+    </div>
+
+    <!-- BOTÃO DE INSTALAR -->
     <button id="btnInstalarApp" onclick="abrirModalInstalar()" style="position: fixed; top: 75px; right: 15px; z-index: 9999; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.75rem; padding: 8px 14px; border-radius: 20px; border: 1px solid #fff; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.5); cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
         <span style="font-size: 0.9rem;">📲</span> Instalar
     </button>
@@ -219,7 +225,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE PAGAMENTO PROTEGIDO (NOVO) -->
+    <!-- MODAL DE PAGAMENTO PROTEGIDO -->
     <div id="modalPagamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
         <div style="background: #fff; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
             <button onclick="fecharModalPagamento()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer;">&times;</button>
@@ -242,7 +248,27 @@
             <p style="font-size: 0.85rem; font-weight: 800; color: #0f1115; text-align: left; margin-bottom: 5px;">Colar o SMS:</p>
             <input type="text" id="inputComprovativoCompra" placeholder="Cola o SMS ou o código..." style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box; margin-bottom: 5px;">
             <p id="msgCodigoCompra" style="text-align: center; font-weight: bold; font-size: 0.8rem; margin-top: 0; margin-bottom: 15px; color: #16a34a;"></p>
+            
+            <p style="font-size: 0.65rem; color: #94a3b8; margin-bottom: 10px; text-align: center;">
+                Ao clicar em Confirmar, aceitas os <a href="termos.html" target="_blank" style="color: #1E40AF; font-weight: bold;">Termos e Condições</a> do MZLINK.
+            </p>
+            
             <button id="btnConfirmarPagamento" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">✅ Confirmar Pagamento</button>
+        </div>
+    </div>
+
+    <!-- POPUP DE MUDANÇAS -->
+    <div id="popupAviso" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10005; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
+        <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); border: 2px solid #d4af37; border-radius: 20px; padding: 30px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3); position: relative;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🚀</div>
+            <h2 style="color: #d4af37; font-size: 1.5rem; margin-top: 0; font-weight: 900; letter-spacing: 1px;">GRANDES MUDANÇAS!</h2>
+            <p style="color: #c9ccd3; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5;">O MZLINK está a evoluir para te dar mais segurança e conforto!</p>
+            <div style="background: #1E40AF; color: white; border-radius: 8px; padding: 12px; margin-bottom: 20px; text-align: left; font-size: 0.85rem;">
+                <p style="margin: 0 0 5px 0;">🛡️ <strong>Pagamento Protegido:</strong> O teu dinheiro só sai depois de receberes o produto!</p>
+                <p style="margin: 0 0 5px 0;">📲 <strong>App Oficial:</strong> Instala o MZLINK no teu telemóvel.</p>
+                <p style="margin: 0;">⭐ <strong>Novas Taxas:</strong> Apenas 4% de comissão (máximo 500 MT).</p>
+            </div>
+            <button onclick="fecharAviso()" style="width: 100%; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);">Entendi, vamos a isso! 🚀</button>
         </div>
     </div>
 
@@ -250,11 +276,41 @@
     <script src="sessao.js" charset="UTF-8"></script>
     <script src="header.js"></script>
     <script src="modo-premium.js"></script>
-    <script src="script.js"></script> 
-    <script src="script.js?v=4"></script>
+    <script src="script.js?v=6"></script> 
+    <script src="avaliações.js" defer></script>
     <script src="galeria.js" defer></script>
 
     <script>
+        // ===== LÓGICA DOS TERMOS =====
+        function aceitarTermos() {
+            localStorage.setItem('mzlink_termos_aceites', 'sim');
+            document.getElementById('modalTermos').style.display = 'none';
+            verificarAvisoMudancas();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const termosAceites = localStorage.getItem('mzlink_termos_aceites');
+            if (termosAceites !== 'sim') {
+                document.getElementById('modalTermos').style.display = 'flex';
+            } else {
+                verificarAvisoMudancas();
+            }
+        });
+
+        function verificarAvisoMudancas() {
+            const avisoVisto = localStorage.getItem('mzlink_aviso_visto');
+            const hoje = new Date().toDateString();
+            const popupAviso = document.getElementById('popupAviso');
+            if (popupAviso && avisoVisto !== hoje) {
+                setTimeout(() => { popupAviso.style.display = 'flex'; }, 1000);
+            }
+        }
+
+        function fecharAviso() {
+            document.getElementById('popupAviso').style.display = 'none';
+            localStorage.setItem('mzlink_aviso_visto', new Date().toDateString());
+        }
+
         // ===== LÓGICA DO MENU E EFEITO DE ONDA =====
         const btnAbrirMenu = document.getElementById('btnAbrirMenu');
         const btnFecharMenu = document.getElementById('btnFecharMenu');
@@ -360,47 +416,5 @@
             } catch(e) {}
         });
     </script>
-    <!-- POPUP DE AVISO DE MUDANÇAS -->
-<div id="popupAviso" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10005; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
-    <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); border: 2px solid #d4af37; border-radius: 20px; padding: 30px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3); position: relative;">
-        
-        <div style="font-size: 3rem; margin-bottom: 10px;">🚀</div>
-        <h2 style="color: #d4af37; font-size: 1.5rem; margin-top: 0; font-weight: 900; letter-spacing: 1px;">GRANDES MUDANÇAS!</h2>
-        <p style="color: #c9ccd3; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5;">
-            O MZLINK está a evoluir para te dar mais segurança e conforto!
-        </p>
-        
-        <div style="background: #1E40AF; color: white; border-radius: 8px; padding: 12px; margin-bottom: 20px; text-align: left; font-size: 0.85rem;">
-            <p style="margin: 0 0 5px 0;">🛡️ <strong>Pagamento Protegido:</strong> O teu dinheiro só sai depois de receberes o produto!</p>
-            <p style="margin: 0 0 5px 0;">📲 <strong>App Oficial:</strong> Instala o MZLINK no teu telemóvel.</p>
-            <p style="margin: 0;">⭐ <strong>Novas Taxas:</strong> Apenas 4% de comissão (máximo 500 MT).</p>
-        </div>
-
-        <button onclick="fecharAviso()" style="width: 100%; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);">
-            Entendi, vamos a isso! 🚀
-        </button>
-    </div>
-</div>
-
-<script>
-    // Lógica do Popup (Aparece apenas 1 vez por dia)
-    function fecharAviso() {
-        document.getElementById('popupAviso').style.display = 'none';
-        // Guarda a data de hoje no browser para não voltar a aparecer hoje
-        localStorage.setItem('mzlink_aviso_visto', new Date().toDateString());
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const avisoVisto = localStorage.getItem('mzlink_aviso_visto');
-        const hoje = new Date().toDateString();
-        
-        // Se a data guardada for diferente de hoje, mostra o popup
-        if (avisoVisto !== hoje) {
-            setTimeout(() => {
-                document.getElementById('popupAviso').style.display = 'flex';
-            }, 1000); // Aparece 1 segundo depois de abrir a página
-        }
-    });
-</script>
 </body>
-</html>
+                    </html>
