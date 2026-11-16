@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar e Editar Anúncio (Preço Obrigatório)
+   MZLINK · Publicar e Editar Anúncio (Preço Obrigatório + Smart Pricing)
    ============================================================ */
 
 (async function () {
@@ -33,8 +33,10 @@
   var fotosAviso = document.getElementById("fotosAviso");
   var limiteTexto = document.getElementById("limiteTexto");
   
-  // NÃO EXISTE MAIS O precoCombinar
   var inputPreco = document.getElementById("preco");
+  var inputTipo = document.getElementById("tipo");
+  var divDica = document.getElementById("dicaPreco");
+  var timerDica = null;
   
   var selectCategoria = document.getElementById("categoria");
   var divEstado = document.getElementById("divEstado");
@@ -64,6 +66,65 @@
     for (var k in extra) h[k] = extra[k];
     return h;
   }
+
+  // ===== SMART PRICING (A MÁGICA ACONTECE AQUI) =====
+  async function calcularDicaPreco() {
+      var categoria = selectCategoria.value;
+      var precoUser = Number(inputPreco.value);
+      
+      if (!categoria || categoria === "" || !precoUser || precoUser <= 0) {
+          if(divDica) divDica.style.display = "none";
+          return;
+      }
+
+      try {
+          var r = await fetch(MZ.url + "/rest/v1/profissionais?select=preco&categoria=eq." + categoria + "&preco=not.is.null&preco=gt.0&vendido=eq.false&limit=30", {
+              headers: cabecalhos({})
+          });
+
+          if (!r.ok) return;
+          var itens = await r.json();
+
+          if (itens.length === 0) {
+              divDica.style.display = "block";
+              divDica.style.color = "#1E40AF";
+              divDica.style.background = "#eff6ff";
+              divDica.style.borderColor = "#bfdbfe";
+              divDica.innerHTML = "💡 Sê o primeiro a vender nesta categoria! Define o teu preço com sabedoria.";
+              return;
+          }
+
+          var soma = 0;
+          itens.forEach(function(item) { soma += Number(item.preco); });
+          var media = soma / itens.length;
+
+          if (precoUser > (media * 1.15)) {
+              divDica.style.display = "block";
+              divDica.style.color = "#b45309";
+              divDica.style.background = "#fffbeb";
+              divDica.style.borderColor = "#fcd34d";
+              divDica.innerHTML = "💡 <strong>Dica de Venda:</strong> O preço médio nesta categoria é <strong>" + media.toFixed(0) + " MT</strong>. O teu produto está um pouco caro. Considera baixar o preço para venderes mais rápido!";
+          } else {
+              divDica.style.display = "block";
+              divDica.style.color = "#15803d";
+              divDica.style.background = "#f0fdf4";
+              divDica.style.borderColor = "#bbf7d0";
+              divDica.innerHTML = "🔥 <strong>Excelente!</strong> O teu preço está dentro da média de mercado. Tens boas chances de vender rápido!";
+          }
+
+      } catch (e) {
+          console.log("Erro na dica inteligente", e);
+      }
+  }
+
+  function ativarDebounce() {
+      clearTimeout(timerDica);
+      timerDica = setTimeout(calcularDicaPreco, 1000); 
+  }
+
+  inputPreco.addEventListener("input", ativarDebounce);
+  inputTipo.addEventListener("input", ativarDebounce);
+  selectCategoria.addEventListener("change", ativarDebounce);
 
   async function comprimirImagem(file) {
       return new Promise((resolve) => {
@@ -125,40 +186,23 @@
     if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
       bloquearFormulario();
     }
-  }
+       }
 
-  function bloquearFormulario() {
+   function bloquearFormulario() {
     if (form) form.style.display = "none";
-
     var aviso = document.createElement("div");
     aviso.className = "limite-anuncios-aviso";
     aviso.style.cssText = "background: #fffbeb; border: 2px solid #d4af37; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;";
-    
-    aviso.innerHTML =
-      '<div style="font-size: 3rem; margin-bottom: 10px;">🔒</div>' +
-      '<h3 style="color: #b45309; margin-bottom: 10px;">Limite do Plano Básico Atingido</h3>' +
-      '<p style="color: #667085; font-size: 0.9rem; margin-bottom: 15px;">' +
-        'A tua conta está no <strong>Plano Básico</strong>, que permite apenas 3 anúncios ativos. <br><br>' +
-        'Como tens <strong>' + totalMeusAnuncios + ' anúncios publicados</strong>, precisas de <strong>apagar ou marcar como vendido ' + (totalMeusAnuncios - 3) + ' anúncio(s)</strong> para voltares a publicar.' +
-      '</p>' +
-      '<p style="color: #1E40AF; font-weight: 800; margin-bottom: 20px;">👑 Queres publicar sem limites? Renova o teu Premium!</p>' +
-      '<a href="premium.html" style="display: inline-block; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 800; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);">Renovar Premium Agora</a>';
-
-    if (form && form.parentNode) {
-      form.parentNode.insertBefore(aviso, form);
-    }
+    aviso.innerHTML = '<div style="font-size: 3rem; margin-bottom: 10px;">🔒</div><h3 style="color: #b45309; margin-bottom: 10px;">Limite do Plano Básico Atingido</h3><p style="color: #667085; font-size: 0.9rem; margin-bottom: 15px;">A tua conta está no <strong>Plano Básico</strong>, que permite apenas 3 anúncios ativos. <br><br>Como tens <strong>' + totalMeusAnuncios + ' anúncios publicados</strong>, precisas de <strong>apagar ou marcar como vendido ' + (totalMeusAnuncios - 3) + ' anúncio(s)</strong> para voltares a publicar.</p><p style="color: #1E40AF; font-weight: 800; margin-bottom: 20px;">👑 Queres publicar sem limites? Renova o teu Premium!</p><a href="premium.html" style="display: inline-block; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 800; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);">Renovar Premium Agora</a>';
+    if (form && form.parentNode) { form.parentNode.insertBefore(aviso, form); }
   }
 
   function atualizarContador() {
     contador.textContent = ficheiros.length + "/" + limiteFotos;
     if (ficheiros.length >= limiteFotos) {
-      btnAddFoto.disabled = true;
-      btnAddFoto.textContent = "Limite atingido";
-      fotosAviso.style.display = "block"; 
+      btnAddFoto.disabled = true; btnAddFoto.textContent = "Limite atingido"; fotosAviso.style.display = "block"; 
     } else {
-      btnAddFoto.disabled = false;
-      btnAddFoto.textContent = "Adicionar foto (" + (limiteFotos - ficheiros.length) + " restantes)";
-      fotosAviso.style.display = "none"; 
+      btnAddFoto.disabled = false; btnAddFoto.textContent = "Adicionar foto (" + (limiteFotos - ficheiros.length) + " restantes)"; fotosAviso.style.display = "none"; 
     }
     fotosVazio.style.display = ficheiros.length > 0 ? "none" : "block";
   }
@@ -168,23 +212,14 @@
     ficheiros.forEach(function (item, i) {
       var div = document.createElement("div");
       div.className = "foto-item";
-      div.innerHTML = `
-        <img src="${item.url}">
-        ${i === 0 ? '<span class="principal">PRINCIPAL</span>' : ''}
-        <span class="numero">${(i + 1)}/${limiteFotos}</span>
-        <button type="button" class="remover" onclick="window.removerFotoPublicar(${i})">×</button>
-      `;
+      div.innerHTML = `<img src="${item.url}">${i === 0 ? '<span class="principal">PRINCIPAL</span>' : ''}<span class="numero">${(i + 1)}/${limiteFotos}</span><button type="button" class="remover" onclick="window.removerFotoPublicar(${i})">×</button>`;
       preview.appendChild(div);
     });
   }
 
   window.removerFotoPublicar = function(i) {
-      if (ficheiros[i].url.startsWith('blob:')) {
-          URL.revokeObjectURL(ficheiros[i].url);
-      }
-      ficheiros.splice(i, 1);
-      renderPreview();
-      atualizarContador();
+      if (ficheiros[i].url.startsWith('blob:')) URL.revokeObjectURL(ficheiros[i].url);
+      ficheiros.splice(i, 1); renderPreview(); atualizarContador();
   };
 
   btnAddFoto.addEventListener("click", function () { inputFotos.click(); });
@@ -192,40 +227,28 @@
   inputFotos.addEventListener("change", function (e) {
     var novos = Array.prototype.slice.call(e.target.files);
     if (!novos.length) return;
-
     var espaco = limiteFotos - ficheiros.length;
     if (espaco <= 0) { alert("Limite atingido!"); return; }
-
     var aceitos = novos.slice(0, espaco);
     aceitos.forEach(function (f) {
-      if (f.type.startsWith("image/")) {
-        ficheiros.push({ file: f, url: URL.createObjectURL(f) });
-      }
+      if (f.type.startsWith("image/")) ficheiros.push({ file: f, url: URL.createObjectURL(f) });
     });
-    inputFotos.value = "";
-    renderPreview();
-    atualizarContador();
+    inputFotos.value = ""; renderPreview(); atualizarContador();
   });
 
   async function listarMeus() {
     lista.textContent = "";
     var r = await fetch(MZ.url + "/rest/v1/profissionais?select=*&user_id=eq." + encodeURIComponent(usuario.id) + "&categoria=neq.loja&order=criado_em.desc", { headers: cabecalhos({}) });
-
     if (!r.ok) { lista.textContent = "Erro ao carregar."; return; }
-
     var itens = await r.json();
-
     if (itens.length === 0) { lista.innerHTML = "<p>Ainda não tens anúncios.</p>"; return; }
 
     itens.forEach(function (item) {
       var linha = document.createElement("div");
       linha.className = "meu-item";
       var nFotos = (item.fotos && item.fotos.length) || 0;
-      
-      // Se o preço for null (anúncios antigos), mostra "A combinar"
       var precoTxt = item.preco ? "💰 " + item.preco + " MT" : "⚠️ A combinar (Antigo)";
       var estadoTxt = item.estado && item.estado !== "Serviço" ? " | " + item.estado : "";
-      
       var isVendido = item.vendido === true;
       var btnVendido = isVendido 
         ? '<button type="button" onclick="window.alternarVendido(\'' + item.id + '\', true)" style="background:#fef3c7; color:#d97706; border:1px solid #fcd34d; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.75rem;">🔄 Disponível</button>'
@@ -255,74 +278,45 @@
   window.alternarVendido = async function(id, isVendido) {
       var msg = isVendido ? "Marcar este anúncio como Disponível novamente?" : "Marcar como Vendido? Ele desaparecerá da página inicial, mas continuará no teu perfil.";
       if (!confirm(msg)) return;
-
       try {
           await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + id, {
-              method: "PATCH",
-              headers: cabecalhos({ "Content-Type": "application/json" }),
+              method: "PATCH", headers: cabecalhos({ "Content-Type": "application/json" }),
               body: JSON.stringify({ vendido: !isVendido })
           });
           listarMeus();
-      } catch (e) {
-          alert("Erro ao atualizar. Tenta novamente.");
-      }
+      } catch (e) { alert("Erro ao atualizar. Tenta novamente."); }
   };
 
   window.prepararEdicao = async function(id) {
       try {
           var res = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + id + "&select=*", { headers: cabecalhos({}) });
           if (!res.ok) throw new Error("Falha de rede.");
-          
           var dados = await res.json();
-          if (dados.length === 0) {
-              alert("Erro: Este anúncio já não existe.");
-              listarMeus();
-              return;
-          }
-          
+          if (dados.length === 0) { alert("Erro: Este anúncio já não existe."); listarMeus(); return; }
           var item = dados[0];
-
           idAnuncioEmEdicao = id;
-          
           document.getElementById("tipo").value = item.tipo || "";
           document.getElementById("descricao").value = item.descricao || "";
           document.getElementById("local").value = item.local || "";
           document.getElementById("categoria").value = item.categoria || "";
           document.getElementById("whatsapp").value = String(item.whatsapp || "").replace(/^258/, "");
-          
-          // Coloca o preço existente (se não houver, fica vazio)
           inputPreco.value = item.preco || "";
-
           selectCategoria.dispatchEvent(new Event('change'));
-          if (item.estado && item.estado !== "Serviço") {
-              selectEstado.value = item.estado;
-          }
-
+          if (item.estado && item.estado !== "Serviço") selectEstado.value = item.estado;
           ficheiros = [];
           if (item.fotos && item.fotos.length > 0) {
-              item.fotos.forEach(function(url) {
-                  ficheiros.push({ file: null, url: url });
-              });
+              item.fotos.forEach(function(url) { ficheiros.push({ file: null, url: url }); });
           }
-          renderPreview();
-          atualizarContador();
-
+          renderPreview(); atualizarContador();
           tituloFormulario.textContent = "✏️ Editar Anúncio";
           botao.textContent = "💾 Guardar Alterações";
           btnCancelarEdicao.style.display = "block";
           btnPartilharWa.style.display = "none";
-          
           window.scrollTo({ top: 0, behavior: 'smooth' });
-          
-      } catch (erro) {
-          console.error(erro);
-          alert("Erro ao tentar carregar: " + erro.message);
-      }
+      } catch (erro) { console.error(erro); alert("Erro ao tentar carregar: " + erro.message); }
   };
 
-  btnCancelarEdicao.addEventListener("click", function() {
-      resetarFormulario();
-  });
+  btnCancelarEdicao.addEventListener("click", function() { resetarFormulario(); });
 
   function resetarFormulario() {
       form.reset();
@@ -331,6 +325,7 @@
       renderPreview();
       atualizarContador();
       inputPreco.disabled = false;
+      if(divDica) divDica.style.display = "none"; // Esconde a dica
       tituloFormulario.textContent = "Publicar anúncio";
       botao.textContent = "🚀 Publicar Anúncio";
       btnCancelarEdicao.style.display = "none";
@@ -341,14 +336,9 @@
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
-    
     if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
-      alert(
-        "Ups! A tua conta está no plano Básico (limite de 3 anúncios).\n\n" +
-        "Como tens " + totalMeusAnuncios + " anúncios publicados, precisas de apagar alguns ou renovar o teu Premium para continuares a vender sem limites!"
-      );
-      window.location.href = "premium.html";
-      return;
+      alert("Ups! A tua conta está no plano Básico (limite de 3 anúncios).\n\nComo tens " + totalMeusAnuncios + " anúncios publicados, precisas de apagar alguns ou renovar o teu Premium para continuares a vender sem limites!");
+      window.location.href = "premium.html"; return;
     }
 
     var nome = document.getElementById("nome").value.trim();
@@ -357,64 +347,29 @@
     var local = document.getElementById("local").value.trim();
     var categoria = selectCategoria.value;
     var telefone = document.getElementById("whatsapp").value.replace(/\s/g, "");
-    
     var estado = "Serviço";
-    if (categoria === "produtos" || categoria === "vendedores") {
-        estado = selectEstado.value || "Novo";
-    }
+    if (categoria === "produtos" || categoria === "vendedores") estado = selectEstado.value || "Novo";
 
-    // ===== VALIDAÇÃO DO PREÇO OBRIGATÓRIO =====
     var precoFinal = inputPreco.value ? Number(inputPreco.value) : null;
 
-    if (!nome || !tipo || !local || !categoria || !telefone || !descricao) {
-      aviso("Preenche todos os campos obrigatórios.", true);
-      return;
-    }
-
-    if (!precoFinal || precoFinal <= 0) {
-      aviso("⚠️ O preço é obrigatório. Coloca um valor para ativares o Pagamento Protegido MZLINK.", true);
-      botao.disabled = false;
-      return;
-    }
+    if (!nome || !tipo || !local || !categoria || !telefone || !descricao) { aviso("Preenche todos os campos obrigatórios.", true); return; }
+    if (!precoFinal || precoFinal <= 0) { aviso("⚠️ O preço é obrigatório. Coloca um valor para ativares o Pagamento Protegido MZLINK.", true); botao.disabled = false; return; }
 
     botao.disabled = true;
     aviso(idAnuncioEmEdicao ? "A guardar alterações..." : "A publicar anúncio...", false);
     
     try {
-      var dadosAnuncio = {
-          nome: nome,
-          tipo: tipo,
-          descricao: descricao,
-          estado: estado,
-          local: local,
-          categoria: categoria,
-          preco: precoFinal,
-          whatsapp: "258" + telefone,
-      };
-
+      var dadosAnuncio = { nome: nome, tipo: tipo, descricao: descricao, estado: estado, local: local, categoria: categoria, preco: precoFinal, whatsapp: "258" + telefone };
       var anuncioId = idAnuncioEmEdicao;
 
       if (idAnuncioEmEdicao) {
-          var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + idAnuncioEmEdicao, {
-            method: "PATCH",
-            headers: cabecalhos({ "Content-Type": "application/json" }),
-            body: JSON.stringify(dadosAnuncio)
-          });
+          var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + idAnuncioEmEdicao, { method: "PATCH", headers: cabecalhos({ "Content-Type": "application/json" }), body: JSON.stringify(dadosAnuncio) });
           if (!r.ok) throw new Error("Erro ao editar");
       } else {
-          dadosAnuncio.user_id = usuario.id;
-          dadosAnuncio.plano = planoUser;
-          dadosAnuncio.fotos = [];
-          dadosAnuncio.vendido = false; 
-
-          var r = await fetch(MZ.url + "/rest/v1/profissionais", {
-            method: "POST",
-            headers: cabecalhos({ "Content-Type": "application/json", Prefer: "return=representation" }),
-            body: JSON.stringify(dadosAnuncio)
-          });
+          dadosAnuncio.user_id = usuario.id; dadosAnuncio.plano = planoUser; dadosAnuncio.fotos = []; dadosAnuncio.vendido = false; 
+          var r = await fetch(MZ.url + "/rest/v1/profissionais", { method: "POST", headers: cabecalhos({ "Content-Type": "application/json", Prefer: "return=representation" }), body: JSON.stringify(dadosAnuncio) });
           if (!r.ok) throw new Error("Erro na base de dados");
-          var criado = await r.json();
-          anuncioId = criado[0].id;
+          var criado = await r.json(); anuncioId = criado[0].id;
       }
 
       var urlsFinais = [];
@@ -422,36 +377,16 @@
 
       for (var i = 0; i < ficheiros.length; i++) {
           if (ficheiros[i].file) {
-              houveNovasFotos = true;
-              aviso("A enviar fotos...", false);
+              houveNovasFotos = true; aviso("A enviar fotos...", false);
               var fComprimido = await comprimirImagem(ficheiros[i].file); 
               var caminho = usuario.id + "/" + anuncioId + "/" + Date.now() + "_" + i + ".jpg";
-
-              var rUpload = await fetch(MZ.url + "/storage/v1/object/anuncios-fotos/" + caminho, {
-                method: "POST",
-                headers: {
-                  apikey: MZ.key,
-                  Authorization: "Bearer " + s.access_token,
-                  "Content-Type": "image/jpeg",
-                  "x-upsert": "true"
-                },
-                body: fComprimido
-              });
-
-              if (rUpload.ok) {
-                urlsFinais.push(MZ.url + "/storage/v1/object/public/anuncios-fotos/" + caminho);
-              }
-          } else {
-              urlsFinais.push(ficheiros[i].url); 
-          }
+              var rUpload = await fetch(MZ.url + "/storage/v1/object/anuncios-fotos/" + caminho, { method: "POST", headers: { apikey: MZ.key, Authorization: "Bearer " + s.access_token, "Content-Type": "image/jpeg", "x-upsert": "true" }, body: fComprimido });
+              if (rUpload.ok) urlsFinais.push(MZ.url + "/storage/v1/object/public/anuncios-fotos/" + caminho);
+          } else { urlsFinais.push(ficheiros[i].url); }
       }
 
       if (houveNovasFotos) {
-          await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + anuncioId, {
-            method: "PATCH",
-            headers: cabecalhos({ "Content-Type": "application/json" }),
-            body: JSON.stringify({ fotos: urlsFinais })
-          });
+          await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + anuncioId, { method: "PATCH", headers: cabecalhos({ "Content-Type": "application/json" }), body: JSON.stringify({ fotos: urlsFinais }) });
       }
 
       aviso("✅ " + (idAnuncioEmEdicao ? "Anúncio atualizado!" : "Anúncio publicado!"), false);
@@ -459,18 +394,10 @@
       if (!idAnuncioEmEdicao) {
           var urlAnuncio = "https://mzlink.co.mz/vendedor.html?id=" + usuario.id;
           var msgZap = encodeURIComponent("Olha o que encontrei no MZLINK! " + tipo + " a " + precoFinal + " MT. Fala direto comigo: " + urlAnuncio);
-          btnPartilharWa.href = "https://wa.me/?text=" + msgZap;
-          btnPartilharWa.style.display = "block";
+          btnPartilharWa.href = "https://wa.me/?text=" + msgZap; btnPartilharWa.style.display = "block";
       }
-      
-      resetarFormulario();
-      listarMeus();
-
-    } catch (err) {
-      console.error(err);
-      aviso("Erro ao guardar. Tenta novamente.", true);
-    }
-
+      resetarFormulario(); listarMeus();
+    } catch (err) { console.error(err); aviso("Erro ao guardar. Tenta novamente.", true); }
     botao.disabled = false;
   });
 
@@ -479,11 +406,6 @@
     await listarMeus();
   } catch (e) { 
       console.error(e);
-      // Se der erro no carregamento do utilizador, ainda tenta listar os anúncios
-      if(usuario) {
-          await listarMeus();
-      } else {
-          window.location.href = "login.html"; 
-      }
+      if(usuario) { await listarMeus(); } else { window.location.href = "login.html"; }
   }
 })();
