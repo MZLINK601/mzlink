@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="modo-premium.css">
     <style>
         /* Estilos extras para os novos campos */
-        .linha-preco { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .linha-preco input[type="number"] { flex: 1; margin-bottom: 0; }
-        .check-combinar { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; font-weight: 700; color: #667085; cursor: pointer; }
-        .check-combinar input { width: 18px; height: 18px; accent-color: #25D366; cursor: pointer; }
+        .linha-preco { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .linha-preco input[type="number"] { width: 100%; margin-bottom: 5px; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; font-size: 1rem; box-sizing: border-box; }
+        .aviso-preco { font-size: 0.75rem; color: #16a34a; font-weight: 700; display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+        
         .estado-select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; font-weight: 600; margin-bottom: 15px; background: #fff; }
         .btn-partilhar-wa { display: none; background: #25D366; color: white; text-align: center; padding: 15px; border-radius: 8px; font-weight: 800; text-decoration: none; margin-top: 15px; box-shadow: 0 4px 12px rgba(37,211,102,0.3); }
 
@@ -71,12 +71,10 @@
                 <label for="whatsapp">WhatsApp</label>
                 <input type="tel" id="whatsapp" placeholder="84 123 4567" required>
 
-                <label for="preco">Preço (MT)</label>
+                <label for="preco">Preço (MT) - Obrigatório</label>
                 <div class="linha-preco">
-                    <input type="number" id="preco" placeholder="Ex: 1500">
-                    <label class="check-combinar">
-                        <input type="checkbox" id="precoCombinar"> A combinar
-                    </label>
+                    <input type="number" id="preco" placeholder="Ex: 1500" required min="1">
+                    <span class="aviso-preco">🛡️ Obrigatório para ativar o Pagamento Protegido MZLINK.</span>
                 </div>
 
                 <!-- ===== Secção de Fotos ===== -->
@@ -121,7 +119,7 @@
     </div>
 
     <script src="sessao.js" charset="UTF-8"></script>
-    <script src="publicar.js?v=23" charset="UTF-8"></script>
+    <script src="publicar.js?v=24" charset="UTF-8"></script>
     <script src="modo-premium.js"></script>
 </body>
-        </html>
+</html>
