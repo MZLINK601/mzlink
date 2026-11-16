@@ -67,8 +67,10 @@
             <img src="logo-mzlink.png" alt="MZLINK" style="height: 40px;">
         </a>
         <div style="display: flex; align-items: center; gap: 10px;">
-            <span class="saudacao" style="font-size: 0.9rem; font-weight: 600; color: #1e293b;">
+            <span class="saudacao" style="font-size: 0.9rem; font-weight: 600; color: #1e293b; display: flex; align-items: center;">
                 Olá, <span id="nomeUserTopo">...</span>
+                <!-- SININHO DE NOTIFICAÇÃO AQUI -->
+                <span id="sinoNotificacoes" style="display: none; background: #dc2626; color: white; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 50%; margin-left: 5px; cursor: pointer;" onclick="window.location.href='perfil.html'">🔔</span>
             </span>
             <span data-badge-premium></span>
             <button id="btnAbrirMenu" class="menu-link" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #0f1115; padding: 0; display: flex; justify-content: center; align-items: center;">☰</button>
@@ -118,7 +120,6 @@
         </div>
     </section>
 
-    <!-- SECÇÃO INTELIGENTE: VISTOS RECENTEMENTE -->
     <section id="seccaoVistos" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
         <h2 style="color: #0f1115; font-size: 1.3rem; font-weight: 900; margin-bottom: 15px;">👀 Vistos Recentemente</h2>
         <div id="listaVistos" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; text-align: left;"></div>
@@ -178,7 +179,7 @@
     </div>
 </footer>
 
-        <!-- POPUP DE TERMOS E CONDIÇÕES (O ÚNICO QUE FICA) -->
+        <!-- POPUP DE TERMOS E CONDIÇÕES -->
     <div id="modalTermos" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10010; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
         <div style="background: #fff; border-radius: 20px; padding: 30px 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
             <div style="font-size: 3rem; margin-bottom: 10px;">⚖️</div>
@@ -267,12 +268,12 @@
     <script src="sessao.js" charset="UTF-8"></script>
     <script src="header.js"></script>
     <script src="modo-premium.js"></script>
-    <script src="script.js?v=8"></script> <!-- ATUALIZADO PARA v=8 PARA O VISTOS RECENTEMENTE -->
+    <script src="script.js?v=9"></script> <!-- ATUALIZADO PARA v=9 -->
     <script src="avaliações.js" defer></script>
     <script src="galeria.js" defer></script>
 
     <script>
-        // ===== LÓGICA DOS TERMOS (O único popup que fica) =====
+        // ===== LÓGICA DOS TERMOS =====
         function aceitarTermos() {
             localStorage.setItem('mzlink_termos_aceites', 'sim');
             document.getElementById('modalTermos').style.display = 'none';
@@ -285,7 +286,7 @@
             }
         });
 
-        // ===== LÓGICA DO MENU E EFEITO DE ONDA =====
+        // ===== LÓGICA DO MENU =====
         const btnAbrirMenu = document.getElementById('btnAbrirMenu');
         const btnFecharMenu = document.getElementById('btnFecharMenu');
         const menuLateral = document.getElementById('menuLateral');
@@ -355,10 +356,7 @@
 
         // ===== LÓGICA DO BOTÃO DE INSTALAR (PWA) =====
         let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
         function abrirModalInstalar() { document.getElementById('modalInstalar').style.display = 'flex'; }
         function fecharModalInstalar() { document.getElementById('modalInstalar').style.display = 'none'; }
@@ -391,4 +389,4 @@
         });
     </script>
 </body>
-                </html>
+    </html>
