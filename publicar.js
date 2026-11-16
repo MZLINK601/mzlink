@@ -33,7 +33,7 @@
   var fotosAviso = document.getElementById("fotosAviso");
   var limiteTexto = document.getElementById("limiteTexto");
   
-  // ATENÇÃO: O precoCombinar FOI REMOVIDO daqui.
+  // NÃO EXISTE MAIS O precoCombinar
   var inputPreco = document.getElementById("preco");
   
   var selectCategoria = document.getElementById("categoria");
@@ -53,8 +53,6 @@
           }
       }
   });
-
-  // Removemos o eventListener do checkbox "A Combinar"
 
   function aviso(texto, erro) {
     message.textContent = texto;
@@ -292,7 +290,7 @@
           document.getElementById("categoria").value = item.categoria || "";
           document.getElementById("whatsapp").value = String(item.whatsapp || "").replace(/^258/, "");
           
-          // Se o anúncio antigo não tinha preço, o campo fica vazio e obriga o vendedor a colocar
+          // Coloca o preço existente (se não houver, fica vazio)
           inputPreco.value = item.preco || "";
 
           selectCategoria.dispatchEvent(new Event('change'));
@@ -479,5 +477,13 @@
   try {
     await carregarUsuario();
     await listarMeus();
-  } catch (e) { window.location.href = "login.html"; }
+  } catch (e) { 
+      console.error(e);
+      // Se der erro no carregamento do utilizador, ainda tenta listar os anúncios
+      if(usuario) {
+          await listarMeus();
+      } else {
+          window.location.href = "login.html"; 
+      }
+  }
 })();
