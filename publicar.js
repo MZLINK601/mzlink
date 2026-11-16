@@ -1,5 +1,5 @@
 /* ============================================================
-   MZLINK · Publicar e Editar Anúncio (Com Botão Vendido e Aviso Inteligente)
+   MZLINK · Publicar e Editar Anúncio (Preço Obrigatório)
    ============================================================ */
 
 (async function () {
@@ -19,7 +19,7 @@
   var usuario = null;
   var planoUser = "basico";
   var limiteFotos = 4;
-  var limiteAnuncios = 3; // Valor padrão Básico
+  var limiteAnuncios = 3; 
   var totalMeusAnuncios = 0;
   var ficheiros = []; 
   var idAnuncioEmEdicao = null; 
@@ -32,7 +32,8 @@
   var fotosVazio = document.getElementById("fotosVazio");
   var fotosAviso = document.getElementById("fotosAviso");
   var limiteTexto = document.getElementById("limiteTexto");
-  var precoCombinar = document.getElementById("precoCombinar");
+  
+  // ATENÇÃO: O precoCombinar FOI REMOVIDO daqui.
   var inputPreco = document.getElementById("preco");
   
   var selectCategoria = document.getElementById("categoria");
@@ -53,16 +54,7 @@
       }
   });
 
-  precoCombinar.addEventListener("change", function() {
-      if(this.checked) {
-          inputPreco.value = "";
-          inputPreco.disabled = true;
-          inputPreco.placeholder = "A combinar";
-      } else {
-          inputPreco.disabled = false;
-          inputPreco.placeholder = "Ex: 1500";
-      }
-  });
+  // Removemos o eventListener do checkbox "A Combinar"
 
   function aviso(texto, erro) {
     message.textContent = texto;
@@ -120,7 +112,6 @@
       totalMeusAnuncios = anunciosReais.length;
     }
 
-    // --- A CORREÇÃO DO LIMITE AQUI ---
     limiteFotos = planoUser === "premium" ? 20 : 4;
     limiteAnuncios = planoUser === "premium" ? Infinity : 3;
     
@@ -133,13 +124,11 @@
     
     atualizarContador();
 
-    // Verifica se precisa de bloquear o formulário
     if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
       bloquearFormulario();
     }
   }
 
-  // --- A MENSAGEM INTELIGENTE AQUI ---
   function bloquearFormulario() {
     if (form) form.style.display = "none";
 
@@ -234,7 +223,9 @@
       var linha = document.createElement("div");
       linha.className = "meu-item";
       var nFotos = (item.fotos && item.fotos.length) || 0;
-      var precoTxt = item.preco ? "💰 " + item.preco + " MT" : "A combinar";
+      
+      // Se o preço for null (anúncios antigos), mostra "A combinar"
+      var precoTxt = item.preco ? "💰 " + item.preco + " MT" : "⚠️ A combinar (Antigo)";
       var estadoTxt = item.estado && item.estado !== "Serviço" ? " | " + item.estado : "";
       
       var isVendido = item.vendido === true;
@@ -301,15 +292,8 @@
           document.getElementById("categoria").value = item.categoria || "";
           document.getElementById("whatsapp").value = String(item.whatsapp || "").replace(/^258/, "");
           
-          if (item.preco) {
-              inputPreco.value = item.preco;
-              precoCombinar.checked = false;
-              inputPreco.disabled = false;
-          } else {
-              inputPreco.value = "";
-              precoCombinar.checked = true;
-              inputPreco.disabled = true;
-          }
+          // Se o anúncio antigo não tinha preço, o campo fica vazio e obriga o vendedor a colocar
+          inputPreco.value = item.preco || "";
 
           selectCategoria.dispatchEvent(new Event('change'));
           if (item.estado && item.estado !== "Serviço") {
@@ -360,7 +344,6 @@
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
     
-    // --- A MENSAGEM DE ERRO INTELIGENTE AQUI ---
     if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
       alert(
         "Ups! A tua conta está no plano Básico (limite de 3 anúncios).\n\n" +
@@ -382,13 +365,17 @@
         estado = selectEstado.value || "Novo";
     }
 
-    var precoFinal = null;
-    if (!precoCombinar.checked) {
-        precoFinal = inputPreco.value ? Number(inputPreco.value) : null;
-    }
+    // ===== VALIDAÇÃO DO PREÇO OBRIGATÓRIO =====
+    var precoFinal = inputPreco.value ? Number(inputPreco.value) : null;
 
     if (!nome || !tipo || !local || !categoria || !telefone || !descricao) {
       aviso("Preenche todos os campos obrigatórios.", true);
+      return;
+    }
+
+    if (!precoFinal || precoFinal <= 0) {
+      aviso("⚠️ O preço é obrigatório. Coloca um valor para ativares o Pagamento Protegido MZLINK.", true);
+      botao.disabled = false;
       return;
     }
 
@@ -473,7 +460,7 @@
       
       if (!idAnuncioEmEdicao) {
           var urlAnuncio = "https://mzlink.co.mz/vendedor.html?id=" + usuario.id;
-          var msgZap = encodeURIComponent("Olha o que encontrei no MZLINK! " + tipo + " a " + (precoFinal ? precoFinal + " MT" : "combinar") + ". Fala direto comigo: " + urlAnuncio);
+          var msgZap = encodeURIComponent("Olha o que encontrei no MZLINK! " + tipo + " a " + precoFinal + " MT. Fala direto comigo: " + urlAnuncio);
           btnPartilharWa.href = "https://wa.me/?text=" + msgZap;
           btnPartilharWa.style.display = "block";
       }
