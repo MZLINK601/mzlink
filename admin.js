@@ -115,7 +115,7 @@
     if (r.ok) { alert("🗑 Apagado!"); carregarAnuncios(); carregarTudo(); } else { alert("Erro ao apagar."); }
   };
 
-   async function carregarPendentes() {
+  async function carregarPendentes() {
     var div = document.getElementById("tabelaPendentes");
     if (!div) return;
     try {
@@ -143,9 +143,7 @@
       await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + userId, { method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ plano: "premium", premium_ate: dataFutura.toISOString() }) });
       alert("✅ Promovido!"); await carregarTudo(); await carregarPendentes(); 
     } catch (e) { alert("Erro ao aprovar."); }
-  }
-
-  async function carregarSuporte() {
+                 }  async function carregarSuporte() {
     var div = document.getElementById("listaSuporte");
     if (!div) return;
     try {
@@ -169,16 +167,15 @@
     if (r.ok) { alert("✅ Resolvido!"); carregarSuporte(); }
   };
 
-  // ===== CARTEIRA E VENDAS PROTEGIDAS (CORRIGIDA) =====
   async function carregarVendasProtegidas() {
     var divVendas = document.getElementById("listaVendasProtegidas");
     var divSaldo = document.getElementById("saldoMZLink");
+    var divDevedor = document.getElementById("valorDevedor");
     if (!divVendas) return;
 
     try {
         var sessao = await MZ.sessaoValida();
 
-        // 1. Calcular a Carteira (Soma das comissões de vendas CONCLUÍDAS)
         var rSaldo = await fetch(MZ.url + "/rest/v1/vendas_protegidas?status=eq.concluido&select=taxa_mzlink", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
@@ -189,13 +186,16 @@
             if (divSaldo) divSaldo.innerText = saldoTotal.toFixed(2) + " MT";
         }
 
-        // 2. Mostrar a Lista (Vendas PENDENTES de libertação: pago ou enviado)
         var r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?status=in.(pago,enviado)&order=criado_em.desc", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
 
         if (!r.ok) { divVendas.innerHTML = "<p style='color:red;'>Erro ao carregar vendas.</p>"; return; }
         var vendas = await r.json();
+
+        var valorDevedorTotal = 0;
+        vendas.forEach(v => valorDevedorTotal += Number(v.valor_produto));
+        if (divDevedor) divDevedor.innerText = valorDevedorTotal.toFixed(2) + " MT";
 
         if (vendas.length === 0) {
             divVendas.innerHTML = "<p style='padding:15px; color:#16a34a; font-weight:bold;'>✅ Nenhuma venda pendente de libertação.</p>";
@@ -215,11 +215,11 @@
                     <strong>${esc(v.whatsapp_vendedor)}</strong><br>
                     <small style="color: #667085; font-size: 0.7rem;">Status: ${v.status.toUpperCase()}</small>
                 </td>
-                <td style="padding: 8px 5px; font-size: 0.85rem; font-weight: bold; color: #16a34a;">
+                <td style="padding: 8px 5px; font-size: 0.85rem; font-weight: bold; color: #1E40AF;">
                     ${Number(v.valor_produto).toFixed(2)} MT
                 </td>
                 <td style="padding: 8px 5px; text-align: center;">
-                    <button onclick="window.libertarPagamento('${v.id}', '${v.produto_id}')" style="background: #16a34a; color: white; border: none; padding: 6px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.7rem;">✅ Pago ao Vendedor</button>
+                    <button onclick="window.libertarPagamento('${v.id}', '${v.produto_id}', '${v.whatsapp_vendedor}')" style="background: #16a34a; color: white; border: none; padding: 6px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.7rem;">✅ Pago ao Vendedor</button>
                 </td>
             </tr>`;
         });
@@ -229,9 +229,11 @@
     } catch (e) { divVendas.innerHTML = "<p style='color:red;'>Erro de ligação.</p>"; }
   }
 
-  window.libertarPagamento = async function(vendaId, produtoId) {
+  // ===== LIBERTAR PAGAMENTO COM WHATSAPP E SMS =====
+  window.libertarPagamento = async function(vendaId, produtoId, whatsappVendedor) {
     if (!confirm("Confirmas que já enviaste o dinheiro ao vendedor? Isto conclui a venda.")) return;
     var sessao = await MZ.sessaoValida();
+    
     try {
         var r1 = await fetch(MZ.url + "/rest/v1/vendas_protegidas?id=eq." + vendaId, {
             method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" },
@@ -244,7 +246,29 @@
         });
 
         if (r1.ok && r2.ok) {
-            alert("✅ Pagamento libertado e anúncio marcado como vendido!");
+            if (whatsappVendedor) {
+                let numLimpo = String(whatsappVendedor).replace(/\D/g, "");
+                if (numLimpo && !numLimpo.startsWith("258")) numLimpo = "258" + numLimpo;
+                
+                const msgTexto = `MZLINK: Venda do pedido #${vendaId} concluida! O teu dinheiro foi enviado. O anuncio foi removido da loja. Obrigado! 🇲🇿`;
+                const msgZap = encodeURIComponent(msgTexto);
+                
+                const usarWhatsApp = confirm("✅ Pagamento libertado!\n\nComo queres notificar o vendedor?\n\n[OK] = Abrir WhatsApp\n[Cancelar] = Copiar SMS");
+                
+                if (usarWhatsApp) {
+                    window.open(`https://wa.me/${numLimpo}?text=${msgZap}`, "_blank");
+                } else {
+                    try {
+                        await navigator.clipboard.writeText(msgTexto);
+                        alert(`✅ Mensagem copiada!\n\nO número é: ${numLimpo}\n\nVai à app de SMS e cola (Ctrl+V / manter premido).`);
+                    } catch (e) {
+                        alert(`Número: ${numLimpo}\n\nMensagem: ${msgTexto}`);
+                    }
+                }
+            } else {
+                alert("✅ Pagamento libertado! (O vendedor não tem número registado.)");
+            }
+            
             carregarVendasProtegidas(); 
             carregarTudo(); 
         } else {
