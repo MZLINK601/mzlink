@@ -198,33 +198,26 @@ document.addEventListener("DOMContentLoaded", function () {
       const media = Number(item.media_estrelas) || 0;
       const total = Number(item.total_avaliacoes) || 0;
 
-      const msgPartilha = encodeURIComponent(
-        "Olha este anúncio no MZLINK: " + item.nome + " (" + item.tipo + " em " + item.local + "). Fala com ele aqui: https://mzlink.co.mz/"
-      );
-
       const badgePremium = ehPremium ? '<span class="badge-premium-card">👑 PREMIUM</span>' : '';
       const badgeEmpresa = ehEmpresa ? '<span style="background: #E0F2FE; color: #0369A1; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 800; vertical-align: middle; margin-left: 4px;">🏢 EMPRESA</span>' : '';
-      const badgeEstado = item.estado ? `<span style="background: #f3f4f6; color: #4b5563; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 4px;">${item.estado}</span>` : '';
 
       let avaliacaoHTML = "";
       if (total > 0) {
-        avaliacaoHTML = '<div class="avaliacao-info"><span class="estrelas-mini">' + gerarEstrelasHTML(media) + '</span><span class="media">' + media.toFixed(1) + '</span><span class="total">(' + total + ' avalia' + (total === 1 ? 'ção' : 'ções') + ')</span></div>';
+        avaliacaoHTML = '<div style="font-size: 0.75rem; color: #d4af37; font-weight: bold; margin-top: 2px;">' + gerarEstrelasHTML(media) + ' ' + media.toFixed(1) + ' <span style="color:#667085;font-size:0.65rem;">(' + total + ')</span></div>';
       } else {
-        avaliacaoHTML = '<div class="avaliacao-info sem-avaliacoes">Ainda sem avaliações</div>';
-      }
-
-      let btnAvaliar = "";
-      if (userAtual && String(userAtual.id) !== String(item.user_id)) {
-        btnAvaliar = '<button class="btn-avaliar" data-anuncio-id="' + item.id + '" data-anuncio-nome="' + limpar(item.nome) + '">⭐ Avaliar</button>';
+        avaliacaoHTML = '<div style="font-size: 0.7rem; color: #94a3b8; font-style: italic; margin-top: 2px;">Sem avaliações</div>';
       }
 
       const fotos = item.fotos || [];
       let fotoHTML = "";
       if (fotos.length > 0) {
         const fotosJSON = encodeURIComponent(JSON.stringify(fotos));
-        fotoHTML = '<div class="foto-principal-card" data-fotos="' + fotosJSON + '" data-nome="' + limpar(item.nome) + '"><img src="' + fotos[0] + '" alt="' + limpar(item.nome) + '" loading="lazy">' + (fotos.length > 1 ? '<span class="contador-fotos">📸 ' + fotos.length + '</span>' : '') + '<span class="icone-zoom">🔍 Ver fotos</span></div>';
+        fotoHTML = `<div class="foto-principal-card" data-fotos="${fotosJSON}" data-nome="${limpar(item.nome)}" style="width: 100%; height: 100%; position: relative; cursor: pointer;">
+                        <img src="${fotos[0]}" alt="${limpar(item.nome)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" loading="lazy">
+                        ${fotos.length > 1 ? '<span style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px;">📸 ' + fotos.length + '</span>' : ''}
+                     </div>`;
       } else {
-        fotoHTML = '<div class="foto-principal-card sem-foto"><span>📸</span><small>Sem fotos</small></div>';
+        fotoHTML = `<div style="width: 100%; height: 100%; background: #eef1f5; display: flex; align-items: center; justify-content: center; color: #a0a0a0; font-size: 1.5rem; border-radius: 8px;">📸</div>`;
       }
 
       // ===== CÁLCULO DA COMISSÃO E BOTÕES =====
@@ -232,69 +225,71 @@ document.addEventListener("DOMContentLoaded", function () {
       let botoesHTML = "";
 
       if (item.preco && Number(item.preco) > 0) {
-        // PRODUTO COM PREÇO FIXO -> SÓ COMPRA PROTEGIDA
         const precoBase = Number(item.preco);
-        let taxa = precoBase * 0.04; // 4% de comissão
-        if (taxa > 500) taxa = 500; // Teto máximo de 500 MT
+        let taxa = precoBase * 0.04;
+        if (taxa > 500) taxa = 500;
         const precoFinal = precoBase + taxa;
 
         precoHTML = `
-          <p style="color: #16a34a; font-weight: 900; font-size: 1.1rem; margin-top: 4px;">💰 ${precoFinal.toFixed(2)} MT</p>
-          <p style="color: #667085; font-size: 0.65rem; margin-top: 0;">🛡️ Inclui taxa de Proteção MZLINK</p>
+          <p style="color: #16a34a; font-weight: 900; font-size: 1rem; margin: 0;">💰 ${precoFinal.toFixed(2)} MT</p>
+          <p style="color: #667085; font-size: 0.6rem; margin: 0;">🛡️ Proteção MZLINK</p>
         `;
 
         botoesHTML = `
-          <div style="display: flex; gap: 6px; margin-top: 10px;">
-            <button onclick="iniciarCompraProtegida('${item.id}', ${precoFinal})" style="flex: 1; background: #16a34a; color: white; border: none; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.9rem; cursor: pointer; padding: 12px 0;">🛡️ Comprar Protegido</button>
-          </div>
+            <button onclick="iniciarCompraProtegida('${item.id}', ${precoFinal})" style="flex: 1; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 800; font-size: 0.75rem; cursor: pointer; padding: 8px 0;">🛡️ Comprar</button>
         `;
       } else {
-        // PRODUTO COM PREÇO A COMBINAR -> CONTACTO DIRETO
-        precoHTML = `<p style="color: #667085; font-size: 0.85rem; margin-top: 4px; font-style: italic;">Preço a combinar</p>`;
+        precoHTML = `<p style="color: #667085; font-size: 0.8rem; margin: 0; font-style: italic;">Preço a combinar</p>`;
         
         botoesHTML = `
-          <div style="display: flex; gap: 6px; margin-top: 10px;">
-            <a class="btn-contactar" style="flex: 1; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; text-decoration: none; padding: 10px 0;" href="tel:+${numero}">📞 Ligar</a>
-            <a class="btn-contactar btn-contactar-wa" data-id="${item.id}" style="flex: 2; background: #25D366; color: white; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; text-decoration: none; padding: 10px 0;" href="https://wa.me/${numero}?text=${msg}" target="_blank" rel="noopener">💬 WhatsApp</a>
-            <a class="btn-partilhar" style="flex: 1; padding: 10px 0; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; border: 1px solid #1E40AF; color: #1E40AF; border-radius: 8px; text-decoration: none;" href="https://wa.me/?text=${msgPartilha}" target="_blank" rel="noopener">📤</a>
-          </div>
+            <a class="btn-contactar" style="flex: 1; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.75rem; text-decoration: none; padding: 8px 0;" href="tel:+${numero}">📞 Ligar</a>
+            <a class="btn-contactar btn-contactar-wa" data-id="${item.id}" style="flex: 1; background: #25D366; color: white; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.75rem; text-decoration: none; padding: 8px 0;" href="https://wa.me/${numero}?text=${msg}" target="_blank" rel="noopener">💬 WhatsApp</a>
         `;
-        }
+      }
 
-                        html +=
-        '<div class="result-card ' + (ehPremium ? 'card-premium' : '') + '">' +
-          fotoHTML +
-          '<div class="card-conteudo">' +
-            '<div class="linha-topo">' +
-              '<a href="vendedor.html?id=' + item.user_id + '" class="avatar-link">' +
-                '<div class="avatar" style="' + (item.avatar_url ? 'background-image: url(' + item.avatar_url + '); background-size: cover; background-position: center; color: transparent;' : '') + '">' + limpar(item.nome.charAt(0)) + '</div>' +
-              '</a>' +
-              '<div class="info">' +
-                '<a href="vendedor.html?id=' + item.user_id + '" style="text-decoration:none; color:inherit;">' +
-                  '<h3>' + limpar(item.nome) + ' ' + badgePremium + ' ' + badgeEmpresa + '</h3>' +
-                '</a>' +
-                '<span class="tag">' + limpar(item.tipo) + '</span>' + badgeEstado +
-                '<p>📍 ' + limpar(item.local) + '</p>' +
-                precoHTML +
-              '</div>' +
-            '</div>' +
-            avaliacaoHTML +
-            btnAvaliar +
-            botoesHTML +
-          '</div>' +
-        '</div>';
+      // ===== MONTAGEM DO CARTÃO HORIZONTAL =====
+      html += `
+        <div class="result-card ${ehPremium ? 'card-premium' : ''}" style="display: flex; flex-direction: row; padding: 10px; gap: 12px; align-items: stretch; margin-bottom: 15px;">
+          
+          <!-- Imagem (Esquerda) -->
+          <div style="width: 110px; min-width: 110px; height: 130px;">
+             ${fotoHTML}
+          </div>
+
+          <!-- Conteúdo (Direita) -->
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
+             
+             <div>
+                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                     <a href="vendedor.html?id=${item.user_id}" style="text-decoration: none; color: inherit; display: block; max-width: 70%;">
+                         <h3 style="margin: 0; font-size: 0.95rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${limpar(item.nome)}</h3>
+                     </a>
+                     ${badgePremium}
+                 </div>
+
+                 <div style="margin: 4px 0; display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+                     <span style="font-size: 0.65rem; background: #f0f4f9; color: #475569; padding: 2px 6px; border-radius: 4px;">${limpar(item.tipo)}</span>
+                     ${badgeEmpresa}
+                     <span style="font-size: 0.7rem; color: #667085;">📍 ${limpar(item.local)}</span>
+                 </div>
+                 ${avaliacaoHTML}
+             </div>
+
+             <div style="margin-top: 5px;">
+                 ${precoHTML}
+                 <div style="display: flex; gap: 6px; margin-top: 5px;">
+                     ${botoesHTML}
+                 </div>
+             </div>
+
+          </div>
+        </div>
+      `;
     });
 
     results.innerHTML = html;
 
-    results.querySelectorAll(".btn-avaliar").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        const id = btn.getAttribute("data-anuncio-id");
-        const nome = btn.getAttribute("data-anuncio-nome");
-        if (window.MZAvaliacao) window.MZAvaliacao.abrir(id, nome);
-      });
-    });
-
+    // Listeners para as imagens e botões do WhatsApp
     results.querySelectorAll(".foto-principal-card[data-fotos]").forEach(function (el) {
       el.onclick = function () {
         try {
@@ -410,9 +405,9 @@ window.iniciarCompraProtegida = function(produtoId, valorTotal) {
     try { sessao = JSON.parse(localStorage.getItem(chave)); } catch(e) {}
 
     if (!sessao || !sessao.access_token) {
-        alert("⚠️ Para comprar com Proteção MZLINK, precisas de estar logado.\n\nVais ser redirecionado para o login.");
-        window.location.href = "login.html";
-        return;
+      alert("⚠️ Para comprar com Proteção MZLINK, precisas de estar logado.\n\nVais ser redirecionado para o login.");
+      window.location.href = "login.html";
+      return;
     }
 
     produtoAtualCompra = produtoId;
@@ -477,7 +472,7 @@ document.getElementById('btnConfirmarPagamento')?.addEventListener('click', asyn
     this.disabled = true;
 
     try {
-        const chave = "mzlink_sessao";
+                const chave = "mzlink_sessao";
         let sessao = JSON.parse(localStorage.getItem(chave));
         const SUPABASE_URL = "https://uuswtafwkgrzmzbkgnjq.supabase.co";
         const SUPABASE_KEY = "sb_publishable_vd6DmOxZuXD0cVhIJMtbfQ_-8cWtU7P";
