@@ -62,7 +62,47 @@
 </head>
 <body>
 
-    <main>
+    <!-- CABEÇALHO E MENU -->
+    <header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border-bottom: 2px solid #d4af37; position: sticky; top: 0; z-index: 999;">
+        <a href="index.html" class="logo-header">
+            <img src="logo-mzlink.png" alt="MZLINK" style="height: 40px;">
+        </a>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="saudacao" style="font-size: 0.9rem; font-weight: 600; color: #1e293b; display: flex; align-items: center;">
+                Olá, <span id="nomeUserTopo">...</span>
+                <span id="sinoNotificacoes" style="display: none; background: #dc2626; color: white; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 50%; margin-left: 5px; cursor: pointer;" onclick="window.location.href='perfil.html'">🔔</span>
+            </span>
+            <span data-badge-premium></span>
+            <button id="btnAbrirMenu" class="menu-link" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #0f1115; padding: 0; display: flex; justify-content: center; align-items: center;">☰</button>
+        </div>
+    </header>
+
+    <div id="overlayMenu"></div>
+    <div id="menuLateral">
+        <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+            <strong style="font-size: 1.5rem; color: #d4af37; letter-spacing: 2px;">MZLINK</strong>
+            <button id="btnFecharMenu" class="menu-link" style="background: #d4af37; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1rem; cursor: pointer; color: #0f1115; display: flex; justify-content: center; align-items: center; font-weight: bold;">✕</button>
+        </div>
+
+        <a href="publicar.html" class="menu-link" style="color: #1E40AF;">📢 Publicar Anúncio</a>
+        <a href="perfil.html" class="menu-link" style="color: #1E40AF;">👤 O Meu Perfil</a>
+        <a href="#" class="menu-link" id="linkMenuSuporte" style="color: #1E40AF;">💬 Suporte MZLINK</a>
+
+        <div class="menu-titulo">Área Premium</div>
+        <a href="premium.html" class="menu-link" id="linkMenuPremium" style="color: #d4af37;">⭐ Ativar Premium</a>
+
+        <div class="menu-titulo">Explorar Categorias</div>
+        <a href="#" onclick="filtrarCategoria('produtos'); return false;" class="menu-link">📦 Produtos</a>
+        <a href="#" onclick="filtrarCategoria('servicos'); return false;" class="menu-link">🛠️ Serviços</a>
+        <a href="#" onclick="filtrarCategoria('vendedores'); return false;" class="menu-link">🏪 Vendedores</a>
+        <a href="#" onclick="filtrarCategoria('profissionais'); return false;" class="menu-link">👷 Profissionais</a>
+        <a href="#" onclick="filtrarCategoria('instituicoes'); return false;" class="menu-link">🏛️ Instituições</a>
+        <a href="#" onclick="filtrarCategoria('empresas'); return false;" class="menu-link">🏢 Empresas</a>
+
+        <a href="login.html" class="menu-link" style="margin-top: 20px; border-top: 1px solid #eee; color: #0f1115;">🔑 Entrar / Registar</a>
+        <a href="#" id="btnSairMenu" class="menu-link" style="color: #dc2626; border: none;">🚪 Terminar Sessão</a>
+    </div>
+<main>
     <section class="hero-moz">
         <div class="badge-moz">🇲🇿 100% Moçambicano</div>
         <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
@@ -79,6 +119,7 @@
         </div>
     </section>
 
+    <!-- SECÇÃO INTELIGENTE: VISTOS RECENTEMENTE -->
     <section id="seccaoVistos" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
         <h2 style="color: #0f1115; font-size: 1.3rem; font-weight: 900; margin-bottom: 15px;">👀 Vistos Recentemente</h2>
         <div id="listaVistos" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; text-align: left;"></div>
@@ -145,7 +186,7 @@
             <h2 style="color: #0f1115; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Termos e Condições</h2>
             <p style="color: #475569; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; text-align: left;">Para usar o MZLINK e comprar com <strong>Pagamento Protegido</strong>, precisas de aceitar as nossas regras de segurança, taxas de comissão (4%) e política de privacidade.</p>
             <a href="termos.html" target="_blank" style="display: block; margin-bottom: 20px; color: #1E40AF; font-weight: bold; text-decoration: underline; font-size: 0.9rem;">📄 Ler os Termos Completos</a>
-            <button onclick="aceitarTermos()" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">✅ Aceito os Termos</button>
+            <button onclick="aceitarTermos()" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);">✅ Aceito os Termos</button>
             <button onclick="window.location.href='https://www.google.com'" style="width: 100%; background: none; color: #94a3b8; font-weight: bold; font-size: 0.85rem; padding: 15px 0 0 0; border: none; cursor: pointer;">Não aceito (Sair)</button>
         </div>
     </div>
@@ -215,7 +256,7 @@
         </div>
     </div>
 
-    <!-- ===== MODAL DE ORÇAMENTO RÁPIDO (NOVO) ===== -->
+    <!-- MODAL DE ORÇAMENTO RÁPIDO -->
     <div id="modalOrcamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
         <div style="background: #fff; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
             <button onclick="fecharModalOrcamento()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer;">&times;</button>
@@ -246,7 +287,7 @@
     <script src="sessao.js" charset="UTF-8"></script>
     <script src="header.js"></script>
     <script src="modo-premium.js"></script>
-    <script src="script.js?v=13"></script> <!-- ATUALIZADO PARA v=13 -->
+    <script src="script.js?v=14"></script> <!-- ATUALIZADO PARA v=14 -->
     <script src="avaliações.js" defer></script>
     <script src="galeria.js" defer></script>
 
@@ -273,44 +314,5 @@
         document.addEventListener("DOMContentLoaded", async () => { try { const sessao = await MZ.sessaoValida(); if (!sessao) return; const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } }); const user = await userRes.json(); const r = await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + user.id + "&select=plano", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } }); const dados = await r.json(); if (dados.length > 0 && dados[0].plano === 'premium') { document.getElementById('linkMenuPremium').innerText = "🔄 Renovar Conta Premium"; } } catch(e) {} });
     </script>
 </body>
-                </html>
-
-    <header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border-bottom: 2px solid #d4af37; position: sticky; top: 0; z-index: 999;">
-        <a href="index.html" class="logo-header">
-            <img src="logo-mzlink.png" alt="MZLINK" style="height: 40px;">
-        </a>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <span class="saudacao" style="font-size: 0.9rem; font-weight: 600; color: #1e293b; display: flex; align-items: center;">
-                Olá, <span id="nomeUserTopo">...</span>
-                <span id="sinoNotificacoes" style="display: none; background: #dc2626; color: white; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 50%; margin-left: 5px; cursor: pointer;" onclick="window.location.href='perfil.html'">🔔</span>
-            </span>
-            <span data-badge-premium></span>
-            <button id="btnAbrirMenu" class="menu-link" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #0f1115; padding: 0; display: flex; justify-content: center; align-items: center;">☰</button>
-        </div>
-    </header>
-
-    <div id="overlayMenu"></div>
-    <div id="menuLateral">
-        <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-            <strong style="font-size: 1.5rem; color: #d4af37; letter-spacing: 2px;">MZLINK</strong>
-            <button id="btnFecharMenu" class="menu-link" style="background: #d4af37; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1rem; cursor: pointer; color: #0f1115; display: flex; justify-content: center; align-items: center; font-weight: bold;">✕</button>
-        </div>
-
-        <a href="publicar.html" class="menu-link" style="color: #1E40AF;">📢 Publicar Anúncio</a>
-        <a href="perfil.html" class="menu-link" style="color: #1E40AF;">👤 O Meu Perfil</a>
-        <a href="#" class="menu-link" id="linkMenuSuporte" style="color: #1E40AF;">💬 Suporte MZLINK</a>
-
-        <div class="menu-titulo">Área Premium</div>
-        <a href="premium.html" class="menu-link" id="linkMenuPremium" style="color: #d4af37;">⭐ Ativar Premium</a>
-
-        <div class="menu-titulo">Explorar Categorias</div>
-        <a href="#" onclick="filtrarCategoria('produtos'); return false;" class="menu-link">📦 Produtos</a>
-        <a href="#" onclick="filtrarCategoria('servicos'); return false;" class="menu-link">🛠️ Serviços</a>
-        <a href="#" onclick="filtrarCategoria('vendedores'); return false;" class="menu-link">🏪 Vendedores</a>
-        <a href="#" onclick="filtrarCategoria('profissionais'); return false;" class="menu-link">👷 Profissionais</a>
-        <a href="#" onclick="filtrarCategoria('instituicoes'); return false;" class="menu-link">🏛️ Instituições</a>
-        <a href="#" onclick="filtrarCategoria('empresas'); return false;" class="menu-link">🏢 Empresas</a>
-
-        <a href="login.html" class="menu-link" style="margin-top: 20px; border-top: 1px solid #eee; color: #0f1115;">🔑 Entrar / Registar</a>
-        <a href="#" id="btnSairMenu" class="menu-link" style="color: #dc2626; border: none;">🚪 Terminar Sessão</a>
-            </div>
+</html>
+    
