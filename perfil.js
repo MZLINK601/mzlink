@@ -25,8 +25,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         // 4. Desenhar o Perfil no Ecrã
         renderizarPerfil(user, perfil);
 
-        // 5. Carregar as Vendas Protegidas
+        // 5. Carregar as Vendas Protegidas (para a lista verde)
         carregarVendasProtegidasVendedor(user.id);
+
+        // 6. Carregar Saldo e Notificações (O Novo Painel de Controlo)
+        carregarSaldoENotificacoes(user.id);
 
     } catch (e) {
         console.error("Erro ao carregar perfil:", e);
@@ -34,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 });
 
-// ===== FUNÇÃO QUE DESENHA O PERFIL =====
+// ===== FUNÇÃO QUE DESENHA O PERFIL E OS CARTÕES DE SALDO =====
 function renderizarPerfil(user, perfil) {
     const nome = perfil?.nome || user.user_metadata?.nome || "Utilizador";
     const email = user.email;
@@ -58,6 +61,23 @@ function renderizarPerfil(user, perfil) {
             <div class="badge-moz">🇲🇿 Membro MZLINK</div>
             <div class="plano-badge ${plano}">
                 ${isPremium ? "👑 PREMIUM" : "Básico"}
+            </div>
+        </div>
+
+        <!-- NOTIFICAÇÕES (Aparece só se tiver vendas para entregar) -->
+        <div id="alertaNotificacao" style="display: none; background: #dc2626; color: white; padding: 12px; border-radius: 8px; font-weight: 800; text-align: center; margin-bottom: 15px; cursor: pointer; box-shadow: 0 4px 10px rgba(220,38,38,0.3);" onclick="document.getElementById('seccaoVendasProtegidas').scrollIntoView({behavior: 'smooth'})">
+            🔔 Tens vendas pendentes! Toca para ver.
+        </div>
+
+        <!-- CARTÕES DE SALDO -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">
+            <div style="background: #0f1115; border: 1px solid #d4af37; border-radius: 12px; padding: 15px; text-align: center; color: white;">
+                <p style="margin: 0; font-size: 0.75rem; color: #c9ccd3; font-weight: 700;">🛡️ Saldo a Receber</p>
+                <h3 id="saldoPendente" style="margin: 5px 0 0 0; color: #d4af37; font-size: 1.2rem;">0.00 MT</h3>
+            </div>
+            <div style="background: #f0fdf4; border: 1px solid #16a34a; border-radius: 12px; padding: 15px; text-align: center;">
+                <p style="margin: 0; font-size: 0.75rem; color: #166534; font-weight: 700;">✅ Saldo Recebido</p>
+                <h3 id="saldoRecebido" style="margin: 5px 0 0 0; color: #16a34a; font-size: 1.2rem;">0.00 MT</h3>
             </div>
         </div>
 
@@ -99,13 +119,58 @@ function renderizarPerfil(user, perfil) {
     document.getElementById("conteudo").innerHTML = html;
 }
 
-window.sair = function() {
-    if (typeof MZ.limparSessao === "function") MZ.limparSessao();
-    localStorage.removeItem("mzlink_sessao");
-    window.location.href = "index.html";
-};
+// ===== FUNÇÃO QUE CALCULA O SALDO E AS NOTIFICAÇÕES =====
+async function carregarSaldoENotificacoes(userId) {
+    try {
+        const sessao = await MZ.sessaoValida();
+        
+        // Vai buscar todas as vendas onde ele é o vendedor
+        const r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?vendedor_id=eq." + userId + "&select=valor_produto,status", {
+            headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
+        });
 
-// ===== LÓGICA DE VENDAS PROTEGIDAS =====
+        if (!r.ok) return;
+        const vendas = await r.json();
+
+        let saldoPendente = 0;
+        let saldoRecebido = 0;
+        let vendasPendentes = 0;
+
+        vendas.forEach(v => {
+            // Dinheiro que está no Cofre (Pago ou Enviado)
+            if (v.status === 'pago' || v.status === 'enviado') {
+                saldoPendente += Number(v.valor_produto);
+            } 
+            // Dinheiro que já foi libertado para o vendedor
+            else if (v.status === 'concluido') {
+                saldoRecebido += Number(v.valor_produto);
+            }
+
+            // Conta quantas vendas precisam de ação (entregar o produto)
+            if (v.status === 'pago') {
+                vendasPendentes++;
+            }
+        });
+
+        // Atualiza os valores nos cartões
+        const elPendente = document.getElementById("saldoPendente");
+        const elRecebido = document.getElementById("saldoRecebido");
+        const elAlerta = document.getElementById("alertaNotificacao");
+
+        if (elPendente) elPendente.innerText = saldoPendente.toFixed(2) + " MT";
+        if (elRecebido) elRecebido.innerText = saldoRecebido.toFixed(2) + " MT";
+
+        if (vendasPendentes > 0 && elAlerta) {
+            elAlerta.style.display = "block";
+            elAlerta.innerHTML = `🔔 Tens ${vendasPendentes} venda(s) paga(s) pronta(s) para entrega!`;
+        }
+
+    } catch (e) {
+        console.error("Erro ao carregar saldo e notificações:", e);
+    }
+}
+
+// ===== LÓGICA DE VENDAS PROTEGIDAS (A LISTA VERDE) =====
 async function carregarVendasProtegidasVendedor(userId) {
     const seccao = document.getElementById('seccaoVendasProtegidas');
     const listaDiv = document.getElementById('listaVendasVendedor');
@@ -114,6 +179,7 @@ async function carregarVendasProtegidasVendedor(userId) {
     try {
         const sessao = await MZ.sessaoValida();
         
+        // Busca as vendas onde o status é 'pago' ou 'enviado'
         const r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?vendedor_id=eq." + userId + "&status=in.(pago,enviado)&order=criado_em.desc", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
@@ -139,7 +205,7 @@ async function carregarVendasProtegidasVendedor(userId) {
                 : `<button onclick="marcarComoEnviado(${venda.id})" style="flex: 1; background: #1E40AF; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer;">📦 Marcar como Enviado</button>`;
 
             html += `
-                <div style="background: #f0fdf4; border: 1px solid #16a34a; border-radius: 8px; padding: 15px; position: relative;">
+                <div style="background: #f0fdf4; border: 1px solid #16a34a; border-radius: 8px; padding: 15px; position: relative; margin-bottom: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div>
                             <strong style="color: #166534; font-size: 1rem;">Venda #${venda.id}</strong>
@@ -168,6 +234,7 @@ async function carregarVendasProtegidasVendedor(userId) {
     }
 }
 
+// ===== MARCAR COMO ENVIADO =====
 async function marcarComoEnviado(vendaId) {
     if (!confirm("Confirmas que já entregaste ou enviaste o produto ao cliente?")) return;
 
@@ -184,7 +251,10 @@ async function marcarComoEnviado(vendaId) {
             const sessao2 = await MZ.sessaoValida();
             const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao2.access_token } });
             const user = await userRes.json();
+            
+            // Recarrega as vendas e o saldo
             carregarVendasProtegidasVendedor(user.id); 
+            carregarSaldoENotificacoes(user.id);
         } else {
             alert("Erro ao atualizar.");
         }
@@ -192,3 +262,10 @@ async function marcarComoEnviado(vendaId) {
         alert("Erro de ligação.");
     }
 }
+
+// ===== SAIR =====
+window.sair = function() {
+    if (typeof MZ.limparSessao === "function") MZ.limparSessao();
+    localStorage.removeItem("mzlink_sessao");
+    window.location.href = "index.html";
+};
