@@ -91,6 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (vistos.length > 5) vistos.pop();
       localStorage.setItem("mzlink_vistos", JSON.stringify(vistos));
   }
+  window.guardarVisto = guardarVisto;
 
   async function carregarVistos() {
       const secao = document.getElementById("seccaoVistos"); const lista = document.getElementById("listaVistos"); if (!secao || !lista) return;
@@ -108,8 +109,9 @@ document.addEventListener("DOMContentLoaded", function () {
           });
           lista.innerHTML = html;
       } catch (e) { }
+  }
 
-      function mostrar(lista, titulo) {
+  function mostrar(lista, titulo) {
     if (lista.length === 0) { results.innerHTML = '<h3 class="results-title">Nenhum resultado encontrado.</h3>'; return; }
     lista = ordenarLista(lista); lista = ordenarPremiumPrimeiro(lista);
     let html = '<h3 class="results-title">' + limpar(titulo) + '</h3>';
@@ -260,4 +262,3 @@ document.getElementById('btnEnviarOrcamento')?.addEventListener('click', functio
     if (window.registarCliqueContato) window.registarCliqueContato(dadosOrcamentoAtual.id);
     fecharModalOrcamento();
 });
-                                                                                                                                                                                   }
