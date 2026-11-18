@@ -102,7 +102,8 @@
         <a href="login.html" class="menu-link" style="margin-top: 20px; border-top: 1px solid #eee; color: #0f1115;">🔑 Entrar / Registar</a>
         <a href="#" id="btnSairMenu" class="menu-link" style="color: #dc2626; border: none;">🚪 Terminar Sessão</a>
     </div>
-<main>
+
+    <main>
     <section class="hero-moz">
         <div class="badge-moz">🇲🇿 100% Moçambicano</div>
         <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
@@ -119,7 +120,6 @@
         </div>
     </section>
 
-    <!-- SECÇÃO INTELIGENTE: VISTOS RECENTEMENTE -->
     <section id="seccaoVistos" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
         <h2 style="color: #0f1115; font-size: 1.3rem; font-weight: 900; margin-bottom: 15px;">👀 Vistos Recentemente</h2>
         <div id="listaVistos" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; text-align: left;"></div>
@@ -186,7 +186,7 @@
             <h2 style="color: #0f1115; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Termos e Condições</h2>
             <p style="color: #475569; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; text-align: left;">Para usar o MZLINK e comprar com <strong>Pagamento Protegido</strong>, precisas de aceitar as nossas regras de segurança, taxas de comissão (4%) e política de privacidade.</p>
             <a href="termos.html" target="_blank" style="display: block; margin-bottom: 20px; color: #1E40AF; font-weight: bold; text-decoration: underline; font-size: 0.9rem;">📄 Ler os Termos Completos</a>
-            <button onclick="aceitarTermos()" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);">✅ Aceito os Termos</button>
+            <button onclick="aceitarTermos()" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">✅ Aceito os Termos</button>
             <button onclick="window.location.href='https://www.google.com'" style="width: 100%; background: none; color: #94a3b8; font-weight: bold; font-size: 0.85rem; padding: 15px 0 0 0; border: none; cursor: pointer;">Não aceito (Sair)</button>
         </div>
     </div>
@@ -238,6 +238,10 @@
                 <p style="margin: 0; font-size: 0.8rem; color: #166534; font-weight: 800;">TOTAL A PAGAR</p>
                 <h1 id="valorTotalPagamento" style="color: #16a34a; margin: 5px 0; font-size: 2rem;">0 MT</h1>
                 <p style="margin: 0; font-size: 0.7rem; color: #166534;">Inclui taxa de Proteção MZLINK</p>
+                <!-- AQUI ESTÁ O AVISO OBRIGATÓRIO -->
+                <p style="margin: 8px 0 0 0; font-size: 0.75rem; color: #dc2626; font-weight: 800; background: #fee2e2; padding: 5px; border-radius: 5px;">
+                    ⚠️ É OBRIGATÓRIO pagar este valor exato. Pagamentos parciais serão rejeitados.
+                </p>
             </div>
             <p style="font-size: 0.9rem; font-weight: 800; color: #0f1115; text-align: left; margin-bottom: 5px;">Paga para um destes números:</p>
             <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fb; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
@@ -287,12 +291,11 @@
     <script src="sessao.js" charset="UTF-8"></script>
     <script src="header.js"></script>
     <script src="modo-premium.js"></script>
-    <script src="script.js?v=15"></script> <!-- ATUALIZADO PARA v=14 -->
+    <script src="script.js?v=16"></script>
     <script src="avaliações.js" defer></script>
     <script src="galeria.js" defer></script>
 
     <script>
-        // Lógica Termos, Menu, Suporte, Instalar e Premium
         function aceitarTermos() { localStorage.setItem('mzlink_termos_aceites', 'sim'); document.getElementById('modalTermos').style.display = 'none'; }
         document.addEventListener("DOMContentLoaded", () => { const aceite = localStorage.getItem('mzlink_termos_aceites'); if (aceite !== 'sim') document.getElementById('modalTermos').style.display = 'flex'; });
 
@@ -315,4 +318,3 @@
     </script>
 </body>
 </html>
-    
