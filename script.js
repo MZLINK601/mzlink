@@ -53,9 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!resposta.ok) throw new Error("Erro " + resposta.status);
       dados = await resposta.json();
       filtrarEExibir();
-    } catch (erro) {
-      results.innerHTML = "<p style='text-align:center'>Não foi possível carregar os dados.</p>";
-    }
+    } catch (erro) { results.innerHTML = "<p style='text-align:center'>Não foi possível carregar os dados.</p>"; }
   }
 
   async function carregarProvaSocial() {
@@ -91,7 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (vistos.length > 5) vistos.pop();
       localStorage.setItem("mzlink_vistos", JSON.stringify(vistos));
   }
-  window.guardarVisto = guardarVisto;
 
   async function carregarVistos() {
       const secao = document.getElementById("seccaoVistos"); const lista = document.getElementById("listaVistos"); if (!secao || !lista) return;
@@ -109,9 +106,8 @@ document.addEventListener("DOMContentLoaded", function () {
           });
           lista.innerHTML = html;
       } catch (e) { }
-  }
 
-  function mostrar(lista, titulo) {
+      function mostrar(lista, titulo) {
     if (lista.length === 0) { results.innerHTML = '<h3 class="results-title">Nenhum resultado encontrado.</h3>'; return; }
     lista = ordenarLista(lista); lista = ordenarPremiumPrimeiro(lista);
     let html = '<h3 class="results-title">' + limpar(titulo) + '</h3>';
@@ -184,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ==========================================
-// MODAL DE PAGAMENTO PROTEGIDO (ESCROW)
+// MODAL DE PAGAMENTO PROTEGIDO (COM TRAVA DE VALOR)
 // ==========================================
 let produtoAtualCompra = null; let valorAtualCompra = 0;
 
@@ -214,6 +210,12 @@ document.getElementById('btnConfirmarPagamento')?.addEventListener('click', asyn
     const comprovativo = document.getElementById('inputComprovativoCompra').value.trim(); const msg = document.getElementById('msgCodigoCompra');
     if (!comprovativo) return alert("Cola o código do comprovativo primeiro.");
     if (msg.style.color === 'rgb(220, 38, 38)') return alert("❌ O pagamento não foi feito para os números do MZLINK.");
+
+    // ===== TRAVA DE SEGURANÇA =====
+    const confirmouValor = confirm(`⚠️ ATENÇÃO!\n\nConfirmas que transferiste o valor TOTAL de ${valorAtualCompra.toFixed(2)} MT para o MZLINK?\n\nSe pagaste um valor diferente, o teu pedido será rejeitado pelo administrador.`);
+    if (!confirmouValor) return;
+    // ==============================
+
     this.innerText = "A processar..."; this.disabled = true;
     try {
         let sessao = JSON.parse(localStorage.getItem("mzlink_sessao"));
@@ -257,8 +259,9 @@ document.getElementById('btnEnviarOrcamento')?.addEventListener('click', functio
     const detalhes = document.getElementById('orcamentoDetalhes').value.trim(); const local = document.getElementById('orcamentoLocal').value.trim(); const urgencia = document.getElementById('orcamentoUrgencia').value;
     if (!detalhes || !local) { alert("Por favor, preenche os detalhes e o local."); return; }
     const msgTexto = `Olá *${dadosOrcamentoAtual.nomeVendedor}*, vi o teu serviço no MZLINK e gostaria de pedir um orçamento! 📝\n\n🛠️ *Serviço:* ${dadosOrcamentoAtual.tipoServico}\n📍 *Local:* ${local}\n⏰ *Urgência:* ${urgencia}\n📋 *Detalhes:* ${detalhes}\n\nPodes dizer-me quanto fica? Obrigado!`;
-    const msgZap = encodeURIComponent(msgTexto); let numLimpo = String(dadosOrcamentoAtual.numeroZap).replace(/\D/g, ""); if (numLimpo && !numLimpo.startsWith("258")) numLimpo = "258" + numLimpo;
+    const msgZap = encodeURIComponent(msgTexto); let numLimpo = String(dadosOrcamentoAtual.numeroZap).replace(/\D/g, ""); if (numLimpo && !numLimpos.startsWith("258")) numLimpo = "258" + numLimpo;
     window.open(`https://wa.me/${numLimpo}?text=${msgZap}`, "_blank");
     if (window.registarCliqueContato) window.registarCliqueContato(dadosOrcamentoAtual.id);
     fecharModalOrcamento();
 });
+                                                                                                                                                                                                                                                                                                                             }
