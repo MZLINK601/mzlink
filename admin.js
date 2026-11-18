@@ -143,7 +143,7 @@
       await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + userId, { method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ plano: "premium", premium_ate: dataFutura.toISOString() }) });
       alert("✅ Promovido!"); await carregarTudo(); await carregarPendentes(); 
     } catch (e) { alert("Erro ao aprovar."); }
-          }
+      }
 
    async function carregarSuporte() {
     var div = document.getElementById("listaSuporte");
@@ -178,7 +178,6 @@
     try {
         var sessao = await MZ.sessaoValida();
 
-        // 1. Calcular a Carteira (Soma das taxas de vendas CONCLUÍDAS)
         var rSaldo = await fetch(MZ.url + "/rest/v1/vendas_protegidas?status=eq.concluido&select=taxa_mzlink", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
@@ -189,7 +188,6 @@
             if (divSaldo) divSaldo.innerText = saldoTotal.toFixed(2) + " MT";
         }
 
-        // 2. Ir buscar as vendas pendentes (pago ou enviado)
         var r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?status=in.(pago,enviado)&order=criado_em.desc", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
@@ -206,7 +204,6 @@
             return;
         }
 
-        // 3. O CRUZAMENTO DE DADOS: Vamos buscar os nomes dos produtos e dos vendedores
         var produtosIds = vendas.map(v => v.produto_id).filter(id => id);
         var vendedoresIds = vendas.map(v => v.vendedor_id).filter(id => id);
 
@@ -222,14 +219,14 @@
         }
 
         if (vendedoresIds.length > 0) {
-            var rVends = await fetch(MZ.url + "/rest/v1/profissionais?user_id=in.(" + vendedoresIds.join(',') + ")&select=user_id,nome&categoria=eq.loja", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
+            // AQUI ESTÁ A CORREÇÃO: Removemos o filtro da categoria para ele procurar em todos
+            var rVends = await fetch(MZ.url + "/rest/v1/profissionais?user_id=in.(" + vendedoresIds.join(',') + ")&select=user_id,nome", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
             if (rVends.ok) {
                 var vends = await rVends.json();
                 vends.forEach(v => mapVendedores[v.user_id] = v.nome);
             }
         }
 
-        // 4. Construir a tabela bonita e informativa
         var html = `<table style="width:100%; table-layout: fixed; border-collapse: collapse; text-align: left;">
             <tr style="background: #f8f9fb; border-bottom: 2px solid #eee;">
                 <th style="padding: 8px 5px; font-size: 0.75rem; width: 35%;">Produto</th>
