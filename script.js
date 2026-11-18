@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function verificarNotificacoesVendedor() {
     try {
+        if (typeof MZ === "undefined") return;
         const sessao = await MZ.sessaoValida(); if (!sessao) return;
         const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
         const user = await userRes.json();
@@ -106,8 +107,9 @@ document.addEventListener("DOMContentLoaded", function () {
           });
           lista.innerHTML = html;
       } catch (e) { }
+    }
 
-      function mostrar(lista, titulo) {
+                       function mostrar(lista, titulo) {
     if (lista.length === 0) { results.innerHTML = '<h3 class="results-title">Nenhum resultado encontrado.</h3>'; return; }
     lista = ordenarLista(lista); lista = ordenarPremiumPrimeiro(lista);
     let html = '<h3 class="results-title">' + limpar(titulo) + '</h3>';
@@ -136,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (isServico) {
         precoHTML = `<p style="color: #667085; font-size: 0.8rem; margin: 0; font-style: italic;">${item.preco ? 'A partir de ' + item.preco + ' MT' : 'Preço a combinar'}</p>`;
-        botoesHTML = `<button onclick="event.stopPropagation(); iniciarOrcamento('${item.id}', '${limpar(item.nome)}', '${numero}', '${limpar(item.tipo)}')" style="flex: 1; background: #1E40AF; color: white; border: none; border-radius: 6px; font-weight: 800; font-size: 0.75rem; cursor: pointer; padding: 8px 0;">📝 Pedir Orçamento</button><a class="btn-contactar" style="flex: 1; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.75rem; text-decoration: none; padding: 8px 0;" href="tel:+${numero}">📞 Ligar</a>`;
+        botoesHTML = `<button onclick="event.stopPropagation(); iniciarOrcamento('${item.id}')" style="flex: 1; background: #1E40AF; color: white; border: none; border-radius: 6px; font-weight: 800; font-size: 0.75rem; cursor: pointer; padding: 8px 0;">📝 Pedir Orçamento</button><a class="btn-contactar" style="flex: 1; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.75rem; text-decoration: none; padding: 8px 0;" href="tel:+${numero}">📞 Ligar</a>`;
       } else if (item.preco && Number(item.preco) > 0) {
         const precoBase = Number(item.preco); let taxa = precoBase * 0.04; if (taxa > 500) taxa = 500; const precoFinal = precoBase + taxa;
         precoHTML = `<p style="color: #16a34a; font-weight: 900; font-size: 1rem; margin: 0;">💰 ${precoFinal.toFixed(2)} MT</p><p style="color: #667085; font-size: 0.6rem; margin: 0;">🛡️ Proteção MZLINK</p>`;
@@ -175,9 +177,15 @@ document.addEventListener("DOMContentLoaded", function () {
   ["filtroCategoria", "filtroProvincia", "filtroEstado", "filtroOrdenacao"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("change", filtrarEExibir); });
 
   (async function init() {
-    await carregarUserLogado(); await carregarDados(); await carregarProvaSocial(); await carregarTopVendedores(); await carregarVistos(); await verificarNotificacoesVendedor();
+    await carregarUserLogado(); 
+    await carregarDados(); 
+    await carregarProvaSocial(); 
+    await carregarTopVendedores(); 
+    await carregarVistos(); 
+    await verificarNotificacoesVendedor();
   })();
-});
+
+}); // <--- FIM DA FUNÇÃO PRINCIPAL AQUI (NÃO APAGAR)
 
 // ==========================================
 // MODAL DE PAGAMENTO PROTEGIDO (COM TRAVA DE VALOR)
@@ -211,10 +219,8 @@ document.getElementById('btnConfirmarPagamento')?.addEventListener('click', asyn
     if (!comprovativo) return alert("Cola o código do comprovativo primeiro.");
     if (msg.style.color === 'rgb(220, 38, 38)') return alert("❌ O pagamento não foi feito para os números do MZLINK.");
 
-    // ===== TRAVA DE SEGURANÇA =====
     const confirmouValor = confirm(`⚠️ ATENÇÃO!\n\nConfirmas que transferiste o valor TOTAL de ${valorAtualCompra.toFixed(2)} MT para o MZLINK?\n\nSe pagaste um valor diferente, o teu pedido será rejeitado pelo administrador.`);
     if (!confirmouValor) return;
-    // ==============================
 
     this.innerText = "A processar..."; this.disabled = true;
     try {
@@ -247,8 +253,16 @@ document.getElementById('btnConfirmarPagamento')?.addEventListener('click', asyn
 // MODAL DE ORÇAMENTO RÁPIDO (SERVIÇOS)
 // ==========================================
 let dadosOrcamentoAtual = null;
-window.iniciarOrcamento = function(id, nomeVendedor, numeroZap, tipoServico) {
-    dadosOrcamentoAtual = { id, nomeVendedor, numeroZap, tipoServico };
+window.iniciarOrcamento = function(produtoId) {
+    // Encontra o item na lista global 'dados'
+    if (typeof dados === 'undefined') return;
+    const item = dados.find(i => String(i.id) === String(produtoId));
+    if (!item) return;
+    
+    let numero = String(item.whatsapp || "").replace(/\D/g, "");
+    if (numero && !numero.startsWith("258")) numero = "258" + numero;
+    
+    dadosOrcamentoAtual = { id: item.id, nomeVendedor: item.nome, numeroZap: numero, tipoServico: item.tipo };
     document.getElementById('orcamentoDetalhes').value = ""; document.getElementById('orcamentoLocal').value = ""; document.getElementById('orcamentoUrgencia').value = "Hoje / Urgente";
     document.getElementById('modalOrcamento').style.display = 'flex';
 };
@@ -259,9 +273,10 @@ document.getElementById('btnEnviarOrcamento')?.addEventListener('click', functio
     const detalhes = document.getElementById('orcamentoDetalhes').value.trim(); const local = document.getElementById('orcamentoLocal').value.trim(); const urgencia = document.getElementById('orcamentoUrgencia').value;
     if (!detalhes || !local) { alert("Por favor, preenche os detalhes e o local."); return; }
     const msgTexto = `Olá *${dadosOrcamentoAtual.nomeVendedor}*, vi o teu serviço no MZLINK e gostaria de pedir um orçamento! 📝\n\n🛠️ *Serviço:* ${dadosOrcamentoAtual.tipoServico}\n📍 *Local:* ${local}\n⏰ *Urgência:* ${urgencia}\n📋 *Detalhes:* ${detalhes}\n\nPodes dizer-me quanto fica? Obrigado!`;
-    const msgZap = encodeURIComponent(msgTexto); let numLimpo = String(dadosOrcamentoAtual.numeroZap).replace(/\D/g, ""); if (numLimpo && !numLimpos.startsWith("258")) numLimpo = "258" + numLimpo;
+    const msgZap = encodeURIComponent(msgTexto); 
+    let numLimpo = String(dadosOrcamentoAtual.numeroZap).replace(/\D/g, ""); 
+    if (numLimpo && !numLimpo.startsWith("258")) numLimpo = "258" + numLimpo;
     window.open(`https://wa.me/${numLimpo}?text=${msgZap}`, "_blank");
     if (window.registarCliqueContato) window.registarCliqueContato(dadosOrcamentoAtual.id);
     fecharModalOrcamento();
-});
-                                                                                                                                                                                                                                                                                                                             }
+});     
