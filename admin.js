@@ -143,7 +143,9 @@
       await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + userId, { method: "PATCH", headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ plano: "premium", premium_ate: dataFutura.toISOString() }) });
       alert("✅ Promovido!"); await carregarTudo(); await carregarPendentes(); 
     } catch (e) { alert("Erro ao aprovar."); }
-                 }  async function carregarSuporte() {
+          }
+
+   async function carregarSuporte() {
     var div = document.getElementById("listaSuporte");
     if (!div) return;
     try {
@@ -176,6 +178,7 @@
     try {
         var sessao = await MZ.sessaoValida();
 
+        // 1. Calcular a Carteira (Soma das taxas de vendas CONCLUÍDAS)
         var rSaldo = await fetch(MZ.url + "/rest/v1/vendas_protegidas?status=eq.concluido&select=taxa_mzlink", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
@@ -186,6 +189,7 @@
             if (divSaldo) divSaldo.innerText = saldoTotal.toFixed(2) + " MT";
         }
 
+        // 2. Ir buscar as vendas pendentes (pago ou enviado)
         var r = await fetch(MZ.url + "/rest/v1/vendas_protegidas?status=in.(pago,enviado)&order=criado_em.desc", {
             headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token }
         });
@@ -202,34 +206,74 @@
             return;
         }
 
+        // 3. O CRUZAMENTO DE DADOS: Vamos buscar os nomes dos produtos e dos vendedores
+        var produtosIds = vendas.map(v => v.produto_id).filter(id => id);
+        var vendedoresIds = vendas.map(v => v.vendedor_id).filter(id => id);
+
+        var mapProdutos = {};
+        var mapVendedores = {};
+
+        if (produtosIds.length > 0) {
+            var rProds = await fetch(MZ.url + "/rest/v1/profissionais?id=in.(" + produtosIds.join(',') + ")&select=id,tipo", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
+            if (rProds.ok) {
+                var prods = await rProds.json();
+                prods.forEach(p => mapProdutos[p.id] = p.tipo);
+            }
+        }
+
+        if (vendedoresIds.length > 0) {
+            var rVends = await fetch(MZ.url + "/rest/v1/profissionais?user_id=in.(" + vendedoresIds.join(',') + ")&select=user_id,nome&categoria=eq.loja", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } });
+            if (rVends.ok) {
+                var vends = await rVends.json();
+                vends.forEach(v => mapVendedores[v.user_id] = v.nome);
+            }
+        }
+
+        // 4. Construir a tabela bonita e informativa
         var html = `<table style="width:100%; table-layout: fixed; border-collapse: collapse; text-align: left;">
             <tr style="background: #f8f9fb; border-bottom: 2px solid #eee;">
-                <th style="padding: 8px 5px; font-size: 0.75rem; width: 40%;">Vendedor (WhatsApp)</th>
-                <th style="padding: 8px 5px; font-size: 0.75rem; width: 30%;">Valor a Enviar</th>
-                <th style="padding: 8px 5px; font-size: 0.75rem; width: 30%;">Ação</th>
+                <th style="padding: 8px 5px; font-size: 0.75rem; width: 35%;">Produto</th>
+                <th style="padding: 8px 5px; font-size: 0.75rem; width: 25%;">Vendedor</th>
+                <th style="padding: 8px 5px; font-size: 0.75rem; width: 20%;">Valor</th>
+                <th style="padding: 8px 5px; font-size: 0.75rem; width: 20%; text-align: center;">Ação</th>
             </tr>`;
 
         vendas.forEach(function(v) {
+            var nomeProduto = mapProdutos[v.produto_id] || "Produto #" + v.produto_id;
+            var nomeVendedor = mapVendedores[v.vendedor_id] || "Vendedor";
+            var iniciaisVendedor = nomeVendedor.charAt(0).toUpperCase();
+
             html += `<tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 8px 5px; font-size: 0.8rem; word-break: break-all;">
-                    <strong>${esc(v.whatsapp_vendedor)}</strong><br>
-                    <small style="color: #667085; font-size: 0.7rem;">Status: ${v.status.toUpperCase()}</small>
+                <td style="padding: 10px 5px; font-size: 0.8rem; font-weight: 700; color: #0f1115;">
+                    ${esc(nomeProduto)}
+                    <br><small style="color: #16a34a; font-weight: bold;">#${v.id}</small>
                 </td>
-                <td style="padding: 8px 5px; font-size: 0.85rem; font-weight: bold; color: #1E40AF;">
+                <td style="padding: 10px 5px; font-size: 0.8rem;">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 24px; height: 24px; background: #1E40AF; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.7rem; font-weight: bold;">
+                            ${iniciaisVendedor}
+                        </div>
+                        <span style="color: #475569;">${esc(nomeVendedor)}</span>
+                    </div>
+                    <small style="color: #667085; font-size: 0.7rem; display: block; margin-top: 3px;">📞 ${esc(v.whatsapp_vendedor)}</small>
+                </td>
+                <td style="padding: 10px 5px; font-size: 0.85rem; font-weight: bold; color: #1E40AF;">
                     ${Number(v.valor_produto).toFixed(2)} MT
                 </td>
-                <td style="padding: 8px 5px; text-align: center;">
-                    <button onclick="window.libertarPagamento('${v.id}', '${v.produto_id}', '${v.whatsapp_vendedor}')" style="background: #16a34a; color: white; border: none; padding: 6px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.7rem;">✅ Pago ao Vendedor</button>
+                <td style="padding: 10px 5px; text-align: center;">
+                    <button onclick="window.libertarPagamento('${v.id}', '${v.produto_id}', '${v.whatsapp_vendedor}')" style="background: #16a34a; color: white; border: none; padding: 6px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.7rem; width: 100%;">✅ Pago</button>
                 </td>
             </tr>`;
         });
         html += `</table>`;
         divVendas.innerHTML = html;
 
-    } catch (e) { divVendas.innerHTML = "<p style='color:red;'>Erro de ligação.</p>"; }
+    } catch (e) { 
+        console.error(e);
+        divVendas.innerHTML = "<p style='color:red;'>Erro de ligação.</p>"; 
+    }
   }
 
-  // ===== LIBERTAR PAGAMENTO COM WHATSAPP E SMS =====
   window.libertarPagamento = async function(vendaId, produtoId, whatsappVendedor) {
     if (!confirm("Confirmas que já enviaste o dinheiro ao vendedor? Isto conclui a venda.")) return;
     var sessao = await MZ.sessaoValida();
