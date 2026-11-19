@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MZLINK - Encontre, Compare, Resolva</title>
-    
     <meta name="theme-color" content="#0f1115">
     <link rel="manifest" href="manifest.json">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mzlink.co.mz/">
     <meta property="og:title" content="MZLINK - Encontre, Compare, Resolva">
-    <meta property="og:description" content="🇲🇿 A plataforma 100% Moçambicana. Encontre produtos, serviços e profissionais perto de ti.">
+    <meta property="og:description" content="🇲🇿 A plataforma 100% Moçambicana.">
     <meta property="og:image" content="https://mzlink.co.mz/ponte.jpg">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="cartoes.css">
     <link rel="stylesheet" href="premium-cards.css">
@@ -26,32 +23,30 @@
     <link rel="stylesheet" href="galeria.css">
     <link rel="stylesheet" href="logo.css">
     <link rel="icon" type="image/png" href="favicon.png">
-
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; margin: 0; background: #f8f9fb; }
         
-        /* Menu */
+        /* MENU RÁPIDO (Sem blur e com transform) */
         .menu-link { position: relative; overflow: hidden; text-decoration: none; color: #0f1115; font-weight: 700; font-size: 1rem; padding: 12px 10px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; border-radius: 8px; transition: background 0.2s; cursor: pointer;}
         .menu-link:hover { background: #f8f9fb; color: #1E40AF; }
         .onda-efeito { position: absolute; border-radius: 50%; background: rgba(212, 175, 55, 0.5); transform: scale(0); animation: ondaAgua 0.6s ease-out; pointer-events: none; z-index: 10; }
         @keyframes ondaAgua { 100% { transform: scale(4); opacity: 0; } }
-        #menuLateral { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: #fff; z-index: 10001; transition: left 0.3s ease; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
-        #overlayMenu { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; backdrop-filter: blur(2px); }
+        
+        #menuLateral { position: fixed; top: 0; left: 0; width: 300px; height: 100%; background: #fff; z-index: 10001; transform: translateX(-100%); transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; will-change: transform; }
+        #overlayMenu { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; }
         .menu-titulo { font-size: 0.75rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 5px; padding-left: 10px; }
 
-        /* Hero */
         .hero-moz { background: linear-gradient(rgba(15, 17, 21, 0.7), rgba(15, 17, 21, 0.9)), url('ponte.jpg') center/cover no-repeat !important; padding: 50px 20px 40px !important; text-align: center; width: 92% !important; max-width: 1100px !important; margin: 20px auto !important; border-radius: 12px !important; border: 2px solid #d4af37 !important; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important; position: relative; overflow: hidden; }
-        .badge-moz { display: inline-flex; align-items: center; gap: 6px; background: #E31937; color: #fff; font-weight: 800; font-size: 0.75rem; padding: 8px 16px; border-radius: 999px; margin-bottom: 20px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(227, 25, 55, 0.4); position: relative; z-index: 2; }
-        .hero-moz h1 { font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1.1; margin: 0 0 12px 0; letter-spacing: -1px; text-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; z-index: 2; }
-        .texto-ouro { background: linear-gradient(135deg, #f5d76e, #d4af37); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0px 2px 15px rgba(212, 175, 55, 0.6); }
-        .hero-moz p { font-size: 0.95rem; color: #f8f9fa; margin: 0 auto 25px; max-width: 400px; line-height: 1.5; font-weight: 500; text-shadow: 0 2px 8px rgba(0,0,0,0.8); position: relative; z-index: 2; }
-        .search-box { display: flex !important; max-width: 500px !important; margin: 0 auto !important; border-radius: 8px !important; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255,255,255,0.2) !important; background: #fff !important; overflow: hidden !important; position: relative; z-index: 2; }
-        .search-box input { flex: 1 !important; border: none !important; padding: 16px 20px !important; font-size: 0.95rem !important; outline: none !important; background: transparent !important; color: #0f1115 !important; }
-        .search-box button { background: #1E40AF !important; color: white !important; border: none !important; padding: 0 20px !important; font-weight: 800 !important; font-size: 0.9rem !important; cursor: pointer !important; }
+        .badge-moz { display: inline-flex; align-items: center; gap: 6px; background: #E31937; color: #fff; font-weight: 800; font-size: 0.75rem; padding: 8px 16px; border-radius: 999px; margin-bottom: 20px; letter-spacing: 0.5px; position: relative; z-index: 2; }
+        .hero-moz h1 { font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1.1; margin: 0 0 12px 0; position: relative; z-index: 2; }
+        .texto-ouro { background: linear-gradient(135deg, #f5d76e, #d4af37); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero-moz p { font-size: 0.95rem; color: #f8f9fa; margin: 0 auto 25px; max-width: 400px; position: relative; z-index: 2; }
+        .search-box { display: flex !important; max-width: 500px !important; margin: 0 auto !important; border-radius: 8px !important; background: #fff !important; overflow: hidden !important; position: relative; z-index: 2; }
+        .search-box input { flex: 1 !important; border: none !important; padding: 16px 20px !important; font-size: 0.95rem !important; outline: none !important; }
+        .search-box button { background: #1E40AF !important; color: white !important; border: none !important; padding: 0 20px !important; font-weight: 800 !important; cursor: pointer !important; }
         
-        /* Filtros */
         .filtros-container { display: flex; gap: 10px; margin: 20px auto; max-width: 90%; flex-wrap: wrap; }
-        .filtro-select { flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 0.85rem; font-weight: 700; color: #0f1115; background-color: #ffffff; font-family: inherit; outline: none; transition: all 0.2s; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E40AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 14px top 50%; background-size: 10px auto; }
+        .filtro-select { flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 0.85rem; font-weight: 700; color: #0f1115; background-color: #ffffff; outline: none; appearance: none; }
         
         @media (max-width: 600px) {
             .hero-moz h1 { font-size: 1.9rem; }
@@ -61,44 +56,35 @@
     </style>
 </head>
 <body>
-
-    <!-- CABEÇALHO E MENU -->
     <header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border-bottom: 2px solid #d4af37; position: sticky; top: 0; z-index: 999;">
-        <a href="index.html" class="logo-header">
-            <img src="logo-mzlink.png" alt="MZLINK" style="height: 40px;">
-        </a>
+        <a href="index.html" class="logo-header"><img src="logo-mzlink.png" alt="MZLINK" style="height: 40px;"></a>
         <div style="display: flex; align-items: center; gap: 10px;">
             <span class="saudacao" style="font-size: 0.9rem; font-weight: 600; color: #1e293b; display: flex; align-items: center;">
                 Olá, <span id="nomeUserTopo">...</span>
                 <span id="sinoNotificacoes" style="display: none; background: #dc2626; color: white; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 50%; margin-left: 5px; cursor: pointer;" onclick="window.location.href='perfil.html'">🔔</span>
             </span>
             <span data-badge-premium></span>
-            <button id="btnAbrirMenu" class="menu-link" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #0f1115; padding: 0; display: flex; justify-content: center; align-items: center;">☰</button>
+            <button id="btnAbrirMenu" class="menu-link" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #0f1115; padding: 0;">☰</button>
         </div>
     </header>
 
     <div id="overlayMenu"></div>
     <div id="menuLateral">
-        <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <div style="background: linear-gradient(135deg, #0f1115, #1a1d24); padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <strong style="font-size: 1.5rem; color: #d4af37; letter-spacing: 2px;">MZLINK</strong>
             <button id="btnFecharMenu" class="menu-link" style="background: #d4af37; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1rem; cursor: pointer; color: #0f1115; display: flex; justify-content: center; align-items: center; font-weight: bold;">✕</button>
         </div>
-
         <a href="publicar.html" class="menu-link" style="color: #1E40AF;">📢 Publicar Anúncio</a>
         <a href="perfil.html" class="menu-link" style="color: #1E40AF;">👤 O Meu Perfil</a>
         <a href="#" class="menu-link" id="linkMenuSuporte" style="color: #1E40AF;">💬 Suporte MZLINK</a>
-
+        <a href="https://chat.whatsapp.com/JKU3h9Qmead5HXc2ItbK0C?s=sh&p=a&iam=2" target="_blank" class="menu-link" style="color: #25D366; font-weight: 900;">👥 Comunidade VIP (WhatsApp)</a>
         <div class="menu-titulo">Área Premium</div>
         <a href="premium.html" class="menu-link" id="linkMenuPremium" style="color: #d4af37;">⭐ Ativar Premium</a>
-
-        <div class="menu-titulo">Explorar Categorias</div>
+        <div class="menu-titulo">Categorias</div>
         <a href="#" onclick="filtrarCategoria('produtos'); return false;" class="menu-link">📦 Produtos</a>
         <a href="#" onclick="filtrarCategoria('servicos'); return false;" class="menu-link">🛠️ Serviços</a>
         <a href="#" onclick="filtrarCategoria('vendedores'); return false;" class="menu-link">🏪 Vendedores</a>
         <a href="#" onclick="filtrarCategoria('profissionais'); return false;" class="menu-link">👷 Profissionais</a>
-        <a href="#" onclick="filtrarCategoria('instituicoes'); return false;" class="menu-link">🏛️ Instituições</a>
-        <a href="#" onclick="filtrarCategoria('empresas'); return false;" class="menu-link">🏢 Empresas</a>
-
         <a href="login.html" class="menu-link" style="margin-top: 20px; border-top: 1px solid #eee; color: #0f1115;">🔑 Entrar / Registar</a>
         <a href="#" id="btnSairMenu" class="menu-link" style="color: #dc2626; border: none;">🚪 Terminar Sessão</a>
     </div>
@@ -107,7 +93,7 @@
     <section class="hero-moz">
         <div class="badge-moz">🇲🇿 100% Moçambicano</div>
         <h1>Encontre, Compare,<br><span class="texto-ouro">Resolva.</span></h1>
-        <p>Produtos, serviços e profissionais de confiança perto de ti. Fala direto no WhatsApp.</p>
+        <p>Produtos, serviços e profissionais de confiança perto de ti.</p>
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="O que você procura?">
             <button id="searchButton">Pesquisar</button>
@@ -115,19 +101,27 @@
     </section>
 
     <section style="padding: 10px 20px 20px; text-align: center; max-width: 900px; margin: 0 auto;">
-        <div id="provaSocial" style="background: #0f1115; color: #d4af37; padding: 10px 20px; border-radius: 999px; display: inline-block; font-weight: 800; font-size: 0.85rem; margin-bottom: 25px; border: 1px solid #333;">
-            🔥 A carregar...
-        </div>
+        <div id="provaSocial" style="background: #0f1115; color: #d4af37; padding: 10px 20px; border-radius: 999px; display: inline-block; font-weight: 800; font-size: 0.85rem; margin-bottom: 25px; border: 1px solid #333;">🔥 A carregar...</div>
     </section>
 
     <section id="seccaoVistos" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
         <h2 style="color: #0f1115; font-size: 1.3rem; font-weight: 900; margin-bottom: 15px;">👀 Vistos Recentemente</h2>
-        <div id="listaVistos" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; text-align: left;"></div>
+        <div id="listaVistos" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; text-align: left;"></div>
     </section>
 
     <section id="seccaoTopVendedores" style="display: none; padding: 20px; max-width: 900px; margin: 0 auto; text-align: center;">
         <h2 style="color: #0f1115; font-size: 1.4rem; font-weight: 900; margin-bottom: 20px;">🏆 Top Vendedores do Mês</h2>
-        <div id="listaTopVendedores" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;"></div>
+        <div id="listaTopVendedores" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;"></div>
+    </section>
+
+    <section style="padding: 10px 20px 30px; max-width: 900px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #075E54, #128C7E); border-radius: 16px; padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px; box-shadow: 0 8px 25px rgba(37,211,102,0.3); border: 2px solid #25D366; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px; text-align: left;">
+                <h3 style="color: #fff; margin: 0 0 5px 0; font-size: 1.2rem; font-weight: 900;">👥 Comunidade MZLINK</h3>
+                <p style="color: #d1fae5; margin: 0; font-size: 0.85rem;">Entre no nosso grupo VIP para novidades, dicas e suporte exclusivo!</p>
+            </div>
+            <a href="https://chat.whatsapp.com/JKU3h9Qmead5HXc2ItbK0C?s=sh&p=a&iam=2" target="_blank" style="background: #25D366; color: #fff; padding: 12px 20px; border-radius: 8px; font-weight: 800; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">💬 Entrar no Grupo</a>
+        </div>
     </section>
 
     <div class="filtros-container">
@@ -153,12 +147,6 @@
             <option value="Niassa">Niassa</option>
             <option value="Cabo Delgado">Cabo Delgado</option>
         </select>
-        <select id="filtroEstado" class="filtro-select">
-            <option value="">Qualquer Estado</option>
-            <option value="Novo">Novo</option>
-            <option value="Usado">Usado</option>
-            <option value="Serviço">Serviço</option>
-        </select>
         <select id="filtroOrdenacao" class="filtro-select">
             <option value="recentes">Mais Recentes</option>
             <option value="menor_preco">Preço: Menor</option>
@@ -168,153 +156,139 @@
 
     <div id="results"></div>
 </main>
-
-<button id="btnTopo" title="Voltar ao topo" style="position: fixed; bottom: 20px; right: 20px; z-index: 99; background-color: #0f1115; color: #d4af37; border: 2px solid #d4af37; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);">⬆️</button>
-
-<footer class="rodape-mzlink" style="background: #0f1115; color: #c9ccd3; padding: 30px 20px; text-align: center; margin-top: 50px; border-top: 3px solid #d4af37;">
+<button id="btnTopo" title="Voltar ao topo" style="position: fixed; bottom: 20px; right: 20px; z-index: 99; background-color: #0f1115; color: #d4af37; border: 2px solid #d4af37; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; cursor: pointer; display: none;">⬆️</button>
+<footer class="rodape-mzlink" style="background: #0f1115; color: #c9ccd3; padding: 30px; text-align: center; margin-top: 50px; border-top: 3px solid #d4af37;">
     <strong style="color: #d4af37; font-size: 1.2rem;">MZLINK</strong>
     <p style="font-size: 0.8rem; margin-top: 5px;">© 2026 MZLINK · Feito em Moçambique 🇲🇿</p>
-    <div style="margin-top: 15px; display: flex; justify-content: center; gap: 15px; font-size: 0.8rem;">
-        <a href="termos.html" style="color: #c9ccd3; text-decoration: none;">Termos e Condições</a>
-    </div>
+    <div style="margin-top: 15px;"><a href="termos.html" style="color: #c9ccd3; text-decoration: none;">Termos e Condições</a></div>
 </footer>
 
-        <!-- POPUP DE TERMOS E CONDIÇÕES -->
-    <div id="modalTermos" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10010; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
-        <div style="background: #fff; border-radius: 20px; padding: 30px 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
+        <!-- POPUP DE TERMOS -->
+    <div id="modalTermos" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10010; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+        <div style="background: #fff; border-radius: 20px; padding: 30px 25px; max-width: 400px; width: 100%; text-align: center; position: relative;">
             <div style="font-size: 3rem; margin-bottom: 10px;">⚖️</div>
-            <h2 style="color: #0f1115; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Termos e Condições</h2>
-            <p style="color: #475569; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; text-align: left;">Para usar o MZLINK e comprar com <strong>Pagamento Protegido</strong>, precisas de aceitar as nossas regras de segurança, taxas de comissão (4%) e política de privacidade.</p>
-            <a href="termos.html" target="_blank" style="display: block; margin-bottom: 20px; color: #1E40AF; font-weight: bold; text-decoration: underline; font-size: 0.9rem;">📄 Ler os Termos Completos</a>
-            <button onclick="aceitarTermos()" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">✅ Aceito os Termos</button>
-            <button onclick="window.location.href='https://www.google.com'" style="width: 100%; background: none; color: #94a3b8; font-weight: bold; font-size: 0.85rem; padding: 15px 0 0 0; border: none; cursor: pointer;">Não aceito (Sair)</button>
+            <h2 style="color: #0f1115; font-size: 1.4rem; font-weight: 900;">Termos e Condições</h2>
+            <p style="color: #475569; font-size: 0.9rem; margin-bottom: 20px; text-align: left;">Para usar o MZLINK e comprar com <strong>Pagamento Protegido</strong>, precisas de aceitar as nossas regras de segurança, taxas de comissão (4%) e política de privacidade.</p>
+            <a href="termos.html" target="_blank" style="display: block; margin-bottom: 20px; color: #1E40AF; font-weight: bold;">📄 Ler os Termos Completos</a>
+            <button onclick="aceitarTermos()" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">✅ Aceito os Termos</button>
+            <button onclick="window.location.href='https://www.google.com'" style="width: 100%; background: none; color: #94a3b8; font-weight: bold; padding: 15px 0 0 0; border: none; cursor: pointer;">Não aceito (Sair)</button>
+        </div>
+    </div>
+
+    <!-- TUTORIAL DE BOAS-VINDAS -->
+    <div id="modalOnboarding" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10020; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+        <div style="background: #fff; border-radius: 20px; padding: 30px 20px; max-width: 420px; width: 100%; text-align: center; border-top: 6px solid #d4af37;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">👋</div>
+            <h2 style="color: #0f1115; font-size: 1.5rem; font-weight: 900;">Bem-vindo ao MZLINK!</h2>
+            <p style="color: #667085; font-size: 0.9rem; margin-bottom: 25px;">Siga estes 3 passos para começar a vender com segurança.</p>
+            <div style="display: flex; align-items: center; gap: 12px; text-align: left; background: #f8f9fb; padding: 12px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid #1E40AF;">
+                <div style="background: #1E40AF; color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold;">1</div>
+                <div><strong style="color: #0f1115; font-size: 0.9rem;">Cria o teu Perfil</strong><p style="margin: 0; font-size: 0.75rem; color: #64748b;">Menu (☰) > "O Meu Perfil".</p></div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; text-align: left; background: #f8f9fb; padding: 12px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid #d4af37;">
+                <div style="background: #d4af37; color: #0f1115; width: 25px; height: 25px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold;">2</div>
+                <div><strong style="color: #0f1115; font-size: 0.9rem;">Publica o teu Anúncio</strong><p style="margin: 0; font-size: 0.75rem; color: #64748b;">Menu (☰) > "Publicar Anúncio".</p></div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; text-align: left; background: #f0fdf4; padding: 12px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #16a34a;">
+                <div style="background: #16a34a; color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold;">3</div>
+                <div><strong style="color: #166534; font-size: 0.9rem;">Vende com Proteção</strong><p style="margin: 0; font-size: 0.75rem; color: #15803d;">O dinheiro fica seguro no MZLINK.</p></div>
+            </div>
+            <button onclick="aceitarTutorial()" style="width: 100%; background: linear-gradient(135deg, #d4af37, #f5d76e); color: #0f1115; font-weight: 900; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">Entendi, Vamos a Isso! 🚀</button>
         </div>
     </div>
 
     <!-- BOTÃO DE INSTALAR -->
-    <button id="btnInstalarApp" onclick="abrirModalInstalar()" style="position: fixed; top: 75px; right: 15px; z-index: 9999; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.75rem; padding: 8px 14px; border-radius: 20px; border: 1px solid #fff; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.5); cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: 'Inter', sans-serif; transition: transform 0.2s;">
-        <span style="font-size: 0.9rem;">📲</span> Instalar
-    </button>
+    <button id="btnInstalarApp" onclick="abrirModalInstalar()" style="position: fixed; top: 75px; right: 15px; z-index: 9999; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 0.75rem; padding: 8px 14px; border-radius: 20px; border: 1px solid #fff; cursor: pointer; display: flex; align-items: center; gap: 4px;">📲 Instalar</button>
 
     <!-- MODAL DE INSTALAÇÃO -->
-    <div id="modalInstalar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
-        <div style="background: #1a1d24; border: 2px solid #d4af37; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
-            <button onclick="fecharModalInstalar()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #c9ccd3; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            <h2 style="color: #d4af37; font-size: 1.4rem; margin-top: 0; font-weight: 900;">Instalar MZLINK</h2>
-            <p style="color: #c9ccd3; font-size: 0.9rem; margin-bottom: 20px;">Leve o MZLINK sempre consigo. Instale a nossa App no seu telemóvel!</p>
-            <div style="background: #fff; padding: 15px; border-radius: 12px; display: inline-block; margin-bottom: 20px;">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://mzlink.co.mz" alt="QR Code MZLINK" style="display: block; width: 150px; height: 150px;">
-            </div>
-            <p style="color: #8b8f99; font-size: 0.75rem; margin-top: -10px; margin-bottom: 20px;">Aponte a câmara do seu telemóvel</p>
-            <button id="btnInstalarNativo" onclick="triggerInstalar()" style="display: flex; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 12px; border: none; cursor: pointer; width: 100%; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
-                <span style="font-size: 1.2rem;">📲</span> Instalar Agora
-            </button>
-            <p style="color: #c9ccd3; font-size: 0.8rem; text-align: left; background: #0f1115; padding: 10px; border-radius: 8px; line-height: 1.5;">
-                <strong>Não funciona?</strong><br><strong>Android:</strong> Toque nos 3 pontinhos do Chrome.<br><strong>iPhone:</strong> Abra no Safari, toque em Partilhar e "Adicionar ao ecrã principal".
-            </p>
+    <div id="modalInstalar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: #1a1d24; border: 2px solid #d4af37; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center;">
+            <button onclick="fecharModalInstalar()" style="float: right; background: none; border: none; color: #c9ccd3; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <h2 style="color: #d4af37; font-size: 1.4rem; font-weight: 900;">Instalar MZLINK</h2>
+            <div style="background: #fff; padding: 15px; border-radius: 12px; display: inline-block; margin: 15px 0;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://mzlink.co.mz" style="width: 150px; height: 150px;"></div>
+            <button id="btnInstalarNativo" onclick="triggerInstalar()" style="display: flex; background: linear-gradient(135deg, #f5d76e, #d4af37); color: #0f1115; font-weight: 900; padding: 15px; border-radius: 12px; border: none; cursor: pointer; width: 100%; justify-content: center; align-items: center; gap: 10px;">📲 Instalar Agora</button>
         </div>
     </div>
 
     <!-- MODAL DE SUPORTE -->
     <div id="modalSuporte" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10005; justify-content: center; align-items: flex-end;">
-        <div style="background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; padding: 25px; box-sizing: border-box; position: relative;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #0f1115; font-size: 1.2rem;">💬 Suporte MZLINK</h3>
-                <button id="fecharSuporte" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888;">✕</button>
-            </div>
-            <p style="font-size: 0.85rem; color: #667085; margin-top: 0; margin-bottom: 15px;">Dúvidas ou problemas? Escreve a tua mensagem e a equipa responde.</p>
-            <textarea id="txtMensagemSuporte" placeholder="Escreve a tua mensagem aqui..." style="width: 100%; height: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: none; margin-bottom: 15px; box-sizing: border-box;"></textarea>
-            <button id="btnEnviarSuporte" style="width: 100%; background: #1E40AF; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">Enviar Mensagem</button>
+        <div style="background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; padding: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><h3 style="margin: 0; color: #0f1115;">💬 Suporte MZLINK</h3><button id="fecharSuporte" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888;">✕</button></div>
+            <textarea id="txtMensagemSuporte" placeholder="Escreve a tua mensagem..." style="width: 100%; height: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; resize: none; margin-bottom: 15px; box-sizing: border-box;"></textarea>
+            <button id="btnEnviarSuporte" style="width: 100%; background: #1E40AF; color: white; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer;">Enviar Mensagem</button>
         </div>
     </div>
 
-    <!-- MODAL DE PAGAMENTO PROTEGIDO -->
-    <div id="modalPagamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
-        <div style="background: #fff; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
-            <button onclick="fecharModalPagamento()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            <h2 style="color: #16a34a; font-size: 1.4rem; margin-top: 0; font-weight: 900;">🛡️ Compra Protegida</h2>
-            <p style="color: #667085; font-size: 0.9rem; margin-bottom: 15px;">O teu dinheiro está seguro. O vendedor só recebe após confirmares a entrega.</p>
-            <div style="background: #f0fdf4; border: 2px solid #16a34a; border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+    <!-- MODAL DE PAGAMENTO -->
+    <div id="modalPagamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+        <div style="background: #fff; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center;">
+            <button onclick="fecharModalPagamento()" style="float: right; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <h2 style="color: #16a34a; font-size: 1.4rem; font-weight: 900;">🛡️ Compra Protegida</h2>
+            <div style="background: #f0fdf4; border: 2px solid #16a34a; border-radius: 12px; padding: 15px; margin: 15px 0;">
                 <p style="margin: 0; font-size: 0.8rem; color: #166534; font-weight: 800;">TOTAL A PAGAR</p>
                 <h1 id="valorTotalPagamento" style="color: #16a34a; margin: 5px 0; font-size: 2rem;">0 MT</h1>
-                <p style="margin: 0; font-size: 0.7rem; color: #166534;">Inclui taxa de Proteção MZLINK</p>
-                <!-- AQUI ESTÁ O AVISO OBRIGATÓRIO -->
-                <p style="margin: 8px 0 0 0; font-size: 0.75rem; color: #dc2626; font-weight: 800; background: #fee2e2; padding: 5px; border-radius: 5px;">
-                    ⚠️ É OBRIGATÓRIO pagar este valor exato. Pagamentos parciais serão rejeitados.
-                </p>
+                <p style="margin: 8px 0 0 0; font-size: 0.75rem; color: #dc2626; font-weight: 800; background: #fee2e2; padding: 5px; border-radius: 5px;">⚠️ É OBRIGATÓRIO pagar este valor exato.</p>
             </div>
-            <p style="font-size: 0.9rem; font-weight: 800; color: #0f1115; text-align: left; margin-bottom: 5px;">Paga para um destes números:</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fb; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                <div style="text-align: left;"><strong style="font-size: 0.9rem; color: #0f1115;">M-Pesa: 85 233 7913</strong><br><small style="color: #667085; font-size: 0.75rem;">Nome: AMÓS ELDIO</small></div>
-                <button onclick="navigator.clipboard.writeText('852337913'); alert('Copiado!')" style="background: #1E40AF; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">📋</button>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fb; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
-                <div style="text-align: left;"><strong style="font-size: 0.9rem; color: #0f1115;">e-Mola: 87 960 8566</strong><br><small style="color: #667085; font-size: 0.75rem;">Nome: CELESTE</small></div>
-                <button onclick="navigator.clipboard.writeText('879608566'); alert('Copiado!')" style="background: #1E40AF; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">📋</button>
-            </div>
-            <p style="font-size: 0.85rem; font-weight: 800; color: #0f1115; text-align: left; margin-bottom: 5px;">Colar o SMS:</p>
-            <input type="text" id="inputComprovativoCompra" placeholder="Cola o SMS ou o código..." style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box; margin-bottom: 5px;">
-            <p id="msgCodigoCompra" style="text-align: center; font-weight: bold; font-size: 0.8rem; margin-top: 0; margin-bottom: 15px; color: #16a34a;"></p>
-            <p style="font-size: 0.65rem; color: #94a3b8; margin-bottom: 10px; text-align: center;">Ao clicar em Confirmar, aceitas os <a href="termos.html" target="_blank" style="color: #1E40AF; font-weight: bold;">Termos e Condições</a> do MZLINK.</p>
-            <button id="btnConfirmarPagamento" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">✅ Confirmar Pagamento</button>
+            <div style="background: #f8f9fb; padding: 10px; border-radius: 8px; margin-bottom: 10px; text-align: left;"><strong>M-Pesa: 85 233 7913</strong><br><small>Nome: AMÓS ELDIO</small></div>
+            <div style="background: #f8f9fb; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: left;"><strong>e-Mola: 87 960 8566</strong><br><small>Nome: CELESTE</small></div>
+            <input type="text" id="inputComprovativoCompra" placeholder="Cola o código do SMS..." style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 5px; box-sizing: border-box;">
+            <p id="msgCodigoCompra" style="text-align: center; font-weight: bold; font-size: 0.8rem; margin-bottom: 15px; color: #16a34a;"></p>
+            <button id="btnConfirmarPagamento" style="width: 100%; background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 900; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">✅ Confirmar Pagamento</button>
         </div>
     </div>
 
-    <!-- MODAL DE ORÇAMENTO RÁPIDO -->
-    <div id="modalOrcamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
-        <div style="background: #fff; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
-            <button onclick="fecharModalOrcamento()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            <h2 style="color: #1E40AF; font-size: 1.3rem; margin-top: 0; font-weight: 900;">📝 Pedir Orçamento</h2>
-            <p style="color: #667085; font-size: 0.85rem; margin-bottom: 15px;">Preenche os detalhes e o profissional responde-te no WhatsApp.</p>
-            <div style="text-align: left; margin-bottom: 12px;">
-                <label style="font-size: 0.8rem; font-weight: 800; color: #0f1115;">O que precisas? (Detalhes)</label>
-                <textarea id="orcamentoDetalhes" placeholder="Ex: Preciso de instalar 2 tomadas..." style="width: 100%; height: 70px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem; resize: none; box-sizing: border-box; margin-top: 5px;"></textarea>
-            </div>
-            <div style="text-align: left; margin-bottom: 12px;">
-                <label style="font-size: 0.8rem; font-weight: 800; color: #0f1115;">Onde é? (Bairro / Localização)</label>
-                <input type="text" id="orcamentoLocal" placeholder="Ex: Polana, Maputo" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; margin-top: 5px;">
-            </div>
-            <div style="text-align: left; margin-bottom: 20px;">
-                <label style="font-size: 0.8rem; font-weight: 800; color: #0f1115;">Quando precisas?</label>
-                <select id="orcamentoUrgencia" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; margin-top: 5px; background: #fff;">
-                    <option value="Hoje / Urgente">Hoje / Urgente</option>
-                    <option value="Esta semana">Esta semana</option>
-                    <option value="Este mês">Este mês</option>
-                    <option value="Apenas a pedir informação">Apenas a pedir informação</option>
-                </select>
-            </div>
-            <button id="btnEnviarOrcamento" style="width: 100%; background: linear-gradient(135deg, #25D366, #1da851); color: white; font-weight: 900; font-size: 1rem; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">💬 Enviar via WhatsApp</button>
+    <!-- MODAL DE ORÇAMENTO -->
+    <div id="modalOrcamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+        <div style="background: #fff; border-radius: 20px; padding: 25px; max-width: 400px; width: 100%; text-align: center;">
+            <button onclick="fecharModalOrcamento()" style="float: right; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <h2 style="color: #1E40AF; font-size: 1.3rem; font-weight: 900;">📝 Pedir Orçamento</h2>
+            <textarea id="orcamentoDetalhes" placeholder="O que precisas? (ex: instalar tomadas)" style="width: 100%; height: 70px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin: 10px 0; resize: none; box-sizing: border-box;"></textarea>
+            <input type="text" id="orcamentoLocal" placeholder="Onde? (ex: Polana)" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box;">
+            <select id="orcamentoUrgencia" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box;">
+                <option value="Hoje / Urgente">Hoje / Urgente</option><option value="Esta semana">Esta semana</option><option value="Este mês">Este mês</option>
+            </select>
+            <button id="btnEnviarOrcamento" style="width: 100%; background: #25D366; color: white; font-weight: 900; padding: 15px; border-radius: 10px; border: none; cursor: pointer;">💬 Enviar via WhatsApp</button>
         </div>
     </div>
 
-    <!-- SCRIPTS -->
     <script src="sessao.js" charset="UTF-8"></script>
     <script src="header.js"></script>
     <script src="modo-premium.js"></script>
-    <script src="script.js?v=18"></script>
+    <script src="script.js?v=22"></script>
     <script src="avaliações.js" defer></script>
     <script src="galeria.js" defer></script>
 
     <script>
         function aceitarTermos() { localStorage.setItem('mzlink_termos_aceites', 'sim'); document.getElementById('modalTermos').style.display = 'none'; }
-        document.addEventListener("DOMContentLoaded", () => { const aceite = localStorage.getItem('mzlink_termos_aceites'); if (aceite !== 'sim') document.getElementById('modalTermos').style.display = 'flex'; });
+        function aceitarTutorial() { localStorage.setItem('mzlink_tutorial_visto', 'sim'); document.getElementById('modalOnboarding').style.display = 'none'; }
+        
+        document.addEventListener("DOMContentLoaded", () => { 
+            const aceite = localStorage.getItem('mzlink_termos_aceites'); 
+            if (aceite !== 'sim') document.getElementById('modalTermos').style.display = 'flex'; 
+            else {
+                const sessao = localStorage.getItem('mzlink_sessao');
+                const tutorialVisto = localStorage.getItem('mzlink_tutorial_visto');
+                if (sessao && tutorialVisto !== 'sim') { setTimeout(() => { document.getElementById('modalOnboarding').style.display = 'flex'; }, 1500); }
+            }
+        });
 
         const btnAbrirMenu = document.getElementById('btnAbrirMenu'); const btnFecharMenu = document.getElementById('btnFecharMenu'); const menuLateral = document.getElementById('menuLateral'); const overlayMenu = document.getElementById('overlayMenu');
         function criarOnda(e) { const el = e.currentTarget; const rect = el.getBoundingClientRect(); const onda = document.createElement('span'); onda.classList.add('onda-efeito'); const tamanho = Math.max(rect.width, rect.height) * 2; onda.style.width = onda.style.height = `${tamanho}px`; onda.style.left = `${e.clientX - rect.left - tamanho / 2}px`; onda.style.top = `${e.clientY - rect.top - tamanho / 2}px`; el.appendChild(onda); setTimeout(() => { onda.remove(); }, 600); }
         document.querySelectorAll('.menu-link').forEach(link => { link.addEventListener('click', criarOnda); });
-        function abrirMenu() { menuLateral.style.left = '0px'; overlayMenu.style.display = 'block'; } function fecharMenu() { menuLateral.style.left = '-320px'; overlayMenu.style.display = 'none'; }
+        
+        function abrirMenu() { menuLateral.style.transform = 'translateX(0)'; overlayMenu.style.display = 'block'; } 
+        function fecharMenu() { menuLateral.style.transform = 'translateX(-100%)'; overlayMenu.style.display = 'none'; }
+        
         btnAbrirMenu.addEventListener('click', abrirMenu); btnFecharMenu.addEventListener('click', fecharMenu); overlayMenu.addEventListener('click', fecharMenu);
         function filtrarCategoria(categoria) { const dropdown = document.getElementById("filtroCategoria"); if (dropdown) { dropdown.value = categoria; dropdown.dispatchEvent(new Event('change')); } fecharMenu(); document.getElementById("results").scrollIntoView({ behavior: 'smooth' }); }
 
         document.getElementById('linkMenuSuporte').onclick = (e) => { e.preventDefault(); fecharMenu(); document.getElementById('modalSuporte').style.display = 'flex'; };
         document.getElementById('fecharSuporte').onclick = () => { document.getElementById('modalSuporte').style.display = 'none'; };
-        document.getElementById('btnEnviarSuporte').onclick = async () => { const btn = document.getElementById('btnEnviarSuporte'); const msg = document.getElementById('txtMensagemSuporte').value.trim(); if (!msg) return alert("Escreve uma mensagem primeiro!"); btn.innerText = "A enviar..."; btn.disabled = true; try { const sessao = await MZ.sessaoValida(); if (!sessao) { alert("Precisas de fazer login!"); window.location.href = "login.html"; return; } const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } }); const user = await userRes.json(); const r = await fetch(MZ.url + "/rest/v1/suporte", { method: "POST", headers: { "apikey": MZ.key, "Authorization": "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ user_id: user.id, email: user.email, mensagem: msg }) }); if (r.ok) { alert("✅ Mensagem enviada!"); document.getElementById('txtMensagemSuporte').value = ""; document.getElementById('modalSuporte').style.display = 'none'; } else { alert("❌ Erro ao enviar."); } } catch (e) { alert("❌ Erro de ligação."); } finally { btn.innerText = "Enviar Mensagem"; btn.disabled = false; } };
+        document.getElementById('btnEnviarSuporte').onclick = async () => { const btn = document.getElementById('btnEnviarSuporte'); const msg = document.getElementById('txtMensagemSuporte').value.trim(); if (!msg) return alert("Escreve uma mensagem!"); btn.innerText = "A enviar..."; btn.disabled = true; try { const sessao = await MZ.sessaoValida(); if (!sessao) { alert("Precisas de fazer login!"); window.location.href = "login.html"; return; } const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } }); const user = await userRes.json(); const r = await fetch(MZ.url + "/rest/v1/suporte", { method: "POST", headers: { "apikey": MZ.key, "Authorization": "Bearer " + sessao.access_token, "Content-Type": "application/json" }, body: JSON.stringify({ user_id: user.id, email: user.email, mensagem: msg }) }); if (r.ok) { alert("✅ Enviado!"); document.getElementById('txtMensagemSuporte').value = ""; document.getElementById('modalSuporte').style.display = 'none'; } else { alert("❌ Erro."); } } catch (e) { alert("❌ Erro."); } finally { btn.innerText = "Enviar Mensagem"; btn.disabled = false; } };
 
         let deferredPrompt; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
         function abrirModalInstalar() { document.getElementById('modalInstalar').style.display = 'flex'; } function fecharModalInstalar() { document.getElementById('modalInstalar').style.display = 'none'; }
-        async function triggerInstalar() { if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') { fecharModalInstalar(); } deferredPrompt = null; } else { alert("Para instalar a MZLINK:\n\n1. Toque nos 3 pontinhos do Chrome.\n2. Escolha 'Instalar aplicação' ou 'Adicionar ao ecrã inicial'."); } }
-
-        document.addEventListener("DOMContentLoaded", async () => { try { const sessao = await MZ.sessaoValida(); if (!sessao) return; const userRes = await fetch(MZ.url + "/auth/v1/user", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } }); const user = await userRes.json(); const r = await fetch(MZ.url + "/rest/v1/profissionais?user_id=eq." + user.id + "&select=plano", { headers: { apikey: MZ.key, Authorization: "Bearer " + sessao.access_token } }); const dados = await r.json(); if (dados.length > 0 && dados[0].plano === 'premium') { document.getElementById('linkMenuPremium').innerText = "🔄 Renovar Conta Premium"; } } catch(e) {} });
+        async function triggerInstalar() { if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') { fecharModalInstalar(); } deferredPrompt = null; } else { alert("Para instalar:\n\n1. Toque nos 3 pontinhos do Chrome.\n2. Escolha 'Instalar aplicação'."); } }
     </script>
 </body>
-</html>
+                </html>
