@@ -15,14 +15,14 @@
   var btnCancelarEdicao = document.getElementById("btnCancelarEdicao");
   var tituloFormulario = document.getElementById("tituloFormulario");
   var btnPartilharWa = document.getElementById("btnPartilharWa");
-  
+
   var usuario = null;
   var planoUser = "basico";
   var limiteFotos = 4;
-  var limiteAnuncios = 3; 
+  var limiteAnuncios = 3;
   var totalMeusAnuncios = 0;
-  var ficheiros = []; 
-  var idAnuncioEmEdicao = null; 
+  var ficheiros = [];
+  var idAnuncioEmEdicao = null;
 
   var inputFotos = document.getElementById("inputFotos");
   var btnAddFoto = document.getElementById("btnAdicionarFoto");
@@ -32,12 +32,12 @@
   var fotosVazio = document.getElementById("fotosVazio");
   var fotosAviso = document.getElementById("fotosAviso");
   var limiteTexto = document.getElementById("limiteTexto");
-  
+
   var inputPreco = document.getElementById("preco");
   var inputTipo = document.getElementById("tipo");
   var divDica = document.getElementById("dicaPreco");
   var timerDica = null;
-  
+
   var selectCategoria = document.getElementById("categoria");
   var divEstado = document.getElementById("divEstado");
   var selectEstado = document.getElementById("estado");
@@ -56,6 +56,37 @@
       }
   });
 
+  var blocoModoPreco = document.getElementById("blocoModoPreco");
+  var selectModoPreco = document.getElementById("modoPreco");
+  var labelPreco = document.getElementById("labelPreco");
+  var linhaPreco = document.getElementById("linhaPreco");
+  var avisoPreco = document.getElementById("avisoPreco");
+
+  function ehServico(cat) { return cat === "servicos" || cat === "profissionais" || cat === "instituicoes" || cat === "empresas"; }
+
+  function ajustarPreco() {
+      var servico = ehServico(selectCategoria.value);
+      blocoModoPreco.style.display = servico ? "block" : "none";
+      if (servico && selectModoPreco.value === "combinar") {
+          linhaPreco.style.display = "none"; labelPreco.style.display = "none";
+          inputPreco.required = false; inputPreco.value = "";
+          if (divDica) divDica.style.display = "none";
+      } else {
+          linhaPreco.style.display = "flex"; labelPreco.style.display = "block";
+          inputPreco.required = !servico;
+          if (servico) {
+              labelPreco.textContent = "A partir de (MT)";
+              avisoPreco.textContent = "💬 Os clientes veem 'A partir de ...' e podem pedir orçamento.";
+          } else {
+              labelPreco.textContent = "Preço (MT) - Obrigatório";
+              avisoPreco.textContent = "🛡️ Obrigatório para ativar o Pagamento Protegido MZLINK.";
+          }
+      }
+  }
+  selectCategoria.addEventListener("change", ajustarPreco);
+  selectModoPreco.addEventListener("change", ajustarPreco);
+  ajustarPreco();
+
   function aviso(texto, erro) {
     message.textContent = texto;
     message.className = erro ? "error" : "";
@@ -71,7 +102,7 @@
   async function calcularDicaPreco() {
       var categoria = selectCategoria.value;
       var precoUser = Number(inputPreco.value);
-      
+
       if (!categoria || categoria === "" || !precoUser || precoUser <= 0) {
           if(divDica) divDica.style.display = "none";
           return;
@@ -119,7 +150,7 @@
 
   function ativarDebounce() {
       clearTimeout(timerDica);
-      timerDica = setTimeout(calcularDicaPreco, 1000); 
+      timerDica = setTimeout(calcularDicaPreco, 1000);
   }
 
   inputPreco.addEventListener("input", ativarDebounce);
@@ -135,7 +166,7 @@
               img.src = event.target.result;
               img.onload = () => {
                   const canvas = document.createElement("canvas");
-                  const MAX_WIDTH = 1000; 
+                  const MAX_WIDTH = 1000;
                   let scale = MAX_WIDTH / img.width;
                   if (scale > 1) scale = 1;
                   canvas.width = img.width * scale;
@@ -145,7 +176,7 @@
                   canvas.toBlob((blob) => {
                       const newFile = new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() });
                       resolve(newFile);
-                  }, 'image/jpeg', 0.7); 
+                  }, 'image/jpeg', 0.7);
               };
           };
       });
@@ -166,21 +197,21 @@
       var dados = await r2.json();
       var perfilLoja = dados.find(function(item) { return item.categoria === 'loja'; });
       planoUser = (perfilLoja && perfilLoja.plano) ? perfilLoja.plano : "basico";
-      
+
       var anunciosReais = dados.filter(function(item) { return item.categoria !== 'loja'; });
       totalMeusAnuncios = anunciosReais.length;
     }
 
     limiteFotos = planoUser === "premium" ? 20 : 4;
     limiteAnuncios = planoUser === "premium" ? Infinity : 3;
-    
+
     if (limiteTexto) limiteTexto.textContent = limiteFotos + " fotos";
     if (planoUser === "premium") {
         fotosInfo.innerHTML = "⭐ Plano <strong>Premium</strong>: até 20 fotos.";
     } else {
         fotosInfo.innerHTML = "🆓 Plano <strong>Básico</strong>: até 4 fotos. <a href='premium.html'>Tornar-se Premium</a>";
     }
-    
+
     atualizarContador();
 
     if (planoUser === "basico" && totalMeusAnuncios >= limiteAnuncios) {
@@ -200,9 +231,9 @@
   function atualizarContador() {
     contador.textContent = ficheiros.length + "/" + limiteFotos;
     if (ficheiros.length >= limiteFotos) {
-      btnAddFoto.disabled = true; btnAddFoto.textContent = "Limite atingido"; fotosAviso.style.display = "block"; 
+      btnAddFoto.disabled = true; btnAddFoto.textContent = "Limite atingido"; fotosAviso.style.display = "block";
     } else {
-      btnAddFoto.disabled = false; btnAddFoto.textContent = "Adicionar foto (" + (limiteFotos - ficheiros.length) + " restantes)"; fotosAviso.style.display = "none"; 
+      btnAddFoto.disabled = false; btnAddFoto.textContent = "Adicionar foto (" + (limiteFotos - ficheiros.length) + " restantes)"; fotosAviso.style.display = "none";
     }
     fotosVazio.style.display = ficheiros.length > 0 ? "none" : "block";
   }
@@ -247,10 +278,10 @@
       var linha = document.createElement("div");
       linha.className = "meu-item";
       var nFotos = (item.fotos && item.fotos.length) || 0;
-      var precoTxt = item.preco ? "💰 " + item.preco + " MT" : "⚠️ A combinar (Antigo)";
+      var precoTxt = item.preco ? "💰 " + item.preco + " MT" : "💬 Preço a combinar";
       var estadoTxt = item.estado && item.estado !== "Serviço" ? " | " + item.estado : "";
       var isVendido = item.vendido === true;
-      var btnVendido = isVendido 
+      var btnVendido = isVendido
         ? '<button type="button" onclick="window.alternarVendido(\'' + item.id + '\', true)" style="background:#fef3c7; color:#d97706; border:1px solid #fcd34d; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.75rem;">🔄 Disponível</button>'
         : '<button type="button" onclick="window.alternarVendido(\'' + item.id + '\', false)" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.75rem;">✅ Vendido</button>';
 
@@ -301,6 +332,7 @@
           document.getElementById("categoria").value = item.categoria || "";
           document.getElementById("whatsapp").value = String(item.whatsapp || "").replace(/^258/, "");
           inputPreco.value = item.preco || "";
+          selectModoPreco.value = item.preco ? "apartir" : "combinar";
           selectCategoria.dispatchEvent(new Event('change'));
           if (item.estado && item.estado !== "Serviço") selectEstado.value = item.estado;
           ficheiros = [];
@@ -353,23 +385,43 @@
     var precoFinal = inputPreco.value ? Number(inputPreco.value) : null;
 
     if (!nome || !tipo || !local || !categoria || !telefone || !descricao) { aviso("Preenche todos os campos obrigatórios.", true); return; }
-    if (!precoFinal || precoFinal <= 0) { aviso("⚠️ O preço é obrigatório. Coloca um valor para ativares o Pagamento Protegido MZLINK.", true); botao.disabled = false; return; }
+    if (ehServico(categoria)) {
+      if (selectModoPreco.value === "combinar") { precoFinal = null; }
+      else if (!precoFinal || precoFinal <= 0) { aviso("⚠️ Coloca o valor do 'A partir de' ou escolhe 'Preço a combinar'.", true); return; }
+    } else if (!precoFinal || precoFinal <= 0) { aviso("⚠️ O preço é obrigatório. Coloca um valor para ativares o Pagamento Protegido MZLINK.", true); botao.disabled = false; return; }
 
     botao.disabled = true;
     aviso(idAnuncioEmEdicao ? "A guardar alterações..." : "A publicar anúncio...", false);
-    
+
     try {
       var dadosAnuncio = { nome: nome, tipo: tipo, descricao: descricao, estado: estado, local: local, categoria: categoria, preco: precoFinal, whatsapp: "258" + telefone };
       var anuncioId = idAnuncioEmEdicao;
 
       if (idAnuncioEmEdicao) {
-          var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + idAnuncioEmEdicao, { method: "PATCH", headers: cabecalhos({ "Content-Type": "application/json" }), body: JSON.stringify(dadosAnuncio) });
+                    var r = await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + idAnuncioEmEdicao, {
+              method: "PATCH",
+              headers: cabecalhos({ "Content-Type": "application/json" }),
+              body: JSON.stringify(dadosAnuncio)
+          });
           if (!r.ok) throw new Error("Erro ao editar");
       } else {
-          dadosAnuncio.user_id = usuario.id; dadosAnuncio.plano = planoUser; dadosAnuncio.fotos = []; dadosAnuncio.vendido = false; 
-          var r = await fetch(MZ.url + "/rest/v1/profissionais", { method: "POST", headers: cabecalhos({ "Content-Type": "application/json", Prefer: "return=representation" }), body: JSON.stringify(dadosAnuncio) });
+          dadosAnuncio.user_id = usuario.id;
+          dadosAnuncio.plano = planoUser;
+          dadosAnuncio.fotos = [];
+          dadosAnuncio.vendido = false;
+
+          var r = await fetch(MZ.url + "/rest/v1/profissionais", {
+              method: "POST",
+              headers: cabecalhos({
+                  "Content-Type": "application/json",
+                  Prefer: "return=representation"
+              }),
+              body: JSON.stringify(dadosAnuncio)
+          });
+
           if (!r.ok) throw new Error("Erro na base de dados");
-          var criado = await r.json(); anuncioId = criado[0].id;
+          var criado = await r.json();
+          anuncioId = criado[0].id;
       }
 
       var urlsFinais = [];
@@ -377,35 +429,80 @@
 
       for (var i = 0; i < ficheiros.length; i++) {
           if (ficheiros[i].file) {
-              houveNovasFotos = true; aviso("A enviar fotos...", false);
-              var fComprimido = await comprimirImagem(ficheiros[i].file); 
+              houveNovasFotos = true;
+              aviso("A enviar fotos...", false);
+
+              var fComprimido = await comprimirImagem(ficheiros[i].file);
               var caminho = usuario.id + "/" + anuncioId + "/" + Date.now() + "_" + i + ".jpg";
-              var rUpload = await fetch(MZ.url + "/storage/v1/object/anuncios-fotos/" + caminho, { method: "POST", headers: { apikey: MZ.key, Authorization: "Bearer " + s.access_token, "Content-Type": "image/jpeg", "x-upsert": "true" }, body: fComprimido });
-              if (rUpload.ok) urlsFinais.push(MZ.url + "/storage/v1/object/public/anuncios-fotos/" + caminho);
-          } else { urlsFinais.push(ficheiros[i].url); }
+
+              var rUpload = await fetch(MZ.url + "/storage/v1/object/anuncios-fotos/" + caminho, {
+                  method: "POST",
+                  headers: {
+                      apikey: MZ.key,
+                      Authorization: "Bearer " + s.access_token,
+                      "Content-Type": "image/jpeg",
+                      "x-upsert": "true"
+                  },
+                  body: fComprimido
+              });
+
+              if (rUpload.ok) {
+                  urlsFinais.push(MZ.url + "/storage/v1/object/public/anuncios-fotos/" + caminho);
+              }
+          } else {
+              urlsFinais.push(ficheiros[i].url);
+          }
       }
 
       if (houveNovasFotos) {
-          await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + anuncioId, { method: "PATCH", headers: cabecalhos({ "Content-Type": "application/json" }), body: JSON.stringify({ fotos: urlsFinais }) });
+          await fetch(MZ.url + "/rest/v1/profissionais?id=eq." + anuncioId, {
+              method: "PATCH",
+              headers: cabecalhos({ "Content-Type": "application/json" }),
+              body: JSON.stringify({ fotos: urlsFinais })
+          });
       }
 
-      aviso("✅ " + (idAnuncioEmEdicao ? "Anúncio atualizado!" : "Anúncio publicado!"), false);
-      
-      if (!idAnuncioEmEdicao) {
+      var foiEdicao = !!idAnuncioEmEdicao;
+
+      resetarFormulario();
+      listarMeus();
+
+      aviso("✅ " + (foiEdicao ? "Anúncio atualizado!" : "Anúncio publicado!"), false);
+
+      if (!foiEdicao) {
           var urlAnuncio = "https://mzlink.co.mz/vendedor.html?id=" + usuario.id;
-          var msgZap = encodeURIComponent("Olha o que encontrei no MZLINK! " + tipo + " a " + precoFinal + " MT. Fala direto comigo: " + urlAnuncio);
-          btnPartilharWa.href = "https://wa.me/?text=" + msgZap; btnPartilharWa.style.display = "block";
-      }
-      resetarFormulario(); listarMeus();
-    } catch (err) { console.error(err); aviso("Erro ao guardar. Tenta novamente.", true); }
-    botao.disabled = false;
-  });
+          var textoPreco = precoFinal ? " a " + precoFinal + " MT" : "";
 
-  try {
+          var msgZap = encodeURIComponent(
+              "Olha o que encontrei no MZLINK! " +
+              tipo +
+              textoPreco +
+              ". Fala direto comigo: " +
+              urlAnuncio
+          );
+
+          btnPartilharWa.href = "https://wa.me/?text=" + msgZap;
+          btnPartilharWa.style.display = "block";
+      }
+
+  } catch (err) {
+      console.error(err);
+      aviso("Erro ao guardar. Tenta novamente.", true);
+  }
+
+  botao.disabled = false;
+});
+
+try {
     await carregarUsuario();
     await listarMeus();
-  } catch (e) { 
-      console.error(e);
-      if(usuario) { await listarMeus(); } else { window.location.href = "login.html"; }
-  }
+} catch (e) {
+    console.error(e);
+
+    if (usuario) {
+        await listarMeus();
+    } else {
+        window.location.href = "login.html";
+    }
+}
 })();
